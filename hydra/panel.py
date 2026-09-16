@@ -525,13 +525,13 @@ async def dashboard(request: Request):
 
 
 @app.get("/servers", response_class=HTMLResponse)
-async def servers_list(request: Request):
+async def servers_list(request: Request, error: Optional[str] = None, deleted: Optional[str] = None):
     """Servers list page."""
     servers = await db.fetchall("SELECT * FROM servers ORDER BY created_at DESC")
     return templates.TemplateResponse(
         request=request,
         name="pages/servers.html",
-        context={"servers": servers}
+        context={"servers": servers, "error": error, "deleted": deleted}
     )
 
 
@@ -622,3 +622,49 @@ async def catch_up_reports():
         "reports_generated": len(generated),
         "details": generated,
     }
+
+
+# Server creation from web form
+from fastapi import Form
+from fastapi.responses import RedirectResponse
+
+
+@app.post("/servers/create")
+async def create_server_form(
+    server_id: str = Form(...),
+    ip: str = Form(...),
+    location: str = Form(""),
+    city: str = Form(""),
+    bandwidth_mbps: int = Form(1000),
+    ssh_port: int = Form(22),
+):
+    """Create server from web form (server-side rendering)."""
+    from urllib.parse import quote
+    try:
+        await manager.register_server(
+            server_id=server_id,
+            ip=ip,
+            location=location,
+            city=city,
+            bandwidth_mbps=bandwidth_mbps,
+            ssh_port=ssh_port,
+        )
+        return RedirectResponse("/servers", status_code=303)
+    except Exception as e:
+        return RedirectResponse(f"/servers?error={quote(str(e))}", status_code=303)
+
+
+@app.post("/servers/{server_id}/delete")
+async def delete_server_form(server_id: str):
+    """Delete server from web form (cascades to related data)."""
+    from urllib.parse import quote
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        return RedirectResponse("/servers?error=Server+not+found", status_code=303)
+    
+    # Каскадное удаление: protocol_instances, metrics, alerts,
+    # agent_tokens, key_server_clients (по FOREIGN KEY ... ON DELETE CASCADE)
+    await db.execute("DELETE FROM servers WHERE id = ?", server_id)
+    await db.commit()
+    
+    return RedirectResponse(f"/servers?deleted={quote(server_id)}", status_code=303)
