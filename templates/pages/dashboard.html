@@ -1,26 +1,26 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Hydra Panel{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
+{% block title %}Обзор — Hydra Panel{% endblock %}
+{% block page_title %}Обзор{% endblock %}
 
 {% block content %}
 <div class="space-y-6">
     <!-- Stats cards -->
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <!-- Total servers -->
-        <div class="overflow-hidden rounded-lg bg-white shadow">
+        <!-- Всего серверов -->
+        <div class="overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700">
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <svg class="h-6 w-6 text-primary-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z" />
                         </svg>
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="truncate text-sm font-medium text-gray-500">Total Servers</dt>
+                            <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Всего серверов</dt>
                             <dd class="flex items-baseline">
-                                <div class="text-2xl font-semibold text-gray-900">{{ stats.total_servers }}</div>
+                                <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ stats.total_servers }}</div>
                             </dd>
                         </dl>
                     </div>
@@ -28,20 +28,20 @@
             </div>
         </div>
         
-        <!-- Active clients -->
-        <div class="overflow-hidden rounded-lg bg-white shadow">
+        <!-- Активных клиентов -->
+        <div class="overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700">
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <svg class="h-6 w-6 text-primary-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
                         </svg>
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="truncate text-sm font-medium text-gray-500">Active Clients</dt>
+                            <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Активных клиентов</dt>
                             <dd class="flex items-baseline">
-                                <div class="text-2xl font-semibold text-gray-900">{{ stats.total_clients }}</div>
+                                <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ stats.total_clients }}</div>
                             </dd>
                         </dl>
                     </div>
@@ -49,20 +49,20 @@
             </div>
         </div>
         
-        <!-- Access keys -->
-        <div class="overflow-hidden rounded-lg bg-white shadow">
+        <!-- Ключей доступа -->
+        <div class="overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700">
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <svg class="h-6 w-6 text-primary-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
                         </svg>
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="truncate text-sm font-medium text-gray-500">Access Keys</dt>
+                            <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Ключей доступа</dt>
                             <dd class="flex items-baseline">
-                                <div class="text-2xl font-semibold text-gray-900">{{ stats.total_keys }}</div>
+                                <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ stats.total_keys }}</div>
                             </dd>
                         </dl>
                     </div>
@@ -70,20 +70,20 @@
             </div>
         </div>
         
-        <!-- Alerts -->
-        <div class="overflow-hidden rounded-lg bg-white shadow">
+        <!-- Активных алертов -->
+        <div class="overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700">
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <svg class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                         </svg>
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="truncate text-sm font-medium text-gray-500">Active Alerts</dt>
+                            <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Активных алертов</dt>
                             <dd class="flex items-baseline">
-                                <div class="text-2xl font-semibold text-red-600">{{ stats.active_alerts }}</div>
+                                <div class="text-2xl font-semibold text-red-600 dark:text-red-400">{{ stats.active_alerts }}</div>
                             </dd>
                         </dl>
                     </div>
@@ -92,36 +92,38 @@
         </div>
     </div>
     
-    <!-- Recent servers -->
-    <div class="bg-white shadow sm:rounded-lg">
+    <!-- Недавние серверы -->
+    <div class="bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700 sm:rounded-lg">
         <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-base font-semibold leading-6 text-gray-900">Recent Servers</h3>
-            <div class="mt-5">
-                <table class="min-w-full divide-y divide-gray-300">
+            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Недавние серверы</h3>
+            <div class="mt-5 overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
                     <thead>
                         <tr>
-                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Server ID</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">IP Address</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Location</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
+                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 sm:pl-0">ID сервера</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">IP адрес</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Локация</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Статус</th>
                             <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                                <span class="sr-only">Actions</span>
+                                <span class="sr-only">Действия</span>
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                         {% for server in servers[:5] %}
-                        <tr>
-                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{ server.id }}</td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ server.ip }}</td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ server.location or '-' }}</td>
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-0">{{ server.id }}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">{{ server.ip }}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">{{ server.location or '—' }}</td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20 dark:ring-green-500/30">
                                     {{ server.status }}
                                 </span>
                             </td>
                             <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                                <a href="/servers/{{ server.id }}" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                <a href="/servers/{{ server.id }}" class="text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300">
+                                    Открыть
+                                </a>
                             </td>
                         </tr>
                         {% endfor %}

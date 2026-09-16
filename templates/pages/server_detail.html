@@ -1,91 +1,104 @@
 {% extends "base.html" %}
 
-{% block title %}{{ server.id }} - Hydra Panel{% endblock %}
-{% block page_title %}Server: {{ server.id }}{% endblock %}
+{% block title %}{{ server.id }} — Hydra Panel{% endblock %}
+{% block page_title %}Сервер: {{ server.id }}{% endblock %}
 
 {% block content %}
 <div class="space-y-6">
-    <!-- Server info -->
-    <div class="bg-white shadow sm:rounded-lg">
+    <!-- Хлебные крошки -->
+    <nav class="flex" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm">
+            <li><a href="/servers" class="text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">Серверы</a></li>
+            <li class="text-gray-500 dark:text-gray-400">/</li>
+            <li class="text-gray-900 dark:text-white font-medium">{{ server.id }}</li>
+        </ol>
+    </nav>
+
+    <!-- Информация о сервере -->
+    <div class="bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700 sm:rounded-lg">
         <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-base font-semibold leading-6 text-gray-900">Server Information</h3>
-            <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-                <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-                    <dt class="truncate text-sm font-medium text-gray-500">IP Address</dt>
-                    <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{{ server.ip }}</dd>
+            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Информация о сервере</h3>
+            <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-900/50 px-4 py-5 ring-1 ring-gray-200 dark:ring-gray-700">
+                    <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">IP-адрес</dt>
+                    <dd class="mt-1 text-xl font-semibold tracking-tight text-gray-900 dark:text-white font-mono">{{ server.ip }}</dd>
                 </div>
-                <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-                    <dt class="truncate text-sm font-medium text-gray-500">Location</dt>
-                    <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{{ server.location or 'N/A' }}</dd>
+                <div class="overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-900/50 px-4 py-5 ring-1 ring-gray-200 dark:ring-gray-700">
+                    <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Локация</dt>
+                    <dd class="mt-1 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ server.location or '—' }}</dd>
                 </div>
-                <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-                    <dt class="truncate text-sm font-medium text-gray-500">Bandwidth</dt>
-                    <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{{ server.bandwidth_mbps }} Mbps</dd>
+                <div class="overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-900/50 px-4 py-5 ring-1 ring-gray-200 dark:ring-gray-700">
+                    <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Город</dt>
+                    <dd class="mt-1 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ server.city or '—' }}</dd>
+                </div>
+                <div class="overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-900/50 px-4 py-5 ring-1 ring-gray-200 dark:ring-gray-700">
+                    <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Канал</dt>
+                    <dd class="mt-1 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ server.bandwidth_mbps }} Мбит/с</dd>
                 </div>
             </dl>
         </div>
     </div>
-    
-    <!-- Protocol instances -->
-    <div class="bg-white shadow sm:rounded-lg">
+
+    <!-- Протоколы -->
+    <div class="bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700 sm:rounded-lg">
         <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-base font-semibold leading-6 text-gray-900">Protocols</h3>
-            <div class="mt-5">
-                <table class="min-w-full divide-y divide-gray-300">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Protocol</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Port</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Max Connections</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        {% for protocol in protocols %}
-                        <tr>
-                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{ protocol.protocol }}</td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ protocol.port }}</td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ protocol.max_connections }}</td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                                    {{ protocol.status }}
-                                </span>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Протоколы</h3>
+            {% if protocols %}
+            <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                {% for protocol in protocols %}
+                <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white uppercase">{{ protocol.protocol }}</h4>
+                        <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400">
+                            {{ protocol.status }}
+                        </span>
+                    </div>
+                    <dl class="mt-3 space-y-1 text-sm">
+                        <div class="flex justify-between"><dt class="text-gray-500 dark:text-gray-400">Порт</dt><dd class="font-mono text-gray-900 dark:text-white">{{ protocol.port }}</dd></div>
+                        <div class="flex justify-between"><dt class="text-gray-500 dark:text-gray-400">Макс. подключений</dt><dd class="text-gray-900 dark:text-white">{{ protocol.max_connections }}</dd></div>
+                    </dl>
+                </div>
+                {% endfor %}
             </div>
+            {% else %}
+            <p class="mt-5 text-sm text-gray-500 dark:text-gray-400">Протоколы ещё не установлены. Используйте API <code class="font-mono text-xs bg-gray-100 dark:bg-gray-900 px-1 rounded">POST /api/v1/servers/{{ server.id }}/install</code></p>
+            {% endif %}
         </div>
     </div>
-    
-    <!-- Recent metrics -->
-    <div class="bg-white shadow sm:rounded-lg">
+
+    <!-- Метрики -->
+    <div class="bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700 sm:rounded-lg">
         <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-base font-semibold leading-6 text-gray-900">Recent Metrics</h3>
-            <p class="mt-2 text-sm text-gray-700">Latest {{ metrics|length }} metric data points.</p>
-            <div class="mt-5 max-h-96 overflow-y-auto">
-                <table class="min-w-full divide-y divide-gray-300 text-xs">
-                    <thead>
+            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Метрики</h3>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Последние {{ metrics|length }} точек данных. Обновляются каждую минуту с агента.</p>
+            {% if metrics %}
+            <div class="mt-5 overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                    <thead class="bg-gray-50 dark:bg-gray-900/50">
                         <tr>
-                            <th class="py-2 px-2 text-left">Time</th>
-                            <th class="py-2 px-2 text-left">CPU</th>
-                            <th class="py-2 px-2 text-left">Memory</th>
-                            <th class="py-2 px-2 text-left">Network</th>
+                            <th class="py-2 px-3 text-left font-semibold text-gray-900 dark:text-gray-200">Время</th>
+                            <th class="py-2 px-3 text-left font-semibold text-gray-900 dark:text-gray-200">CPU</th>
+                            <th class="py-2 px-3 text-left font-semibold text-gray-900 dark:text-gray-200">Память</th>
+                            <th class="py-2 px-3 text-left font-semibold text-gray-900 dark:text-gray-200">Сеть</th>
+                            <th class="py-2 px-3 text-left font-semibold text-gray-900 dark:text-gray-200">Задержка</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                         {% for metric in metrics %}
-                        <tr>
-                            <td class="py-2 px-2">{{ metric.timestamp }}</td>
-                            <td class="py-2 px-2">{{ "%.1f"|format(metric.cpu_percent) }}%</td>
-                            <td class="py-2 px-2">{{ "%.1f"|format(metric.memory_percent) }}%</td>
-                            <td class="py-2 px-2">{{ "%.1f"|format(metric.network_rx_mbps + metric.network_tx_mbps) }} Mbps</td>
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                            <td class="py-2 px-3 font-mono text-gray-500 dark:text-gray-400">{{ metric.timestamp }}</td>
+                            <td class="py-2 px-3 text-gray-900 dark:text-white">{{ "%.1f"|format(metric.cpu_percent) }}%</td>
+                            <td class="py-2 px-3 text-gray-900 dark:text-white">{{ "%.1f"|format(metric.memory_percent) }}%</td>
+                            <td class="py-2 px-3 text-gray-900 dark:text-white">{{ "%.1f"|format(metric.network_rx_mbps + metric.network_tx_mbps) }} Мбит/с</td>
+                            <td class="py-2 px-3 text-gray-900 dark:text-white">{{ "%.0f"|format(metric.latency_ms) }} мс</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+            {% else %}
+            <p class="mt-5 text-sm text-gray-500 dark:text-gray-400">Метрик пока нет. Установите агента мониторинга на сервер.</p>
+            {% endif %}
         </div>
     </div>
 </div>
