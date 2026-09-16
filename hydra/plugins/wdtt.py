@@ -16,9 +16,105 @@ class WDTTPlugin(ProtocolPlugin):
     def version(self) -> str:
         return "17"
     
-    async def install(self, server_ip: str, ssh_key_path: str) -> PluginResult:
-        """Install WDTT v17 on remote server."""
-        raise NotImplementedError("WDTT installation not yet implemented")
+    async def install(self, server_ip: str, ssh_key_path: str, max_passwords: int = 50) -> PluginResult:
+        """Install WDTT v17 on remote server.
+        
+        Steps:
+        1. Check if already installed (systemctl is-active wdtt)
+        2. Install Go
+        3. Clone WDTT-Plus repo
+        4. Build wdtt-server
+        5. Generate main password
+        6. Run install.sh init-config + install
+        7. Open ports 56000, 56001 (NOT 9000 - that's client-side only)
+        """
+        if not (1 <= max_passwords <= 10000):
+            raise ValueError(f"max_passwords must be in [1, 10000], got: {max_passwords}")
+        
+        cmd = f'''
+set -euo pipefail
+
+# Проверка что уже установлен
+if systemctl is-active wdtt >/dev/null 2>&1; then
+    echo "ALREADY_INSTALLED"
+    exit 0
+fi
+
+echo "Installing WDTT Plus v17..."
+
+# Установка Go
+GO_VER=$(curl -s "https://go.dev/VERSION?m=text" | head -1)
+if [ ! -d /usr/local/go ]; then
+    wget -q "https://go.dev/dl/${{GO_VER}}.linux-amd64.tar.gz"
+    sudo tar -C /usr/local -xzf "${{GO_VER}}.linux-amd64.tar.gz"
+    rm -f "${{GO_VER}}.linux-amd64.tar.gz"
+fi
+echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee /etc/profile.d/go.sh
+sudo chmod +x /etc/profile.d/go.sh
+export PATH=$PATH:/usr/local/go/bin
+
+# Клонирование репо
+cd /root
+if [ ! -d WDTT-Plus ]; then
+    git clone https://github.com/Ivan4537/WDTT-Plus.git
+fi
+cd WDTT-Plus
+
+# Сборка
+go build -o wdtt-server .
+
+# Генерация main password
+openssl rand -base64 32 | tr -d '\\n' | sudo tee /root/wdtt-main.pass > /dev/null
+sudo chmod 600 /root/wdtt-main.pass
+
+# Установка через install.sh
+cd server-installer
+sudo bash install.sh init-config \\
+  --output /root/wdtt-initial.json \\
+  --password-file /root/wdtt-main.pass \\
+  --dtls-port 56000 --wg-port 56001 --client-port 9000 \\
+  --dns 1.1.1.1 --max-passwords {max_passwords} --yes
+
+sudo bash install.sh install \\
+  --binary /root/WDTT-Plus/wdtt-server \\
+  --config /root/wdtt-initial.json \\
+  --dtls-port 56000 --wg-port 56001 --client-port 9000 \\
+  --dns 1.1.1.1 --max-passwords {max_passwords} \\
+  --wg-backend kernel --firewall open --yes
+
+# Открытие портов (9000 НЕ открываем — это локальный порт клиента)
+sudo ufw allow 56000/udp
+sudo ufw allow 56001/udp
+
+echo "INSTALL_COMPLETE"
+'''
+        
+        async with SSHTransport(server_ip, key_path=ssh_key_path) as ssh:
+            result = await ssh.run(cmd)
+            output = result.stdout
+            
+            if "ALREADY_INSTALLED" in output:
+                return PluginResult(
+                    success=True,
+                    message="WDTT already installed",
+                )
+            
+            if not result.success or "ERROR" in output:
+                return PluginResult(
+                    success=False,
+                    message=f"Installation failed: {output}\nStderr: {result.stderr}",
+                )
+            
+            if "INSTALL_COMPLETE" in output:
+                return PluginResult(
+                    success=True,
+                    message=f"WDTT v17 installed successfully (max_passwords={max_passwords})",
+                )
+            
+            return PluginResult(
+                success=False,
+                message=f"Unknown result: {output}",
+            )
     
     async def add_client(
         self,
@@ -27,25 +123,12 @@ class WDTTPlugin(ProtocolPlugin):
         client_id: str,
         **kwargs
     ) -> ClientConfig:
-        """Add a new WDTT client.
-        
-        Args:
-            server_ip: IP сервера
-            ssh_key_path: путь к SSH ключу
-            client_id: игнорируется (password генерируется на сервере)
-            **kwargs:
-                label: метка клиента (default: "hydra-client")
-                days: срок действия в днях (default: 0 = бессрочно)
-        
-        Returns:
-            ClientConfig с password в client_id (16 символов)
-        """
+        """Add a new WDTT client."""
         label = kwargs.get("label", "hydra-client")
         days = int(kwargs.get("days", 0))
         
-        # Валидация label (только alphanumeric + hyphen + underscore)
         if not all(c.isalnum() or c in "-_" for c in label):
-            raise ValueError(f"Invalid label: {label}. Use alphanumeric, hyphen, underscore only.")
+            raise ValueError(f"Invalid label: {label}")
         
         cmd = f'''
 set -euo pipefail
@@ -64,19 +147,16 @@ echo "$JSON" | /usr/local/bin/wdtt-server admin --config-dir /etc/wdtt --request
             try:
                 data = json.loads(result.stdout)
             except json.JSONDecodeError as e:
-                raise RuntimeError(f"Failed to parse WDTT response: {e}\nOutput: {result.stdout}")
+                raise RuntimeError(f"Failed to parse WDTT response: {e}")
             
             if "error" in data:
                 raise RuntimeError(f"WDTT error: {data['error']}")
             
             password_obj = data.get("password")
             if not password_obj or "password" not in password_obj:
-                raise RuntimeError(f"Unexpected WDTT response structure: {data}")
+                raise RuntimeError(f"Unexpected WDTT response: {data}")
             
             password = password_obj["password"]
-            
-            # client_id = password (16 симв)
-            # connection_string в формате wdtt://host:port?password=...
             connection_string = f"wdtt://{server_ip}:56000?password={password}"
             
             return ClientConfig(
@@ -111,26 +191,23 @@ echo "$JSON" | /usr/local/bin/wdtt-server admin --config-dir /etc/wdtt --request
             try:
                 data = json.loads(result.stdout)
             except json.JSONDecodeError as e:
-                raise RuntimeError(f"Failed to parse WDTT list response: {e}\nOutput: {result.stdout}")
+                raise RuntimeError(f"Failed to parse: {e}")
             
             if "error" in data:
                 raise RuntimeError(f"WDTT error: {data['error']}")
             
             passwords = data.get("passwords", [])
-            
-            # Нормализация: возвращаем список с одинаковой структурой
-            clients = []
-            for p in passwords:
-                clients.append({
+            return [
+                {
                     "protocol": "wdtt",
-                    "client_id": p.get("password"),  # password = client_id
+                    "client_id": p.get("password"),
                     "label": p.get("label", ""),
                     "is_deactivated": p.get("is_deactivated"),
                     "expires_at": p.get("expires_at"),
                     "active": p.get("is_deactivated") is None,
-                })
-            
-            return clients
+                }
+                for p in passwords
+            ]
     
     async def remove_client(
         self,
@@ -138,13 +215,9 @@ echo "$JSON" | /usr/local/bin/wdtt-server admin --config-dir /etc/wdtt --request
         ssh_key_path: str,
         client_id: str
     ) -> PluginResult:
-        """Remove a WDTT client.
-        
-        Args:
-            client_id: password (16 символов), не label!
-        """
+        """Remove a WDTT client."""
         if len(client_id) != 16:
-            raise ValueError(f"WDTT client_id must be 16-char password, got: {client_id!r}")
+            raise ValueError(f"client_id must be 16-char password, got: {client_id!r}")
         
         cmd = f'''
 set -euo pipefail
@@ -163,20 +236,12 @@ echo "$JSON" | /usr/local/bin/wdtt-server admin --config-dir /etc/wdtt --request
             try:
                 data = json.loads(result.stdout)
             except json.JSONDecodeError as e:
-                raise RuntimeError(f"Failed to parse WDTT delete response: {e}\nOutput: {result.stdout}")
+                raise RuntimeError(f"Failed to parse: {e}")
             
             if "error" in data:
-                return PluginResult(
-                    success=False,
-                    message=f"WDTT error: {data['error']}",
-                    data=data,
-                )
+                return PluginResult(success=False, message=f"WDTT error: {data['error']}")
             
-            return PluginResult(
-                success=True,
-                message=f"Client {client_id} removed",
-                data=data,
-            )
+            return PluginResult(success=True, message=f"Client {client_id} removed")
     
     async def get_status(self, server_ip: str, ssh_key_path: str) -> Dict[str, Any]:
         """Get WDTT status via SSH."""
@@ -209,7 +274,7 @@ echo "$JSON" | /usr/local/bin/wdtt-server admin --config-dir /etc/wdtt --request
                     error_msg = None
             except (json.JSONDecodeError, KeyError) as e:
                 client_count = 0
-                error_msg = f"Failed to parse response: {e}"
+                error_msg = f"Failed to parse: {e}"
             
             return {
                 "service_status": service_status,
