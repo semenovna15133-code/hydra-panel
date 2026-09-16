@@ -1,4 +1,4 @@
-#  HYDRA MANIFEST v3.60 (FINAL — ready for commit & Stage 2)
+#  HYDRA MANIFEST v3.61 (FINAL — FI audit complete)
 
 **Дата фиксации:** 2026-09-16  
 **Состояние:**  согласован по итогам финального ревью; готов к коммиту и старту Этапа 2  
@@ -17,6 +17,7 @@
 
 ## Changelog
 
+**v3.61** — по итогам FI-аудита: порт 9000 WDTT помечен как локальный клиентский (убран из ufw); PPA fallback возвращён на amneziawg-dkms + amneziawg-tools; добавлены правила валидатора AWG (H1-H4 уникальны, S1=S2=S3=S4 при RandomTrailers); убрана guest-коррекция из CPU агента (на VPS guest-время ~0); зафиксирована SAN only стратегия для multi-domain TLS
 **v3.60** — по итогам ревью #26 (проверявшего v3.59): §14 — восстановлен composite PRIMARY KEY (server_id, token_hash) в agent_tokens; регрессия v3.59 возникла при восстановлении секции из снимка схемы до v3.37 без diff-проверки (инциденты того же класса: v3.45, v3.50-rc1); без composite PK политика ротации §13.2 физически нереализуема (UNIQUE constraint failed на втором токене сервера, grace period — фикция, verify_agent_token проверяет одного кандидата). Возвращены ключевые комментарии схемы §14 (масштаб device_connections ~7M строк и TTL, назначение composite PK agent_tokens, пояснения к пороговым колонкам). Changelog фиксирует регрессию явно, по требованию ревью
 **v3.59** — финальные уточнения спецификации: §7 WDTT — MAX_PW читается через venv Python панели /opt/hydra/venv/bin/python (pyyaml там есть после развёртывания кода), с fallback на host python3 только если venv ещё не существует и явной проверкой наличия pyyaml (чистая Ubuntu без python3-yaml падала на import yaml); согласовано с deploy-hook (§13.2, v3.56); текст ошибки уточнён до «§13.2, шаги 1-3 „Развёртывание кода панели“». §15 таблица метрик — строка «Подключения» уточнена: WDTT через jq (.passwords | length), AIVPN и AWG через grep -c по выводу --list-clients / awg show. **Известный дефект v3.59: §14 восстановлен без diff-проверки, agent_tokens потеряла composite PK — исправлено в v3.60**
 **v3.58** — закрытие блокирующего бага в скелете агента (§15): паттерн grep -c PATTERN || echo 0 при нуле совпадений печатал «0» дважды, результат «0\n0» ломал jq --argjson connections_*. Заменено на || true в двух строках скелета: aivpn_conns и awg_conns. Добавлен пункт 10 чек-листа. WDTT-строка (jq ... || echo 0) не тронута: jq при ошибке не печатает ничего
@@ -136,7 +137,7 @@ dev = [
 
 sudo ufw allow 56000/udp
 sudo ufw allow 56001/udp
-sudo ufw allow 9000/udp### Установка сервера (v3.56 — Python/bash разделение; v3.59 — venv Python для YAML)
+# 9000/udp — локальный порт клиента (127.0.0.1:9000), НЕ открывается снаружи### Установка сервера (v3.56 — Python/bash разделение; v3.59 — venv Python для YAML)
 
 **На панели (два отдельных блока):**Блок 1 — чтение panel.yaml и валидация MAX_PW:# v3.59: предпочитаем venv Python панели (pyyaml там есть после развёртывания
 # кода панели), а не host python3 (на чистой Ubuntu без python3-yaml упал бы
@@ -377,6 +378,14 @@ def validate(params):
                 errors.append(f"HeaderProtectionKey requires {s} >= 12")
     if params["S1"] + 56 == params["S2"]:
         errors.append("S1 + 56 must not equal S2")
+    if params.get("header_protection"):
+        h_values = [params.get(f"H{i}") for i in range(1, 5) if params.get(f"H{i}")]
+        if len(h_values) != len(set(h_values)):
+            errors.append("H1-H4 must be unique")
+    if params.get("RandomTrailers"):
+        s_values = [params.get(f"S{i}") for i in range(1, 5)]
+        if len(set(s_values)) > 1:
+            errors.append("RandomTrailers requires S1=S2=S3=S4 (stealth profile)")
     if params["RandomTrailers"] != (params["trailers_max"] > 0):
         errors.append("RandomTrailers must be ON iff trailers_max > 0")
     if params["mtu"] - params["trailers_max"] < 1280:
@@ -1430,15 +1439,9 @@ STAT_FILE=/var/lib/hydra-agent/prev.stat
 user=0; nice=0; sys=0; idle=0; iowait=0; irq=0; softirq=0; steal=0; guest=0; guest_nice=0
 
 read -r _ user nice sys idle iowait irq softirq steal guest guest_nice < /proc/stat
-# v3.55 (замечание внимательного перечитывания): вычитание guest/guest_nice
-# из user/nice — спорная эвристика. В документации ядра Linux guest/guest_nice
-# показывают время, проведённое в гостевом режиме (KVM виртуализация), и
-# часть трактовок включает их в user/nice, часть — считает отдельно.
-# Для 1 vCPU на VPS (обычно не KVM-хост) коррекция не критична, но может
-# чуть занижать CPU если guest уже учтён. Оставляем текущую коррекцию;
-# обсудить на FI-сессии, не стоит ли убрать вычитание для упрощения.
-user=$((user - ${guest:-0}))
-nice=$((nice - ${guest_nice:-0}))
+# v3.61: убрана guest-коррекция. На типичном 1 vCPU VPS guest-время почти
+# всегда 0. Вычитание спорное и может занижать %. Если понадобится на
+# KVM-хосте — вернуть: user=$((user - guest)), nice=$((nice - guest_nice))
 idle_all=$((idle + iowait))
 sys_all=$((sys + irq + softirq))
 total=$((user + nice + sys_all + idle_all + steal))
