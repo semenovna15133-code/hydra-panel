@@ -1,7 +1,12 @@
-"""FastAPI application for Hydra Control Panel."""
+from fastapi import FastAPI, HTTPException, Header, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse, JSONResponse
 import os
 from datetime import datetime
-from fastapi import FastAPI, HTTPException, Header
+from fastapi import FastAPI, HTTPException, Header, Request
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from typing import Optional
 from .core.db import Database
@@ -52,6 +57,11 @@ app = FastAPI(
     description="Multi-protocol VPN server management",
     version="0.1.0",
 )
+
+# Setup templates and static files
+templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 # Global state
 db: Optional[Database] = None
@@ -257,7 +267,7 @@ async def agent_metrics(
             new_token = await rotate_agent_token(db, metrics.server_id)
             headers["X-New-Token"] = new_token
     
-    from fastapi.responses import JSONResponse
+    from fastapi.responses import JSONResponse, HTMLResponse
     return JSONResponse(content=response, headers=headers)
 
 
@@ -489,6 +499,117 @@ async def get_weekly_report(week_start: str):
         raise HTTPException(status_code=404, detail="Report not found")
     return report
 
+
+
+
+# Web UI Routes
+@app.get("/", response_class=HTMLResponse)
+async def dashboard(request: Request):
+    """Dashboard page."""
+    # Get stats
+    stats = {
+        "total_servers": await db.scalar("SELECT COUNT(*) FROM servers") or 0,
+        "total_clients": await db.scalar("SELECT COUNT(*) FROM key_server_clients") or 0,
+        "total_keys": await db.scalar("SELECT COUNT(*) FROM access_keys") or 0,
+        "active_alerts": await db.scalar("SELECT COUNT(*) FROM alerts WHERE resolved_at IS NULL") or 0,
+    }
+    
+    # Get recent servers
+    servers = await db.fetchall("SELECT * FROM servers ORDER BY created_at DESC LIMIT 5")
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/dashboard.html",
+        context={"stats": stats, "servers": servers}
+    )
+
+
+@app.get("/servers", response_class=HTMLResponse)
+async def servers_list(request: Request):
+    """Servers list page."""
+    servers = await db.fetchall("SELECT * FROM servers ORDER BY created_at DESC")
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/servers.html",
+        context={"servers": servers}
+    )
+
+
+@app.get("/servers/{server_id}", response_class=HTMLResponse)
+async def server_detail(request: Request, server_id: str):
+    """Server detail page."""
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        raise HTTPException(status_code=404, detail="Server not found")
+    
+    # Get protocol instances
+    protocols = await db.fetchall(
+        "SELECT * FROM protocol_instances WHERE server_id = ?",
+        server_id
+    )
+    
+    # Get recent metrics
+    metrics = await db.fetchall(
+        """SELECT * FROM metrics 
+           WHERE server_id = ? 
+           ORDER BY timestamp DESC 
+           LIMIT 100""",
+        server_id
+    )
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/server_detail.html",
+        context={"server": server, "protocols": protocols, "metrics": metrics}
+    )
+
+
+@app.get("/clients", response_class=HTMLResponse)
+async def clients_list(request: Request):
+    """Clients list page."""
+    # Get all client registrations
+    clients = await db.fetchall(
+        """SELECT dr.*, ak.key_id 
+           FROM device_registrations dr
+           JOIN access_keys ak ON dr.key_id = ak.key_id
+           ORDER BY dr.registered_at DESC"""
+    )
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/clients.html",
+        context={"clients": clients}
+    )
+
+
+@app.get("/keys", response_class=HTMLResponse)
+async def keys_list(request: Request):
+    """Access keys list page."""
+    keys = await db.fetchall(
+        """SELECT ak.*, 
+                  COUNT(dr.id) as device_count
+           FROM access_keys ak
+           LEFT JOIN device_registrations dr ON ak.key_id = dr.key_id
+           GROUP BY ak.key_id
+           ORDER BY ak.created_at DESC"""
+    )
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/keys.html",
+        context={"keys": keys}
+    )
+
+
+@app.get("/reports", response_class=HTMLResponse)
+async def reports_list(request: Request):
+    """Reports list page."""
+    reports = await db.fetchall(
+        "SELECT * FROM weekly_reports ORDER BY week_start DESC LIMIT 20"
+    )
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/reports.html",
+        context={"reports": reports}
+    )
 
 @app.post("/api/v1/reports/weekly/catch-up")
 async def catch_up_reports():

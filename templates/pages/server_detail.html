@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}{{ server.id }} - Hydra Panel{% endblock %}
+{% block page_title %}Server: {{ server.id }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Server info -->
+    <div class="bg-white shadow sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-base font-semibold leading-6 text-gray-900">Server Information</h3>
+            <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                    <dt class="truncate text-sm font-medium text-gray-500">IP Address</dt>
+                    <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{{ server.ip }}</dd>
+                </div>
+                <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                    <dt class="truncate text-sm font-medium text-gray-500">Location</dt>
+                    <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{{ server.location or 'N/A' }}</dd>
+                </div>
+                <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                    <dt class="truncate text-sm font-medium text-gray-500">Bandwidth</dt>
+                    <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{{ server.bandwidth_mbps }} Mbps</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+    
+    <!-- Protocol instances -->
+    <div class="bg-white shadow sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-base font-semibold leading-6 text-gray-900">Protocols</h3>
+            <div class="mt-5">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Protocol</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Port</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Max Connections</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for protocol in protocols %}
+                        <tr>
+                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{ protocol.protocol }}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ protocol.port }}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ protocol.max_connections }}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm">
+                                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                    {{ protocol.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent metrics -->
+    <div class="bg-white shadow sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-base font-semibold leading-6 text-gray-900">Recent Metrics</h3>
+            <p class="mt-2 text-sm text-gray-700">Latest {{ metrics|length }} metric data points.</p>
+            <div class="mt-5 max-h-96 overflow-y-auto">
+                <table class="min-w-full divide-y divide-gray-300 text-xs">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-2 text-left">Time</th>
+                            <th class="py-2 px-2 text-left">CPU</th>
+                            <th class="py-2 px-2 text-left">Memory</th>
+                            <th class="py-2 px-2 text-left">Network</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for metric in metrics %}
+                        <tr>
+                            <td class="py-2 px-2">{{ metric.timestamp }}</td>
+                            <td class="py-2 px-2">{{ "%.1f"|format(metric.cpu_percent) }}%</td>
+                            <td class="py-2 px-2">{{ "%.1f"|format(metric.memory_percent) }}%</td>
+                            <td class="py-2 px-2">{{ "%.1f"|format(metric.network_rx_mbps + metric.network_tx_mbps) }} Mbps</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
