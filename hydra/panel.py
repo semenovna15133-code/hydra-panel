@@ -12,6 +12,8 @@ from typing import Optional
 from .core.db import Database
 from .core.server_manager import ServerManager
 
+DB_PATH = os.environ.get("HYDRA_DB_PATH", "panel.db")
+
 
 # Pydantic models
 class ServerRegister(BaseModel):
@@ -74,7 +76,7 @@ async def startup():
     global db, manager
     
     # Пути настраиваются через переменные окружения
-    db_path = os.environ.get("HYDRA_DB_PATH", "/var/lib/hydra/panel.db")
+    db_path = os.environ.get("HYDRA_DB_PATH", DB_PATH)
     ssh_key = os.environ.get("HYDRA_SSH_KEY", "/opt/hydra/keys/panel_key")
     
     db = Database(db_path)
@@ -595,7 +597,7 @@ async def keys_list(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="pages/keys.html",
-        context={"keys": keys}
+        context={"keys": keys, "now": datetime.utcnow().isoformat()}
     )
 
 
@@ -668,3 +670,44 @@ async def delete_server_form(server_id: str):
     await db.commit()
     
     return RedirectResponse(f"/servers?deleted={quote(server_id)}", status_code=303)
+
+
+# === Управление ключами доступа (UI) ===
+from fastapi import Form
+from datetime import datetime, timedelta
+import secrets
+import aiosqlite
+
+@app.post("/api/v1/keys/create")
+async def create_key_ui(days_valid: int = Form(30), max_devices: int = Form(3)):
+    """Создать новый ключ доступа из UI"""
+    key_id = secrets.token_urlsafe(32)
+    expires_at = (datetime.utcnow() + timedelta(days=days_valid)).isoformat()
+    
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not initialized")
+    await db.execute(
+        "INSERT INTO access_keys (key_id, expires_at, max_devices) VALUES (?, ?, ?)",
+        key_id, expires_at, max_devices,
+    )
+    await db.commit()
+    
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/keys", status_code=303)
+
+
+@app.post("/api/v1/keys/{key_id}/revoke")
+async def revoke_key_ui(key_id: str):
+    """Отозвать ключ доступа из UI"""
+    revoked_at = datetime.utcnow().isoformat()
+    
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not initialized")
+    await db.execute(
+        "UPDATE access_keys SET revoked_at = ? WHERE key_id = ?",
+        revoked_at, key_id,
+    )
+    await db.commit()
+    
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/keys", status_code=303)

@@ -4,11 +4,68 @@
 {% block page_title %}Ключи доступа{% endblock %}
 
 {% block content %}
-<div>
+<div x-data="{ openCreate: false, openRevoke: false, revokeKeyId: '' }">
     <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
             <h1 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Ключи доступа</h1>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Универсальные ключи доступа для аутентификации клиентов.</p>
+        </div>
+        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <button type="button" @click="openCreate = true" class="block rounded-md bg-primary-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-500 transition-colors">
+                Создать ключ
+            </button>
+        </div>
+    </div>
+
+    <div x-show="openCreate" x-cloak class="relative z-10" role="dialog">
+        <div class="fixed inset-0 bg-gray-900/70" @click="openCreate = false"></div>
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="relative w-full max-w-lg rounded-lg bg-white dark:bg-gray-800 px-4 pb-4 pt-5 shadow-xl sm:p-6 ring-1 ring-gray-200 dark:ring-gray-700">
+                    <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Создать ключ доступа</h3>
+                    <form method="post" action="/api/v1/keys/create" class="mt-5 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Срок действия (дней)</label>
+                            <input type="number" name="days_valid" value="30" min="1" max="365" required class="mt-1 block w-full rounded-md border-0 py-1.5 px-3 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-primary-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Максимум устройств</label>
+                            <input type="number" name="max_devices" value="3" min="1" max="10" required class="mt-1 block w-full rounded-md border-0 py-1.5 px-3 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-primary-500 sm:text-sm">
+                        </div>
+                        <div class="mt-5 flex justify-end gap-3">
+                            <button type="button" @click="openCreate = false" class="rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">Отмена</button>
+                            <button type="submit" class="rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500">Создать</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="openRevoke" x-cloak class="relative z-10" role="dialog">
+        <div class="fixed inset-0 bg-gray-900/70" @click="openRevoke = false"></div>
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="relative w-full max-w-md rounded-lg bg-white dark:bg-gray-800 px-4 pb-4 pt-5 shadow-xl sm:p-6 ring-1 ring-gray-200 dark:ring-gray-700">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Отозвать ключ</h3>
+                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Ключ <span class="font-mono text-xs break-all" x-text="revokeKeyId"></span> будет отозван. Все устройства потеряют доступ.</p>
+                        </div>
+                    </div>
+                    <form method="post" :action="'/api/v1/keys/' + revokeKeyId + '/revoke'">
+                        <div class="mt-5 flex justify-end gap-3">
+                            <button type="button" @click="openRevoke = false" class="rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">Отмена</button>
+                            <button type="submit" class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500">Отозвать</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -23,6 +80,7 @@
                         <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Создан</th>
                         <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Истекает</th>
                         <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Статус</th>
+                        <th class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-200">Действия</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
@@ -41,13 +99,17 @@
                                 <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400">Активен</span>
                             {% endif %}
                         </td>
+                        <td class="whitespace-nowrap px-3 py-4 text-right text-sm">
+                            {% if not key.revoked_at %}
+                            <button type="button" @click="openRevoke = true; revokeKeyId = '{{ key.key_id }}'" class="text-red-600 dark:text-red-400 hover:text-red-500">Отозвать</button>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
-        <!-- Mobile карточки -->
         <ul role="list" class="sm:hidden space-y-3">
             {% for key in keys %}
             <li class="bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700 rounded-lg p-4">
@@ -64,6 +126,11 @@
                     <div><dt class="text-gray-500 dark:text-gray-400">Создан</dt><dd class="text-gray-900 dark:text-white">{{ key.created_at[:10] }}</dd></div>
                     <div><dt class="text-gray-500 dark:text-gray-400">Истекает</dt><dd class="text-gray-900 dark:text-white">{{ (key.expires_at or 'Никогда')[:10] }}</dd></div>
                 </dl>
+                {% if not key.revoked_at %}
+                <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                    <button type="button" @click="openRevoke = true; revokeKeyId = '{{ key.key_id }}'" class="text-sm text-red-600 dark:text-red-400 font-medium">Отозвать ключ</button>
+                </div>
+                {% endif %}
             </li>
             {% endfor %}
         </ul>
@@ -73,6 +140,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
             </svg>
             <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Ключей доступа пока нет</p>
+            <button type="button" @click="openCreate = true" class="mt-4 rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500">Создать первый ключ</button>
         </div>
         {% endif %}
     </div>
