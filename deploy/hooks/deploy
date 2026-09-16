@@ -1,0 +1,39 @@
+#!/bin/bash
+# Certbot deploy-hook: chown новых cert-файлов + restart панели
+
+PANEL_YAML=/etc/hydra/panel.yaml
+VENV_PYTHON=/opt/hydra/venv/bin/python
+
+# Читаем список доменов из panel.yaml через venv Python (pyyaml там есть)
+# или fallback на awk (если venv недоступен)
+DOMAINS=""
+if [ -x "$VENV_PYTHON" ] && "$VENV_PYTHON" -c "import yaml" 2>/dev/null; then
+    DOMAINS=$("$VENV_PYTHON" -c "
+import yaml
+c = yaml.safe_load(open('$PANEL_YAML'))
+for d in c.get('panel_domains', []):
+    print(d)
+")
+else
+    # Fallback: awk парсинг YAML
+    DOMAINS=$(awk '/^panel_domains:/{flag=1; next} /^[^ ]/{flag=0} flag && /^  - /{print $2}' "$PANEL_YAML")
+fi
+
+# Проверяем, соответствует ли RENEWED_LINEAGE одному из доменов панели
+LINEAGE_DOMAIN=$(basename "$RENEWED_LINEAGE")
+MATCHED=""
+for d in $DOMAINS; do
+    if [ "$LINEAGE_DOMAIN" = "$d" ]; then
+        MATCHED="$d"
+        break
+    fi
+done
+
+if [ -n "$MATCHED" ]; then
+    # Применяем chown к обоим путям: live/<domain> и archive/<domain>
+    chown -R hydra:hydra "/etc/letsencrypt/live/$MATCHED"
+    chown -R hydra:hydra "/etc/letsencrypt/archive/$MATCHED"
+    
+    # Restart панели (ExecReload отсутствует в unit)
+    systemctl --no-block restart hydra-panel || true
+fi

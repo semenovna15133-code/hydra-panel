@@ -1,5 +1,6 @@
 """FastAPI application for Hydra Control Panel."""
 import os
+from datetime import datetime
 from fastapi import FastAPI, HTTPException, Header
 from pydantic import BaseModel
 from typing import Optional
@@ -197,7 +198,11 @@ async def agent_metrics(
     metrics: AgentMetrics,
     authorization: Optional[str] = Header(None),
 ):
-    """Receive metrics from agent."""
+    """Receive metrics from agent.
+    
+    If server has a pending rotation (needs_new_token flag), returns
+    X-New-Token header. Agent picks it up and updates config.env.
+    """
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing or invalid token")
     
@@ -223,7 +228,37 @@ async def agent_metrics(
     )
     await db.commit()
     
-    return {"status": "accepted"}
+    # Проверить нужна ли ротация (token истекает через < 7 дней)
+    response = {"status": "accepted"}
+    headers = {}
+    
+    needs_rotation = await db.scalar(
+        """SELECT COUNT(*) FROM agent_tokens
+           WHERE server_id = ?
+             AND expires_at > datetime('now')
+             AND expires_at < datetime('now', '+7 days')""",
+        metrics.server_id,
+    )
+    
+    if needs_rotation and needs_rotation > 0:
+        # Только если это самый свежий токен (по created_at)
+        latest = await db.fetchone(
+            """SELECT token_hash, expires_at FROM agent_tokens
+               WHERE server_id = ? AND expires_at > datetime('now')
+               ORDER BY created_at DESC LIMIT 1""",
+            metrics.server_id,
+        )
+        
+        # Если текущий токен истекает скоро и он самый свежий — выдать новый
+        import hashlib
+        current_hash = hashlib.sha256(token.encode()).hexdigest()
+        if latest and latest['token_hash'] == current_hash:
+            from .core.token_rotation import rotate_agent_token
+            new_token = await rotate_agent_token(db, metrics.server_id)
+            headers["X-New-Token"] = new_token
+    
+    from fastapi.responses import JSONResponse
+    return JSONResponse(content=response, headers=headers)
 
 
 # Client redeem endpoint
@@ -267,3 +302,202 @@ async def bot_heartbeat(
 async def bot_token_check():
     """Check bot token validity (called by panel itself)."""
     return {"ok": True}
+
+
+# Redeem endpoint (full implementation)
+from .core.redeem import (
+    redeem_key as redeem_key_logic,
+    DeviceLimitReached,
+    KeyNotFound,
+    KeyRevoked,
+    KeyExpired,
+)
+from fastapi import Request
+
+
+@app.post("/api/v1/client/redeem")
+async def redeem_key(data: RedeemRequest, request: Request):
+    """Redeem universal key and get configs for all servers.
+    
+    Implements:
+    - Idempotency: same device_id returns existing config
+    - Device limit check (max_devices, default 3)
+    - Race protection via BEGIN IMMEDIATE
+    - Subnet collision detection (alert if 2+ subnets in 5 min)
+    
+    IP is read from request.remote_addr (reverse proxy forbidden).
+    """
+    # Get client IP from request (not X-Forwarded-For)
+    ip = request.client.host if request.client else "0.0.0.0"
+    
+    try:
+        result = await redeem_key_logic(
+            db=db,
+            key_id=data.key_id,
+            device_id=data.device_id,
+            device_name=data.device_name,
+            ip=ip,
+        )
+        return result
+        
+    except KeyNotFound:
+        raise HTTPException(status_code=404, detail="Key not found")
+    except KeyRevoked:
+        raise HTTPException(status_code=403, detail="Key is revoked")
+    except KeyExpired:
+        raise HTTPException(status_code=403, detail="Key is expired")
+    except DeviceLimitReached as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Redeem failed: {str(e)}")
+
+
+# Token rotation endpoints
+@app.post("/api/v1/servers/{server_id}/tokens/rotate")
+async def rotate_token(server_id: str):
+    """Manually rotate agent token for server."""
+    from .core.token_rotation import rotate_agent_token
+    
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        raise HTTPException(status_code=404, detail="Server not found")
+    
+    try:
+        new_token = await rotate_agent_token(db, server_id)
+        return {
+            "status": "rotated",
+            "server_id": server_id,
+            "note": "Deliver this token to agent via X-New-Token or manual update",
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/servers/{server_id}/tokens/revoke")
+async def revoke_tokens(server_id: str):
+    """Immediately revoke all tokens (compromise scenario)."""
+    from .core.token_rotation import manual_revoke_all
+    
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        raise HTTPException(status_code=404, detail="Server not found")
+    
+    count = await manual_revoke_all(db, server_id)
+    return {"status": "revoked", "tokens_affected": count}
+
+
+@app.get("/api/v1/servers/{server_id}/tokens")
+async def list_tokens(server_id: str):
+    """List token status for server (diagnostics)."""
+    from .core.token_rotation import get_active_token_count
+    
+    tokens = await db.fetchall(
+        """SELECT token_hash, expires_at, created_at, rotated_at
+           FROM agent_tokens
+           WHERE server_id = ?
+           ORDER BY created_at DESC""",
+        server_id,
+    )
+    
+    # Не возвращаем полные хеши — только первые 8 символов для диагностики
+    safe_tokens = [
+        {
+            "token_hash_prefix": t["token_hash"][:8],
+            "expires_at": t["expires_at"],
+            "created_at": t["created_at"],
+            "rotated_at": t["rotated_at"],
+            "active": t["expires_at"] > datetime.utcnow().isoformat() if t["expires_at"] else False,
+        }
+        for t in tokens
+    ]
+    
+    active_count = await get_active_token_count(db, server_id)
+    
+    return {
+        "server_id": server_id,
+        "active_count": active_count,
+        "tokens": safe_tokens,
+    }
+
+
+# Forecast and reports endpoints
+@app.get("/api/v1/forecast/{server_id}")
+async def get_forecast(server_id: str, days: int = 7):
+    """Get load forecast for specific server."""
+    from .core.forecast import analyze_server_load
+    
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        raise HTTPException(status_code=404, detail="Server not found")
+    
+    forecast = await analyze_server_load(db, server_id, days)
+    return forecast
+
+
+@app.get("/api/v1/forecast")
+async def get_all_forecasts():
+    """Get load forecasts for all servers."""
+    from .core.forecast import forecast_all_servers
+    
+    forecasts = await forecast_all_servers(db)
+    return {"forecasts": forecasts}
+
+
+@app.post("/api/v1/reports/weekly/generate")
+async def generate_weekly_report_endpoint(
+    week_start: Optional[str] = None,
+    week_end: Optional[str] = None,
+):
+    """Manually generate weekly report."""
+    from .core.weekly_report import generate_weekly_report
+    
+    if week_start and week_end:
+        start = datetime.fromisoformat(week_start)
+        end = datetime.fromisoformat(week_end)
+    else:
+        # По умолчанию — последняя полная неделя
+        now = datetime.utcnow()
+        days_since_monday = now.weekday()
+        end = now - timedelta(days=days_since_monday)
+        start = end - timedelta(days=7)
+    
+    report = await generate_weekly_report(db, start, end)
+    return report
+
+
+@app.get("/api/v1/reports/weekly")
+async def list_weekly_reports(limit: int = 10):
+    """List weekly reports."""
+    reports = await db.fetchall(
+        """SELECT week_start, week_end, generated_at
+           FROM weekly_reports
+           ORDER BY week_start DESC
+           LIMIT ?""",
+        limit,
+    )
+    return {"reports": reports}
+
+
+@app.get("/api/v1/reports/weekly/{week_start}")
+async def get_weekly_report(week_start: str):
+    """Get specific weekly report."""
+    report = await db.fetchone(
+        "SELECT * FROM weekly_reports WHERE week_start = ?",
+        week_start,
+    )
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+    return report
+
+
+@app.post("/api/v1/reports/weekly/catch-up")
+async def catch_up_reports():
+    """Generate all missed weekly reports."""
+    from .core.weekly_report import check_and_generate_missed_reports
+    
+    generated = await check_and_generate_missed_reports(db)
+    return {
+        "status": "completed",
+        "reports_generated": len(generated),
+        "details": generated,
+    }

@@ -1,0 +1,3 @@
+#!/bin/bash
+# Certbot pre-hook: открыть порт 80 для HTTP-01 challenge
+ufw allow 80/tcp

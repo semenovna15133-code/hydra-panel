@@ -1,0 +1,3 @@
+#!/bin/bash
+# Certbot post-hook: закрыть порт 80 после renew
+ufw delete allow 80/tcp 2>/dev/null || true
