@@ -42,3 +42,5 @@ Thumbs.db
 *.sqlite3
 .env
 .env.local
+keys/
+test_ssh_smoke.py
