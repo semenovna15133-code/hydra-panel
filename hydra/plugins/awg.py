@@ -10,18 +10,13 @@ AWG_CONF = "/etc/amnezia/amneziawg/awg0.conf"
 KEYS_DIR = "/etc/amnezia/amneziawg"
 CLIENTS_MAP = "/etc/amnezia/amneziawg/clients.json"
 
-# Базовый диапазон для клиентов
 IP_BASE = "10.0.1"
 IP_START = 2
 IP_END = 250
 
 
 class AWGPlugin(ProtocolPlugin):
-    """AmneziaWG v3.1 implementation.
-    
-    NOTE: Обфускационные параметры задаются на уровне интерфейса и общие для всех пиров.
-    Клиент получает их с сервера автоматически.
-    """
+    """AmneziaWG v3.1 implementation."""
     
     @property
     def name(self) -> str:
@@ -32,7 +27,120 @@ class AWGPlugin(ProtocolPlugin):
         return "3.1"
     
     async def install(self, server_ip: str, ssh_key_path: str) -> PluginResult:
-        raise NotImplementedError("AWG installation not yet implemented")
+        """Install AmneziaWG v3.1 on remote server.
+        
+        Steps:
+        1. Check if already installed (idempotent)
+        2. Add PPA
+        3. Install amneziawg package
+        4. Load kernel module
+        5. Configure sysctl (ip_forward)
+        6. Configure iptables (MASQUERADE)
+        7. Generate server keys if not exist
+        8. Create initial config
+        9. Start interface
+        """
+        cmd = '''
+set -euo pipefail
+
+# Проверка что уже установлен
+if command -v awg >/dev/null 2>&1 && awg show awg0 >/dev/null 2>&1; then
+    echo "ALREADY_INSTALLED"
+    exit 0
+fi
+
+echo "Installing AmneziaWG v3.1..."
+
+# Добавление PPA
+sudo add-apt-repository ppa:amnezia/ppa -y
+sudo apt update
+
+# Установка пакетов
+sudo apt install -y linux-headers-$(uname -r)
+sudo apt install -y amneziawg amneziawg-tools iptables-persistent
+
+# Проверка что модуль загружен
+sudo modprobe amneziawg
+if ! lsmod | grep -q amneziawg; then
+    echo "ERROR: kernel module not loaded"
+    exit 1
+fi
+
+# Настройка sysctl (идемпотентно)
+echo 'net.ipv4.ip_forward=1' | sudo tee /etc/sysctl.d/99-forward.conf
+sudo sysctl -p /etc/sysctl.d/99-forward.conf
+
+# Настройка iptables (идемпотентно)
+EXT_IFACE=$(ip route get 1.1.1.1 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}')
+[ -z "$EXT_IFACE" ] && EXT_IFACE=$(ip -4 route ls default | awk '{print $5; exit}')
+[ -z "$EXT_IFACE" ] && EXT_IFACE="eth0"
+
+sudo iptables -t nat -C POSTROUTING -o "$EXT_IFACE" -j MASQUERADE 2>/dev/null || \\
+  sudo iptables -t nat -A POSTROUTING -o "$EXT_IFACE" -j MASQUERADE
+
+sudo iptables-save | sudo tee /etc/iptables/rules.v4
+
+# Открытие порта
+sudo ufw allow 51820/udp
+
+# Генерация ключей сервера если не существуют
+if [ ! -f {KEYS_DIR}/server_private.key ]; then
+    sudo mkdir -p {KEYS_DIR}
+    cd {KEYS_DIR}
+    awg genkey | sudo tee server_private.key > /dev/null
+    awg pubkey < server_private.key | sudo tee server_public.key > /dev/null
+    sudo chmod 600 server_private.key
+fi
+
+# Создание базового конфига если не существует
+if [ ! -f {AWG_CONF} ]; then
+    sudo bash -c 'cat > {AWG_CONF} <<CONF_EOF
+[Interface]
+Address = {IP_BASE}.1/24
+ListenPort = 51820
+PrivateKey = $(cat {KEYS_DIR}/server_private.key)
+Jc = 8
+Jmin = 50
+Jmax = 1000
+S1 = 30
+S2 = 30
+S3 = 30
+S4 = 30
+CONF_EOF'
+    
+    # Запуск интерфейса
+    sudo awg-quick up awg0
+fi
+
+echo "INSTALL_COMPLETE"
+'''
+        
+        async with SSHTransport(server_ip, key_path=ssh_key_path) as ssh:
+            result = await ssh.run(cmd)
+            output = result.stdout
+            
+            if "ALREADY_INSTALLED" in output:
+                return PluginResult(
+                    success=True,
+                    message="AmneziaWG already installed",
+                )
+            
+            if not result.success or "ERROR" in output:
+                return PluginResult(
+                    success=False,
+                    message=f"Installation failed: {output}",
+                )
+            
+            if "INSTALL_COMPLETE" in output:
+                return PluginResult(
+                    success=True,
+                    message="AmneziaWG v3.1 installed successfully",
+                )
+            
+            return PluginResult(
+                success=False,
+                message=f"Unknown result: {output}",
+            )
     
     async def add_client(
         self,
@@ -41,11 +149,7 @@ class AWGPlugin(ProtocolPlugin):
         client_id: str,
         **kwargs
     ) -> ClientConfig:
-        """Add a new AWG client.
-        
-        Args:
-            client_id: used as label/comment for the peer
-        """
+        """Add a new AWG client."""
         label = client_id or "hydra-client"
         
         if not all(c.isalnum() or c in "-_" for c in label):
@@ -54,21 +158,17 @@ class AWGPlugin(ProtocolPlugin):
         cmd = f'''
 set -euo pipefail
 
-# Генерация ключей через awg
 CLIENT_PRIV=$(awg genkey)
 CLIENT_PUB=$(echo "$CLIENT_PRIV" | awg pubkey)
 
-# Чтение серверного публичного ключа
 SERVER_PUB=$(awg pubkey < {KEYS_DIR}/server_private.key)
 if [ -z "$SERVER_PUB" ]; then
     echo "ERROR: Cannot read server public key"
     exit 1
 fi
 
-# Чтение порта
 LISTEN_PORT=$(awg show awg0 | grep "listening port" | awk '{{print $3}}')
 
-# Поиск свободного IP в диапазоне {IP_BASE}.0/24
 USED_IPS=$(awg show awg0 | grep "allowed ips" | awk '{{print $3}}' | cut -d'/' -f1)
 NEW_IP="{IP_BASE}.{IP_START}"
 i={IP_START}
@@ -81,7 +181,6 @@ while echo "$USED_IPS" | grep -q "^{IP_BASE}.$i$"; do
     NEW_IP="{IP_BASE}.$i"
 done
 
-# Добавление peer в конфиг
 cat >> {AWG_CONF} <<PEER_EOF
 
 [Peer]
@@ -90,10 +189,8 @@ PublicKey = $CLIENT_PUB
 AllowedIPs = $NEW_IP/32
 PEER_EOF
 
-# Перезапуск интерфейса через setconf
 awg setconf awg0 <(awg-quick strip awg0)
 
-# Чтение параметров обфускации для клиентской конфигурации
 CONFIG=$(awg-quick strip awg0)
 JC=$(echo "$CONFIG" | grep "^Jc = " | awk '{{print $3}}')
 JMIN=$(echo "$CONFIG" | grep "^Jmin = " | awk '{{print $3}}')
@@ -104,7 +201,6 @@ S3=$(echo "$CONFIG" | grep "^S3 = " | awk '{{print $3}}')
 S4=$(echo "$CONFIG" | grep "^S4 = " | awk '{{print $3}}')
 HP_KEY=$(echo "$CONFIG" | grep "^HeaderProtectionKey = " | awk '{{print $3}}')
 
-# Сохранение маппинга в clients.json
 if [ ! -f {CLIENTS_MAP} ]; then
     echo '{{}}' > {CLIENTS_MAP}
 fi
@@ -123,7 +219,6 @@ with open('{CLIENTS_MAP}', 'w') as f:
     json.dump(clients, f, indent=2)
 "
 
-# Вывод результата для парсинга
 cat <<OUTPUT_EOF
 CLIENT_PRIV=$CLIENT_PRIV
 CLIENT_PUB=$CLIENT_PUB
@@ -146,9 +241,8 @@ OUTPUT_EOF
             output = result.stdout
             
             if not result.success or "ERROR" in output:
-                raise RuntimeError(f"AWG add_client failed: {output}\nStderr: {result.stderr}")
+                raise RuntimeError(f"AWG add_client failed: {output}")
             
-            # Парсинг вывода
             def parse(key):
                 m = re.search(rf'{key}=([^\s]+)', output)
                 return m.group(1) if m else ""
@@ -172,8 +266,6 @@ OUTPUT_EOF
             
             endpoint = f"{server_ip}:{listen_port}"
             
-            # Формирование клиентской конфигурации
-            # Клиент должен использовать ТЕ ЖЕ параметры обфускации что и сервер
             config_lines = [
                 "[Interface]",
                 f"PrivateKey = {client_priv}",
@@ -185,7 +277,6 @@ OUTPUT_EOF
                 f"Jmax = {jmax}",
             ]
             
-            # Добавляем параметры обфускации если они есть
             if s1 and s1 != "0":
                 config_lines.append(f"S1 = {s1}")
             if s2 and s2 != "0":
@@ -306,18 +397,13 @@ PYTHON_EOF
         ssh_key_path: str,
         client_id: str
     ) -> PluginResult:
-        """Remove an AWG client.
-        
-        Args:
-            client_id: public key (base64)
-        """
+        """Remove an AWG client."""
         if not re.match(r'^[A-Za-z0-9+/]{40,50}={0,2}$', client_id):
             raise ValueError(f"client_id must be a public key (base64), got: {client_id!r}")
         
         cmd = f'''
 set -euo pipefail
 
-# Удаление peer из конфига
 if grep -q "{client_id}" {AWG_CONF}; then
     python3 <<PYTHON_EOF
 with open('{AWG_CONF}') as f:
@@ -350,7 +436,6 @@ with open('{AWG_CONF}', 'w') as f:
 PYTHON_EOF
 fi
 
-# Удаление из маппинга
 if [ -f {CLIENTS_MAP} ]; then
     python3 -c "
 import json
@@ -364,7 +449,6 @@ with open('{CLIENTS_MAP}', 'w') as f:
 "
 fi
 
-# Перезапуск интерфейса
 awg setconf awg0 <(awg-quick strip awg0) 2>/dev/null || true
 
 echo "Client removed"
