@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hydra-panel"
+version = "0.1.0"
+description = "Hydra Control Panel — multi-protocol VPN server management"
+requires-python = ">=3.12"
+dependencies = [
+    "asyncssh>=2.14.0",
+    "pydantic>=2.5.0",
+    "aiosqlite>=0.19.0",
+    "cryptography>=42.0.0",
+    "uvicorn>=0.27.0",
+    "fastapi>=0.110.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.3.0",
+    "mypy>=1.8.0",
+]
+
+[project.scripts]
+hydra = "hydra.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["hydra*"]
