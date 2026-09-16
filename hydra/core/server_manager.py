@@ -195,3 +195,28 @@ class ServerManager:
             hmac.compare_digest(candidate_hash, row['token_hash'])
             for row in candidates
         )
+    
+    async def install_agent(
+        self,
+        server_id: str,
+        panel_url: str,
+        rotation_days: int = 90,
+    ) -> dict:
+        """Install monitoring agent on server."""
+        from ..agent.install import install_agent as agent_install
+        
+        server = await self.db.fetchone(
+            "SELECT * FROM servers WHERE id = ?",
+            server_id,
+        )
+        if not server:
+            raise ValueError(f"Server {server_id} not found")
+        
+        return await agent_install(
+            server_ip=server['ip'],
+            ssh_key_path=self.ssh_key_path,
+            panel_url=panel_url,
+            server_id=server_id,
+            db=self.db,
+            rotation_days=rotation_days,
+        )
