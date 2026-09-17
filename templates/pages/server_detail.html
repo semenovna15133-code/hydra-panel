@@ -43,13 +43,13 @@
     <!-- Баннер результата -->
     {% if msg %}
     <div class="fade-up flex items-start gap-3 rounded-xl border p-4 backdrop-blur
-                {% if msg in ['protocols_ok', 'agent_ok', 'agent_exists', 'reboot_started', 'token_rotated', 'time_synced'] or msg.startswith('service_restarted') %}border-emerald-500/30 bg-emerald-500/10
+                {% if msg in ['protocols_ok', 'agent_ok', 'agent_exists', 'reboot_started', 'token_rotated', 'time_synced', 'ssh_ok'] or msg.startswith('service_restarted') %}border-emerald-500/30 bg-emerald-500/10
                 {% elif msg == 'protocols_partial' %}border-amber-500/30 bg-amber-500/10
                 {% else %}border-rose-500/30 bg-rose-500/10{% endif %}">
-        {% if msg in ['protocols_ok', 'agent_ok', 'agent_exists', 'reboot_started', 'token_rotated', 'time_synced'] or msg.startswith('service_restarted') %}
+        {% if msg in ['protocols_ok', 'agent_ok', 'agent_exists', 'reboot_started', 'token_rotated', 'time_synced', 'ssh_ok'] or msg.startswith('service_restarted') %}
             <svg class="h-5 w-5 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             <p class="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                {% if msg == 'protocols_ok' %}Все протоколы установлены и зарегистрированы{% elif msg == 'agent_ok' %}Агент мониторинга установлен и запущен{% elif msg == 'agent_exists' %}Агент мониторинга уже установлен{% elif msg == 'reboot_started' %}Перезагрузка инициирована — сервер вернётся в строй через 1-2 минуты{% elif msg == 'token_rotated' %}Токен агента ротирован — агент получит новый при следующем heartbeat{% elif msg.startswith('service_restarted') %}Сервис {{ msg.replace('service_restarted_', '') }} перезапущен{% elif msg == 'time_synced' %}Часовой пояс сервера установлен: Europe/Moscow (московское время){% else %}Операция выполнена{% endif %}
+                {% if msg == 'protocols_ok' %}Все протоколы установлены и зарегистрированы{% elif msg == 'agent_ok' %}Агент мониторинга установлен и запущен{% elif msg == 'agent_exists' %}Агент мониторинга уже установлен{% elif msg == 'reboot_started' %}Перезагрузка инициирована — сервер вернётся в строй через 1-2 минуты{% elif msg == 'token_rotated' %}Токен агента ротирован — агент получит новый при следующем heartbeat{% elif msg.startswith('service_restarted') %}Сервис {{ msg.replace('service_restarted_', '') }} перезапущен{% elif msg == 'time_synced' %}Часовой пояс сервера установлен: Europe/Moscow (московское время){% elif msg == 'ssh_ok' %}SSH-доступ проверен: сервер отвечает по ключу панели{% else %}Операция выполнена{% endif %}
             </p>
         {% elif msg == 'protocols_partial' %}
             <svg class="h-5 w-5 shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
@@ -72,9 +72,7 @@
             <div>
                 <div class="flex items-center gap-3">
                     <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{{ server.id }}</h2>
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 ring-1 ring-inset ring-emerald-500/30">
-                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>{{ server.status }}
-                    </span>
+                    {% set badge = {'active': ('emerald', 'активен'), 'offline': ('rose', 'недоступен')}.get(server.status, ('slate', 'не проверен')) %}<span class="inline-flex items-center gap-1.5 rounded-full bg-{{ badge[0] }}-500/10 px-2.5 py-1 text-xs font-semibold text-{{ badge[0] }}-600 dark:text-{{ badge[0] }}-400 ring-1 ring-inset ring-{{ badge[0] }}-500/30"><span class="h-1.5 w-1.5 rounded-full bg-{{ badge[0] }}-500"></span>{{ badge[1] }}</span>
                 </div>
                 <p class="mt-0.5 font-mono text-sm text-slate-500 dark:text-slate-400">{{ server.ip }}:{{ server.ssh_port }}</p>
             </div>
@@ -94,6 +92,13 @@
                     <svg x-show="!busy" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75z" /></svg>
                     <svg x-show="busy" x-cloak class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
                     <span x-text="busy ? 'Установка агента…' : 'Установить агент'"></span>
+                </button>
+            </form>
+            <form method="post" action="/servers/{{ server.id }}/test-ssh">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 rounded-xl glass-soft px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 ring-1 ring-inset ring-slate-300/60 dark:ring-white/10 hover:bg-white/60 dark:hover:bg-white/5 active:scale-95 transition-all">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z" /></svg>
+                    Проверить SSH
                 </button>
             </form>
             <form method="post" action="/servers/{{ server.id }}/sync-time">

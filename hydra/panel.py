@@ -527,13 +527,13 @@ async def dashboard(request: Request):
 
 
 @app.get("/servers", response_class=HTMLResponse)
-async def servers_list(request: Request, error: Optional[str] = None, deleted: Optional[str] = None):
+async def servers_list(request: Request, error: Optional[str] = None, deleted: Optional[str] = None, msg: Optional[str] = None):
     """Servers list page."""
     servers = await db.fetchall("SELECT * FROM servers ORDER BY created_at DESC")
     return templates.TemplateResponse(
         request=request,
         name="pages/servers.html",
-        context={"servers": servers, "error": error, "deleted": deleted}
+        context={"servers": servers, "error": error, "deleted": deleted, "msg": msg}
     )
 
 
@@ -636,12 +636,14 @@ from fastapi.responses import RedirectResponse
 
 @app.post("/servers/create")
 async def create_server_form(
+    request: Request,
     server_id: str = Form(...),
     ip: str = Form(...),
     location: str = Form(""),
     city: str = Form(""),
     bandwidth_mbps: int = Form(1000),
     ssh_port: int = Form(22),
+    ssh_password: str = Form(""),
 ):
     """Create server from web form (server-side rendering)."""
     from urllib.parse import quote
@@ -654,10 +656,44 @@ async def create_server_form(
             bandwidth_mbps=bandwidth_mbps,
             ssh_port=ssh_port,
         )
-        return RedirectResponse("/servers", status_code=303)
     except Exception as e:
-        return RedirectResponse(f"/servers?error={quote(str(e))}", status_code=303)
+        return RedirectResponse("/servers?error=" + quote(str(e)), status_code=303)
 
+    await db.execute("UPDATE servers SET status = 'unknown' WHERE id = ?", server_id)
+    await db.commit()
+
+    # Onboarding v1: одноразовый пароль -> установка ключа панели
+    msg = "server_added"
+    if ssh_password:
+        pub = _read_panel_pubkey()
+        if not pub:
+            msg = quote("Сервер добавлен, но нет публичного ключа панели (keys/hydra_key.pub)")
+        else:
+            try:
+                code, out, err = await _ssh_run_once(
+                    ip, ssh_port, manager.ssh_key_path,
+                    "mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys "
+                    "&& chmod 600 ~/.ssh/authorized_keys && "
+                    f"(grep -qF '{pub}' ~/.ssh/authorized_keys || echo '{pub}' >> ~/.ssh/authorized_keys)",
+                    password=ssh_password,
+                )
+                if code == 0:
+                    msg = "bootstrap_ok"
+                    await db.execute("UPDATE servers SET status = 'active' WHERE id = ?", server_id)
+                    await db.commit()
+                else:
+                    msg = quote("Сервер добавлен, бутстрап ошибся: " + (err or out)[:150])
+                    await db.execute("UPDATE servers SET status = 'offline' WHERE id = ?", server_id)
+                    await db.commit()
+            except TimeoutError:
+                msg = quote("Сервер добавлен, SSH с паролем: таймаут 8 сек")
+                await db.execute("UPDATE servers SET status = 'offline' WHERE id = ?", server_id)
+                await db.commit()
+            except Exception as e:
+                msg = quote("Сервер добавлен, SSH с паролем недоступен: " + str(e)[:150])
+                await db.execute("UPDATE servers SET status = 'offline' WHERE id = ?", server_id)
+                await db.commit()
+    return RedirectResponse(f"/servers?msg={msg}", status_code=303)
 
 @app.post("/servers/{server_id}/delete")
 async def delete_server_form(server_id: str):
@@ -1590,3 +1626,148 @@ async def cli_rotate(request: Request):
         name="pages/setup_done.html",
         context={"cli_token": token, "rotated": True},
     )
+
+
+# === Settings page ===
+
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page(request: Request):
+    """Просмотр и редактирование panel.yaml."""
+    import os as _os
+    
+    yaml_path = _os.environ.get("HYDRA_PANEL_YAML", "./panel.yaml")
+    content = ""
+    exists = _os.path.exists(yaml_path)
+    
+    if exists:
+        try:
+            with open(yaml_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except Exception as e:
+            content = f"# Ошибка чтения: {e}"
+    else:
+        content = """# Hydra Panel Configuration
+# Создай файл для настройки параметров
+
+panel_url: "http://localhost:8000"
+timezone: "Europe/Moscow"
+max_connections_per_key: 3
+alert_webhook: ""
+"""
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/settings.html",
+        context={"content": content, "yaml_path": yaml_path, "exists": exists},
+    )
+
+
+@app.post("/settings")
+async def settings_save(request: Request, content: str = Form(...)):
+    """Сохранить panel.yaml с бекапом."""
+    import os as _os
+    from datetime import datetime as _dt
+    from urllib.parse import quote
+    
+    yaml_path = _os.environ.get("HYDRA_PANEL_YAML", "./panel.yaml")
+    backup_path = None
+    
+    # Валидация YAML (если PyYAML установлен)
+    try:
+        import yaml as _yaml
+        _yaml.safe_load(content)
+    except ImportError:
+        pass
+    except Exception as e:
+        return RedirectResponse("/settings?error=" + quote(f"Невалидный YAML: {str(e)[:100]}"), status_code=303)
+    
+    # Бекап
+    if _os.path.exists(yaml_path):
+        ts = _dt.now().strftime("%Y%m%d-%H%M%S")
+        backup_path = f"{yaml_path}.backup-{ts}"
+        try:
+            _os.rename(yaml_path, backup_path)
+        except Exception as e:
+            return RedirectResponse("/settings?error=" + quote(f"Ошибка бекапа: {e}"), status_code=303)
+    
+    # Запись
+    try:
+        with open(yaml_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        msg = "settings_saved"
+    except Exception as e:
+        # Откат
+        if backup_path and _os.path.exists(backup_path):
+            _os.rename(backup_path, yaml_path)
+        msg = quote(f"Ошибка записи: {e}")
+    
+    return RedirectResponse(f"/settings?msg={msg}", status_code=303)
+
+
+# === Onboarding v1: bootstrap ключа + проверка SSH ===
+
+import asyncssh as _asyncssh
+
+
+async def _ssh_run_once(ip, port, key_path, command, password=None, timeout=8):
+    """Одноразовое SSH-подключение: пароль (bootstrap) или ключ панели."""
+    import asyncio as _aio
+    kwargs = {"host": ip, "port": int(port or 22), "username": "root", "known_hosts": None}
+    if password:
+        kwargs["password"] = password
+    else:
+        kwargs["client_keys"] = [key_path]
+
+    async def _do():
+        async with _asyncssh.connect(**kwargs) as conn:
+            res = await conn.run(command)
+            return res.exit_status, res.stdout or "", res.stderr or ""
+
+    return await _aio.wait_for(_do(), timeout=timeout)
+
+
+def _read_panel_pubkey():
+    """Публичный ключ панели: читает .pub или выводит из приватного."""
+    import os as _osx
+    import subprocess as _sp
+    key_path = manager.ssh_key_path
+    pub = key_path + ".pub"
+    if _osx.path.exists(pub):
+        with open(pub) as f:
+            line = f.read().strip()
+        if line:
+            return line
+    proc = _sp.run(["ssh-keygen", "-y", "-f", key_path], capture_output=True, text=True)
+    if proc.returncode == 0 and proc.stdout.strip():
+        line = proc.stdout.strip() + " hydra-panel"
+        with open(pub, "w") as f:
+            f.write(line + "\n")
+        return line
+    return None
+
+
+@app.post("/servers/{server_id}/test-ssh")
+async def test_ssh_form(server_id: str):
+    """Проверка SSH-доступа ключом панели (с учётом ssh_port)."""
+    from urllib.parse import quote
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        return RedirectResponse("/servers?error=Server+not+found", status_code=303)
+    try:
+        code, out, err = await _ssh_run_once(
+            server["ip"], server["ssh_port"], manager.ssh_key_path, "echo hydra-ok"
+        )
+        if code == 0 and out.strip() == "hydra-ok":
+            msg = "ssh_ok"
+            await db.execute("UPDATE servers SET status = 'active' WHERE id = ?", server_id)
+        else:
+            msg = quote("SSH ответил ошибкой: " + (err or out)[:150])
+            await db.execute("UPDATE servers SET status = 'offline' WHERE id = ?", server_id)
+    except TimeoutError:
+        msg = quote("SSH недоступен: таймаут подключения 8 сек (" + server["ip"] + ":" + str(server["ssh_port"]) + ")")
+        await db.execute("UPDATE servers SET status = 'offline' WHERE id = ?", server_id)
+    except Exception as e:
+        msg = quote("SSH недоступен: " + str(e)[:150])
+        await db.execute("UPDATE servers SET status = 'offline' WHERE id = ?", server_id)
+    await db.commit()
+    return RedirectResponse(f"/servers/{server_id}?msg={msg}", status_code=303)
