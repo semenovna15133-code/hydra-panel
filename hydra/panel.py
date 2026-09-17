@@ -567,7 +567,7 @@ async def server_detail(request: Request, server_id: str, msg: Optional[str] = N
 
 
 @app.get("/clients", response_class=HTMLResponse)
-async def clients_list(request: Request):
+async def clients_list(request: Request, msg: Optional[str] = None):
     """Clients list page."""
     # Get all client registrations
     clients = await db.fetchall(
@@ -576,10 +576,13 @@ async def clients_list(request: Request):
            JOIN access_keys ak ON dr.key_id = ak.key_id
            ORDER BY dr.registered_at DESC"""
     )
+    keys = await db.fetchall(
+        "SELECT key_id FROM access_keys WHERE revoked_at IS NULL ORDER BY created_at DESC"
+    )
     return templates.TemplateResponse(
         request=request,
         name="pages/clients.html",
-        context={"clients": clients}
+        context={"clients": clients, "keys": keys, "msg": msg}
     )
 
 
@@ -817,3 +820,45 @@ checksum_sha256 = {checksum}
         media_type="text/plain",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
+
+
+# === Client (device) management (web UI) ===
+
+@app.post("/clients/create")
+async def create_client_form(
+    key_id: str = Form(...),
+    device_id: str = Form(...),
+    device_name: str = Form(""),
+    last_ip: str = Form(""),
+):
+    """Добавить устройство вручную (например, перенос из старой системы)."""
+    key = await db.fetchone("SELECT key_id FROM access_keys WHERE key_id = ?", key_id)
+    if not key:
+        return RedirectResponse("/clients?msg=client_nokey", status_code=303)
+    try:
+        await db.execute(
+            """INSERT INTO device_registrations
+               (key_id, device_id, device_name, last_ip, registered_at, last_seen_at)
+               VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))""",
+            key_id, device_id, device_name or None, last_ip or None,
+        )
+        await db.commit()
+        msg = "client_added"
+    except Exception:
+        msg = "client_exists"
+    return RedirectResponse(f"/clients?msg={msg}", status_code=303)
+
+
+@app.post("/clients/delete")
+async def delete_client_form(key_id: str = Form(...), device_id: str = Form(...)):
+    """Удалить устройство вместе с историей подключений."""
+    await db.execute(
+        "DELETE FROM device_connections WHERE key_id = ? AND device_id = ?",
+        key_id, device_id,
+    )
+    await db.execute(
+        "DELETE FROM device_registrations WHERE key_id = ? AND device_id = ?",
+        key_id, device_id,
+    )
+    await db.commit()
+    return RedirectResponse("/clients?msg=client_deleted", status_code=303)
