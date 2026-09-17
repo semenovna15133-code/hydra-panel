@@ -584,7 +584,7 @@ async def clients_list(request: Request):
 
 
 @app.get("/keys", response_class=HTMLResponse)
-async def keys_list(request: Request):
+async def keys_list(request: Request, msg: Optional[str] = None):
     """Access keys list page."""
     keys = await db.fetchall(
         """SELECT ak.*, 
@@ -745,3 +745,75 @@ async def install_agent_form(request: Request, server_id: str):
     except Exception as e:
         msg = quote("Ошибка агента: " + str(e))
     return RedirectResponse(f"/servers/{server_id}?msg={msg}", status_code=303)
+
+
+# === Key management (web UI) ===
+
+@app.post("/keys/{key_id}/revoke")
+async def revoke_key_form(key_id: str):
+    """Приостановить ключ (redeem и новые подключения отклоняются)."""
+    key = await db.fetchone("SELECT key_id FROM access_keys WHERE key_id = ?", key_id)
+    if not key:
+        return RedirectResponse("/keys?msg=key_not_found", status_code=303)
+    await db.execute(
+        "UPDATE access_keys SET revoked_at = datetime('now') WHERE key_id = ?",
+        key_id,
+    )
+    await db.commit()
+    return RedirectResponse("/keys?msg=key_revoked", status_code=303)
+
+
+@app.post("/keys/{key_id}/restore")
+async def restore_key_form(key_id: str):
+    """Возобновить действие ключа."""
+    await db.execute(
+        "UPDATE access_keys SET revoked_at = NULL WHERE key_id = ?",
+        key_id,
+    )
+    await db.commit()
+    return RedirectResponse("/keys?msg=key_restored", status_code=303)
+
+
+@app.post("/keys/{key_id}/delete")
+async def delete_key_form(key_id: str):
+    """Удалить ключ каскадно со всеми привязками."""
+    await db.execute("DELETE FROM device_connections WHERE key_id = ?", key_id)
+    await db.execute("DELETE FROM device_registrations WHERE key_id = ?", key_id)
+    await db.execute("DELETE FROM key_server_clients WHERE key_id = ?", key_id)
+    await db.execute("DELETE FROM access_keys WHERE key_id = ?", key_id)
+    await db.commit()
+    return RedirectResponse("/keys?msg=key_deleted", status_code=303)
+
+
+@app.get("/keys/{key_id}/download")
+async def download_key_conf(request: Request, key_id: str):
+    """Скачать ключ в формате Hydra Key File v1 (.conf)."""
+    import hashlib
+    key = await db.fetchone("SELECT * FROM access_keys WHERE key_id = ?", key_id)
+    if not key:
+        raise HTTPException(status_code=404, detail="Key not found")
+    
+    panel_url = str(request.base_url).rstrip("/")
+    checksum = hashlib.sha256(f"{key_id}{panel_url}".encode()).hexdigest()
+    expires = (key["expires_at"] or "never").replace("T", " ")
+    
+    content = f"""# Hydra Key File v1
+# Сгенерировано Hydra Panel: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+# Формат: docs/KEYFILE.md (INI-совместимый)
+
+[hydra]
+version = 1
+type = access-key
+key = {key_id}
+panel_url = {panel_url}
+expires_at = {expires}
+max_devices = {key['max_devices']}
+checksum_sha256 = {checksum}
+"""
+    from fastapi.responses import Response
+    filename = f"hydra-key-{key_id[:8]}.conf"
+    return Response(
+        content=content,
+        media_type="text/plain",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
