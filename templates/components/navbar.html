@@ -1,5 +1,5 @@
 {% set path = request.url.path %}
-{% set titles = {'/': 'Обзор', '/servers': 'Серверы', '/clients': 'Клиенты', '/keys': 'Ключи доступа', '/reports': 'Отчёты'} %}
+{% set titles = {'/': 'Обзор', '/servers': 'Серверы', '/clients': 'Клиенты', '/keys': 'Ключи доступа', '/reports': 'Отчёты', '/database': 'База данных'} %}
 {% set page_title = titles.get(path) %}
 {% if not page_title and path.startswith('/servers/') %}
     {% set page_title = 'Сервер · ' ~ path.split('/')[2] %}
