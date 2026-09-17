@@ -1,131 +1,101 @@
-# Hydra Panel - паспорт (18.09.2026, финал этапа 2)
+# Hydra Panel - паспорт (финал этапа 2)
 
 ## Суть
-Панель управления VPN-инфраструктурой: 3 протокола (WDTT, AIVPN, AmneziaWG 3.1)
-на удалённых VPS через SSH. Мониторинг через bash-агент с cron.
-Около 6500 строк кода, 45+ коммитов. Панель защищена Hydra Auth v1.
+Панель управления VPN-инфраструктурой (WDTT/AIVPN/AmneziaWG 3.1) на удалённых VPS.
+Защищена Hydra Auth v1, бэкапы в GitHub offsite. Мониторинг через bash-агент с cron.
+Около 7500 строк, 50+ коммитов.
 
 ## Стек
-- Python 3.14 + FastAPI + uvicorn
-- SQLite (aiosqlite) - 15 таблиц (11 основных + 4 auth)
-- Jinja2 + TailwindCSS (CDN Play) + HTMX + Alpine.js
-- asyncssh для SSH (включая одноразовые подключения с паролем)
-- bash-агент мониторинга на серверах
+Python 3.14 + FastAPI + uvicorn + SQLite (aiosqlite, 16 таблиц) + Jinja2 +
+TailwindCSS CDN + HTMX + Alpine.js + asyncssh + PyYAML
 
 ## Репозиторий
-github.com:semenovna15133-code/hydra-panel.git
+github.com:semenovna15133-code/hydra-panel.git (код)
+github.com:semenovna15133-code/hydra-backups.git (offsite бэкапы, private)
 
 ## Структура
 hydra/
-  panel.py - FastAPI app: REST + web routes + middleware auth (~1600 строк)
-  cli.py - CLI: --host --port --db-path --ssh-key
-  ssh/transport.py - SSHTransport(host, key_path=...) + SSHResult
-  core/
-    auth.py - Hydra Auth v1: pbkdf2, сессии, rate-limit, CLI-токен
-    db.py, server_manager.py, protocol.py, subnet.py, alerts.py,
-    forecast.py, weekly_report.py, token_rotation.py, redeem.py
-  agent/agent.sh + install.py
-  plugins/wdtt.py, aivpn.py, awg.py
+  panel.py - REST + web + middleware auth + backup worker
+  cli.py, ssh/transport.py
+  core/: auth.py (pbkdf2/sessions/rate-limit/CLI-token),
+         backups.py (create/rotate/restore/push_github),
+         db.py, server_manager.py, protocol.py, ...
+  plugins/: wdtt.py, aivpn.py, awg.py (27 параметров 3.1)
+  agent/: agent.sh + install.py
+templates/: Aurora Glass, auth_layout, sidebar/navbar, 14 pages
+scripts/: login.sh (cookie-jar для curl)
+docs/: MANIFEST.md, KEYFILE.md, PASSPORT.md
 
-templates/
-  base.html - Aurora Glass дизайн-система
-  auth_layout.html - лейаут login/setup (центрированная карточка)
-  components/sidebar.html, navbar.html
-  pages/: dashboard, servers, server_detail, server_logs, server_configs,
-          clients, keys, reports, database, settings,
-          login, setup, setup_done, sessions
+## БД (16 таблиц)
+servers, protocol_instances, metrics (14 колонок), access_keys (+client_id FK),
+device_registrations, device_connections, key_server_clients, agent_tokens,
+alerts, weekly_reports, bot_heartbeats,
+clients (telegram_id UNIQUE, tg_username, display_name, status, notes),
+admin_credentials, sessions, login_attempts, cli_tokens
 
-deploy/: deploy.sh, systemd/hydra-panel.service, hooks/ (certbot)
-scripts/login.sh - cookie-jar для curl
-docs/: MANIFEST.md (v3.61), KEYFILE.md, PASSPORT.md
+## Hydra Auth v1
+pbkdf2_sha256 600k, cookie hydra_session HttpOnly/SameSite/Lax (remember 30д/12ч),
+X-Hydra-Token CLI-токен, rate-limit 5/15мин/IP, /sessions управление устройствами.
+Middleware: закрыто всё кроме /login /setup /api/v1/agent/* /api/v1/client/*
 
-## Схема БД
-Основные: servers (id, ip, ssh_port, location, city, bandwidth_mbps,
-status[active|offline|unknown], agent_installed), protocol_instances,
-metrics (14 колонок incl. connections_*/status_* per protocol),
-access_keys, device_registrations, device_connections, key_server_clients,
-agent_tokens, alerts, weekly_reports, bot_heartbeats
-Auth: admin_credentials (id=1, pbkdf2 hash), sessions (token_hash, ua, ip,
-remember, expires), login_attempts, cli_tokens
+## Onboarding v1
+Поле SSH-пароля root (одноразово) в модалке Add Server -> bootstrap ключа панели
+в authorized_keys -> key-only. test-ssh с timeout 8 сек. Статусы unknown/active/offline.
+ГЭП: manager/plugins пока не используют ssh_port (дефолт 22).
 
-## Hydra Auth v1 (РАБОТАЕТ)
-- pbkdf2_sha256 600k итераций, соль; в БД только хеши
-- Cookie hydra_session: HttpOnly, SameSite=Lax, remember 30д / 12ч
-- Middleware: закрыто всё кроме /login, /setup, /api/v1/agent/*, /api/v1/client/*
-- API без сессии -> 401 JSON; страницы -> 303 на /login
-- X-Hydra-Token: CLI-токен для curl/скриптов (ротация в /settings)
-- Rate-limit: 5 неудач / 15 мин / IP
-- /sessions: список устройств + отзыв + "завершить все"
-- scripts/login.sh: curl -b scripts/.cookies ...
+## Клиенты -> Ключи -> Устройства
+Клиент = человек с telegram_id (для бота: восстановление по TG, напоминания по expires_at).
+UI: /clients (люди), /clients/{id} (ключи+устройства), /keys (создать с селектом клиентов).
+Операции: выпуск, продление, ревьюк/восстановить, отвязать устройства, каскад-удаление.
 
-## Onboarding v1 (РАБОТАЕТ)
-- Поле "SSH-пароль root (одноразово)" в модалке Add Server
-- Пароль НЕ сохраняется: bootstrap через asyncssh (password=...):
-  дописывает hydra_key.pub в authorized_keys, затем key-only
-- _ssh_run_once: timeout 8 сек (asyncio.wait_for) - иначе TCP-висание ~2 мин
-- POST /servers/{id}/test-ssh + кнопка "Проверить SSH"
-- Статусы: unknown при создании -> active/offline после проверки
-- Бейджи: emerald "активен" / rose "недоступен" / slate "не проверен"
-- ИЗВЕСТНЫЙ ГАП: manager/plugins при установке протоколов ходят на порт 22
-  (не получают ssh_port) - рефактор портов в будущем
+## Бэкапы v2 (Disaster Recovery)
+hydra/core/backups.py:
+- create: SQLite backup API (консистентный снапшот даже под нагрузкой)
+- rotate(keep=3): удаляет авто-бэкапы старше трёх (uploaded/pre-restore не трогает)
+- restore: integrity_check + pre-restore снапшот перед перезаписью
+- push_github: gzip+base64 -> GitHub Contents API (обновление по sha), лимит 900 KB
+Часовой воркер: раз в сутки -> create -> rotate -> push (если настроен).
+Конфиг: panel.yaml backup.{keep, github_repo, github_token} или env HYDRA_GH_*
+Env: ~/.config/hydra/env (chmod 600), source перед запуском панели.
+Репозиторий hydra-backups (private), fine-grained token: Contents Read+write.
 
-## Дизайн-система Aurora Glass
-- .glass = backdrop-blur(20px) saturate(160%) + полупрозрачный фон
-- Aurora-фон: 3 дрейфующих градиентных пятна (keyframes drift1-3)
-- Dark/Light + LocalStorage, переход .35s без мигания
-- Gradient indigo->violet->fuchsia, glow-тени, staggered fade-up d1-d6
-- Inter (UI) + JetBrains Mono (IP/токены/код)
-- Mobile: drawer sidebar, карточки вместо таблиц
-- Tailwind Play CDN генерирует классы из server-rendered HTML
-  (динамические bg-{{ badge[0] }}-500/10 работают)
-
-## FI-полигон (реальный тест)
-- 31.77.202.131, ключ keys/hydra_key, порт 22
-- wdtt 56000 / aivpn 443 / awg 51820 (AmneziaWG 3.1.20260812, kernel module)
-- AWG конфиг: /etc/amnezia/amneziawg/awg0.conf (27 параметров в UI-форме)
-- Агент: cron每分钟, буфер сливается batch'ем (247+ метрик в БД)
-- Туннель для метрик: ssh -i keys/hydra_key -R 8000:localhost:8000 -N root@31.77.202.131
+## AWG 3.1 из UI
+27 параметров в 7 группах: Jc/Jmin/Jmax/S1-S4, I1-I5 (CPS count:size),
+H1-H4 (range), HeaderProtectionKey (base64), ContentPaddingAddition,
+RandomTrailers/DisableCookies (on/off), RekeyAfterTime/Timeout/RejectAfterTime/
+KeepaliveTimeout/MaxHandshakeAttempts, MTU, ListenPort.
+Схема: бекап .hydra-backup-TS -> валидация -> base64-запись -> рестарт ->
+проверка через 2с -> авто-откат из бекапа если сервис не поднялся.
 
 ## Локальный запуск
-source .venv/bin/activate && python hydra/cli.py --port 8000
-Первый вход: /setup (пароль админа + CLI-токен показываются один раз)
+source ~/.config/hydra/env
+source .venv/bin/activate
+python hydra/cli.py --port 8000
+Первый вход: /setup (пароль + CLI-токен одноразово)
 
-## Что сделано (полностью)
-- Auth: setup/login/logout/sessions, rate-limit, CLI-токен
-- Серверы: CRUD, reboot, sync-time (Europe/Moscow), test-ssh, bootstrap ключа
-- Протоколы: install/restart/edit конфигов (AWG 27 параметров 7 групп,
-  WDTT/AIVPN raw JSON) с бекапом .hydra-backup-TS и авто-откатом
-- Логи SSH: agent (лог+cron+буфер), wdtt (без [СТАТ]), aivpn (без DEBUG), awg
-- Клиенты/ключи: CRUD, revoke/restore, copy, download .conf (KEYFILE v1)
-- Метрики: batch streaming parser (raw_decode), история, свёртка 15 строк
-- БД: SQL-консоль read-only, бэкап panel.db
-- Настройки: /settings (panel.yaml с валидацией и бекапом), ротация CLI-токена
+## Что сделано
+Auth/Onboarding/Settings/Clients/Keys/Devices/Servers/Protocols/Configs/
+Logs/Metrics/Database/Backups/Aurora Glass Dark+Light/Mobile.
+Реальный FI-полигон 31.77.202.131: 247+ метрик в БД, all protocols up.
 
-## Известные грабли (ВАЖНО)
-1. НЕ обрезать panel.py по маркерам - хвост файла теряется (кейс с /database)
-2. Проверять применение heredoc'ов: grep -c "glass" templates/pages/*.html
-   (кейс: servers.html остался ДО-Aurora, все патчи промахивались)
-3. buffer.json агента = конкатенированные pretty JSON объекты -> raw_decode
-4. expires_at в .conf с пробелом, в БД с T - нормализовать
-5. AWG конфиг в /etc/amnezia/amneziawg/ (нестандартный путь)
-6. agent_installed синхронизировать при install_agent (already_installed)
-7. SSH к мёртвому IP висит до таймаута ОС - всегда asyncio.wait_for
-8. python только из venv; sqlite3 CLI нет - использовать Python sqlite3
-9. Хрупкие якоря в патчах: предпочитать полную перезапись файла или
-   regex по устойчивым признакам; всегда печатать count замен
+## Известные грабли
+1. Не обрезать panel.py по маркерам (кейс с /database)
+2. Проверять применение heredoc'ов (кейс: servers.html ДО-Aurora)
+3. buffer.json = конкатенированные pretty JSON -> raw_decode
+4. expires_at .conf с пробелом, в БД с T
+5. AWG конфиг /etc/amnezia/amneziawg/ (нестандартный путь)
+6. SSH timeout через asyncio.wait_for (TCP-висание иначе 2 мин)
+7. Секреты только в env-файлах 600, никогда в чатах/коммитах
+8. Ротировать всё перед продом после dev-фазы
 
-## Что осталось (Этап 3)
-1. Telegram-бот aiogram 3.x: /start /redeem /status /devices (клиенты),
-   админ-команды, alert-канал, magic-link /login <code> для входа в панель
-2. Страница /bot: heartbeat, токен бота, регенерация
-3. Рефактор ssh_port в manager/plugins (установки на нестандартный порт)
-4. Polish: favicon, CI/CD, README
-
-## Первое задание в новом чате
-Telegram-бот: hydra/bot/ (aiogram 3.x),Long-polling, таблица bot_heartbeats,
-интеграция с panel API через X-Hydra-Token или внутренний DB-доступ.
-Начать с hydra/bot/main.py + роутер /start + heartbeat в панель.
+## Этап 3: Telegram-бот
+1. hydra/bot/main.py - aiogram 3.x, Long-polling
+2. Роутеры: /start, /redeem, /status, /devices, /restore (по telegram_id), /login (magic-link)
+3. Админ: /admin /keys /alerts, alert-канал, heartbeat в panel bot_heartbeats
+4. Напоминания: cron-задача по expires_at ключам клиента
+5. Страница /bot в UI: heartbeat статус, токен бота, регенерация
+6. Интеграция с panel API через X-Hydra-Token или прямой DB-доступ
 
 ## Стиль работы
-Ответы на русском. Код через bash heredoc или Python-скрипты с проверками
-(anchor in content + print count). Коммиты после каждого шага.
+Ответы на русском. Код через bash heredoc + Python-скрипты с проверками.
+Коммиты после каждого шага. Secrets только в env-файлах 600.
