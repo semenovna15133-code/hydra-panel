@@ -1376,3 +1376,63 @@ async def apply_config(request: Request, server_id: str):
         msg = quote("SSH ошибка: " + str(e))
     
     return RedirectResponse(f"/servers/{server_id}/configs?source={source}&msg={msg}", status_code=303)
+
+
+# === Database console (read-only) ===
+
+@app.get("/database", response_class=HTMLResponse)
+async def database_console(request: Request, result: Optional[str] = None, error: Optional[str] = None):
+    """Read-only SQL console."""
+    import base64 as _b64mod
+    import json as _jsonmod
+    tables = await db.fetchall(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name"
+    )
+    decoded_result = None
+    if result:
+        try:
+            decoded_result = _jsonmod.loads(_b64mod.b64decode(result).decode())
+        except Exception:
+            decoded_result = None
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/database.html",
+        context={"tables": tables, "result": decoded_result, "error": error},
+    )
+
+
+@app.post("/database/query")
+async def database_query(request: Request, query: str = Form(...)):
+    """Execute read-only SQL query."""
+    import base64 as _b64mod
+    import json as _jsonmod
+    from urllib.parse import quote
+    q = query.strip().rstrip(";")
+    ql = q.lower()
+    if not (ql.startswith("select") or ql.startswith("pragma")):
+        return RedirectResponse("/database?error=" + quote("Разрешены только SELECT и PRAGMA"), status_code=303)
+    # Word-boundary check: не блокирует колонки вида updated_at
+    if _re.search(r"\b(insert|update|delete|drop|alter|create|attach|detach|vacuum|replace)\b", ql):
+        return RedirectResponse("/database?error=" + quote("Запрещённая операция в запросе"), status_code=303)
+    try:
+        rows = await db.fetchall(q)
+        b64 = _b64mod.b64encode(_jsonmod.dumps(rows, default=str).encode()).decode()
+        return RedirectResponse("/database?result=" + quote(b64), status_code=303)
+    except Exception as e:
+        return RedirectResponse("/database?error=" + quote(str(e)), status_code=303)
+
+
+@app.get("/database/backup")
+async def database_backup():
+    """Download panel.db copy."""
+    import os as _os
+    from datetime import datetime as _dt
+    from fastapi.responses import FileResponse
+    db_path = _os.environ.get("HYDRA_DB_PATH", "./panel.db")
+    if not _os.path.exists(db_path):
+        raise HTTPException(status_code=404, detail="Database not found")
+    return FileResponse(
+        db_path,
+        media_type="application/octet-stream",
+        filename=f"hydra-backup-{_dt.now().strftime('%Y%m%d-%H%M%S')}.db",
+    )
