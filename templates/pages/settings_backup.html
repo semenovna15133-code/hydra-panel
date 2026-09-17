@@ -3,7 +3,7 @@
 {% block title %}Бэкапы — Hydra Panel{% endblock %}
 
 {% block content %}
-<div x-data="{ showHelp: false }">
+<div x-data="{ showHelp: false, recPass: '', recShown: false, genPass() { const a = new Uint8Array(18); crypto.getRandomValues(a); return Array.from(a, b => b.toString(16).padStart(2, '0')).join(''); } }">
     <nav class="fade-up flex items-center gap-2 text-sm">
         <a href="/settings" class="text-slate-500 dark:text-slate-400 hover:text-indigo-500 transition-colors">Настройки</a>
         <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
@@ -54,6 +54,7 @@
             <div><dt class="text-slate-500 dark:text-slate-400">Репозиторий</dt><dd class="mt-1 font-mono font-semibold text-slate-900 dark:text-white">{{ repo or '—' }}</dd></div>
             <div><dt class="text-slate-500 dark:text-slate-400">Master-key</dt><dd class="mt-1 font-mono text-xs text-slate-500 dark:text-slate-400">{{ fingerprint }}</dd></div>
             <div><dt class="text-slate-500 dark:text-slate-400">Сохранено</dt><dd class="mt-1 text-slate-900 dark:text-white">{{ meta.saved_at or '—' }}</dd></div>
+            <div><dt class="text-slate-500 dark:text-slate-400">Recovery-passphrase</dt><dd class="mt-1 text-slate-900 dark:text-white">{% if recovery_set %}установлена {{ recovery_set }}{% else %}не установлена{% endif %}</dd></div>
         </dl>
         {% if configured %}
         <div class="mt-5 flex flex-wrap gap-3">
@@ -95,6 +96,27 @@
                 <input type="number" name="keep" value="{{ meta.keep or 3 }}" min="1" max="30"
                        class="mt-1.5 block w-32 rounded-xl border-0 bg-white/70 dark:bg-white/5 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white ring-1 ring-inset ring-slate-300/60 dark:ring-white/10 focus:ring-2 focus:ring-indigo-500">
             </div>
+            <div class="mt-6 border-t border-slate-200/60 dark:border-white/5 pt-5">
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white">Recovery-passphrase</h4>
+                <p class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">Шифрует бандл с ключами (SSH-ключ панели + master.key + GitHub-токен) и кладёт его в GitHub рядом с бэкапами. На новом сервере восстановление = скрипт + эта passphrase. Показывается один раз — храни во внешнем сейфе.</p>
+            </div>
+            <form method="post" action="/settings/backup/passphrase" class="mt-3">
+                <div class="flex flex-wrap items-center gap-3">
+                    <input type="password" name="passphrase" x-model="recPass" minlength="12" required placeholder="минимум 12 символов или сгенерируй"
+                           class="w-64 rounded-xl border-0 bg-white/70 dark:bg-white/5 px-3.5 py-2.5 font-mono text-sm text-slate-900 dark:text-white ring-1 ring-inset ring-slate-300/60 dark:ring-white/10 focus:ring-2 focus:ring-indigo-500">
+                    <button type="button" @click="recPass = genPass(); recShown = true"
+                            class="rounded-xl glass-soft px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 ring-1 ring-inset ring-slate-300/60 dark:ring-white/10 hover:bg-white/60 dark:hover:bg-white/5">Сгенерировать</button>
+                    <button type="submit" class="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-glow-sm hover:brightness-110 active:scale-95">Установить и создать бандл</button>
+                </div>
+                <div x-show="recShown" x-cloak class="mt-3 flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
+                    <svg class="h-5 w-5 shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+                    <code class="flex-1 break-all font-mono text-sm text-amber-600 dark:text-amber-400" x-text="recPass"></code>
+                    <button type="button" @click="navigator.clipboard.writeText(recPass)"
+                            class="shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 ring-1 ring-inset ring-amber-500/30 hover:bg-amber-500/10">Копировать</button>
+                </div>
+                <p x-show="recShown" x-cloak class="mt-2 text-xs font-medium text-amber-600 dark:text-amber-400">Скопируй passphrase СЕЙЧАС во внешний сейф — после «Установить» она скрыта навсегда.</p>
+            </form>
+
             <div class="flex flex-wrap gap-3 pt-2">
                 <button type="submit" formaction="/settings/backup/test" formnovalidate
                         class="rounded-xl glass-soft px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 ring-1 ring-inset ring-slate-300/60 dark:ring-white/10 hover:bg-white/60 dark:hover:bg-white/5">Проверить</button>

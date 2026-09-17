@@ -1363,7 +1363,7 @@ async def database_backup():
 
 # === Hydra Auth v1 ===
 
-from .core import auth, secrets
+from .core import auth, secrets, recovery
 
 AUTH_PUBLIC_PATHS = {"/login", "/setup", "/favicon.ico"}
 AUTH_PUBLIC_PREFIXES = ("/api/v1/agent/", "/api/v1/client/", "/static")
@@ -1916,6 +1916,10 @@ async def _backup_worker():
                         backups.push_github(repo, token, name)
                     except Exception:
                         pass
+                    try:
+                        await _push_recovery_bundle()
+                    except Exception:
+                        pass
         except Exception:
             pass
         await _aio.sleep(3600)
@@ -2053,6 +2057,7 @@ def _github_ping(repo: str, token: str):
 @app.get("/settings/backup", response_class=HTMLResponse)
 async def settings_backup_page(request: Request, msg: Optional[str] = None):
     repo, token, meta = await _get_github_creds()
+    _rec_tok, _rec_meta = await secrets.get_secret(db, "recovery")
     return templates.TemplateResponse(
         request=request,
         name="pages/settings_backup.html",
@@ -2063,6 +2068,7 @@ async def settings_backup_page(request: Request, msg: Optional[str] = None):
             "meta": meta,
             "source": meta.get("source", "secrets") if meta else "secrets",
             "fingerprint": secrets.master_fingerprint(),
+            "recovery_set": (_rec_meta or {}).get("set_at"),
         },
     )
 
@@ -2098,7 +2104,8 @@ async def settings_backup_push_now():
     backups.rotate(keep)
     try:
         res = backups.push_github(repo, token, name)
-        msg = quote(f"{name} -> GitHub: {'ok' if res.get('ok') else res.get('error')}")
+        bundle_detail = await _push_recovery_bundle()
+        msg = quote(f"{name} -> GitHub: {'ok' if res.get('ok') else res.get('error')}; {bundle_detail}")
     except Exception as e:
         msg = quote(f"{name} -> ошибка: {str(e)[:80]}")
     return RedirectResponse(f"/settings/backup?msg={msg}", status_code=303)
@@ -2109,3 +2116,38 @@ async def settings_backup_delete():
     from urllib.parse import quote
     await secrets.delete_secret(db, "github")
     return RedirectResponse("/settings/backup?msg=" + quote("GitHub credentials удалены из панели (env fallback останется, если задан)"), status_code=303)
+
+
+# === Recovery passphrase + bundle ===
+
+async def _push_recovery_bundle():
+    """Собрать и запушить recovery-bundle.enc (ключи под passphrase)."""
+    repo, token, meta = await _get_github_creds()
+    pass_ph, rmeta = await secrets.get_secret(db, "recovery")
+    if not (repo and token and pass_ph):
+        return "бандл: нет passphrase или credentials"
+    payload = recovery.build_bundle_payload(
+        manager.ssh_key_path, secrets.MASTER_KEY_PATH, {"repo": repo, "token": token}
+    )
+    blob = recovery.encrypt_bundle(payload, pass_ph)
+    path = os.path.join(backups.BACKUP_DIR, recovery.BUNDLE_NAME)
+    with open(path, "wb") as f:
+        f.write(blob)
+    try:
+        res = backups.push_github(repo, token, recovery.BUNDLE_NAME, compress=False)
+        return "бандл в GitHub: ok" if res.get("ok") else f"бандл: {res.get('error')}"
+    except Exception as e:
+        return f"бандл ошибка: {str(e)[:60]}"
+
+
+@app.post("/settings/backup/passphrase")
+async def settings_backup_passphrase(passphrase: str = Form(...)):
+    from urllib.parse import quote
+    if len(passphrase) < 12:
+        return RedirectResponse("/settings/backup?msg=" + quote("Passphrase минимум 12 символов (лучше сгенерировать в менеджере паролей)"), status_code=303)
+    await secrets.set_secret(db, "recovery", passphrase, {"set_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+    detail = await _push_recovery_bundle()
+    return RedirectResponse(
+        "/settings/backup?msg=" + quote(f"Passphrase установлена. {detail}. ЗАПИШИ её во внешний сейф — панель не покажет её снова."),
+        status_code=303,
+    )

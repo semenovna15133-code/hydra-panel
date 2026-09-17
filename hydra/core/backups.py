@@ -73,13 +73,18 @@ def restore(name: str, db_path: str = "panel.db") -> str:
     return name
 
 
-def push_github(repo: str, token: str, backup_name: str):
+def push_github(repo: str, token: str, backup_name: str, compress: bool = True):
     path = os.path.join(BACKUP_DIR, backup_name)
     with open(path, "rb") as f:
-        comp = gzip.compress(f.read(), 6)
+        data = f.read()
+    if compress:
+        comp = gzip.compress(data, 6)
+        remote = f"backups/{backup_name}.gz"
+    else:
+        comp = data
+        remote = f"backups/{backup_name}"
     if len(comp) > 900_000:
-        return {"ok": False, "error": "gzip > 900 KB — лимит GitHub API"}
-    remote = f"backups/{backup_name}.gz"
+        return {"ok": False, "error": "размер > 900 KB — лимит GitHub API"}
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github+json",
