@@ -566,43 +566,6 @@ async def server_detail(request: Request, server_id: str, msg: Optional[str] = N
     )
 
 
-@app.get("/clients", response_class=HTMLResponse)
-async def clients_list(request: Request, msg: Optional[str] = None):
-    """Clients list page."""
-    # Get all client registrations
-    clients = await db.fetchall(
-        """SELECT dr.*, ak.key_id 
-           FROM device_registrations dr
-           JOIN access_keys ak ON dr.key_id = ak.key_id
-           ORDER BY dr.registered_at DESC"""
-    )
-    keys = await db.fetchall(
-        "SELECT key_id FROM access_keys WHERE revoked_at IS NULL ORDER BY created_at DESC"
-    )
-    return templates.TemplateResponse(
-        request=request,
-        name="pages/clients.html",
-        context={"clients": clients, "keys": keys, "msg": msg}
-    )
-
-
-@app.get("/keys", response_class=HTMLResponse)
-async def keys_list(request: Request, msg: Optional[str] = None):
-    """Access keys list page."""
-    keys = await db.fetchall(
-        """SELECT ak.*, 
-                  COUNT(dr.id) as device_count
-           FROM access_keys ak
-           LEFT JOIN device_registrations dr ON ak.key_id = dr.key_id
-           GROUP BY ak.key_id
-           ORDER BY ak.created_at DESC"""
-    )
-    return templates.TemplateResponse(
-        request=request,
-        name="pages/keys.html",
-        context={"keys": keys, "now": datetime.utcnow().isoformat()}
-    )
-
 
 @app.get("/reports", response_class=HTMLResponse)
 async def reports_list(request: Request):
@@ -870,62 +833,6 @@ checksum_sha256 = {checksum}
 
 # === Client (device) management (web UI) ===
 
-@app.post("/clients/create")
-async def create_client_form(
-    key_id: str = Form(...),
-    device_id: str = Form(...),
-    device_name: str = Form(""),
-    last_ip: str = Form(""),
-):
-    """Добавить устройство вручную (например, перенос из старой системы)."""
-    key = await db.fetchone("SELECT key_id FROM access_keys WHERE key_id = ?", key_id)
-    if not key:
-        return RedirectResponse("/clients?msg=client_nokey", status_code=303)
-    try:
-        await db.execute(
-            """INSERT INTO device_registrations
-               (key_id, device_id, device_name, last_ip, registered_at, last_seen_at)
-               VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))""",
-            key_id, device_id, device_name or None, last_ip or None,
-        )
-        await db.commit()
-        msg = "client_added"
-    except Exception:
-        msg = "client_exists"
-    return RedirectResponse(f"/clients?msg={msg}", status_code=303)
-
-
-@app.post("/clients/delete")
-async def delete_client_form(key_id: str = Form(...), device_id: str = Form(...)):
-    """Удалить устройство вместе с историей подключений."""
-    await db.execute(
-        "DELETE FROM device_connections WHERE key_id = ? AND device_id = ?",
-        key_id, device_id,
-    )
-    await db.execute(
-        "DELETE FROM device_registrations WHERE key_id = ? AND device_id = ?",
-        key_id, device_id,
-    )
-    await db.commit()
-    return RedirectResponse("/clients?msg=client_deleted", status_code=303)
-
-
-# === SSH operations (web UI) ===
-
-from .ssh import SSHTransport
-
-PROTOCOL_RESTART_CMDS = {
-    "wdtt": "systemctl restart wdtt",
-    "aivpn": "systemctl restart aivpn-server",
-    "awg": "awg-quick down awg0 && awg-quick up awg0",
-}
-
-PROTOCOL_LOG_CMDS = {
-    "agent": '{ echo "=== hydra-agent.log (last 200) ==="; tail -200 /var/log/hydra-agent.log 2>/dev/null; echo; echo "=== cron runs (hydra) ==="; journalctl -n 300 --no-pager 2>/dev/null | grep -i hydra | tail -20; echo; echo "=== buffer status ==="; ls -la /var/lib/hydra-agent/ 2>/dev/null; wc -l /var/lib/hydra-agent/buffer.ndjson 2>/dev/null; }',
-    "wdtt": '{ echo "=== События (подключения/ошибки, без [СТАТ]) ==="; journalctl -u wdtt -n 3000 --no-pager -q | grep -v "\[СТАТ\]" | tail -80; echo; echo "=== Свежая статистика (последние 10) ==="; journalctl -u wdtt -n 40 --no-pager -q | grep "\[СТАТ\]" | tail -10; }',
-    "aivpn": '{ echo "=== События (без DEBUG) ==="; journalctl -u aivpn-server -n 400 --no-pager -q | grep -v " DEBUG " | tail -100; }',
-    "awg": '{ awg show awg0 2>/dev/null; echo; echo "=== dmesg (awg0) ==="; dmesg | grep awg0 | tail -100; }',
-}
 
 
 @app.post("/servers/{server_id}/reboot")
@@ -1771,3 +1678,217 @@ async def test_ssh_form(server_id: str):
         await db.execute("UPDATE servers SET status = 'offline' WHERE id = ?", server_id)
     await db.commit()
     return RedirectResponse(f"/servers/{server_id}?msg={msg}", status_code=303)
+
+from datetime import datetime, timedelta
+
+
+@app.on_event("startup")
+async def _init_clients_schema():
+    await db.execute("""
+    CREATE TABLE IF NOT EXISTS clients (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        telegram_id INTEGER UNIQUE,
+        tg_username TEXT,
+        display_name TEXT,
+        status TEXT NOT NULL DEFAULT 'active',
+        notes TEXT,
+        created_at TEXT NOT NULL
+    )""")
+    cols = [r["name"] for r in await db.fetchall("PRAGMA table_info(access_keys)")]
+    if "client_id" not in cols:
+        await db.execute("ALTER TABLE access_keys ADD COLUMN client_id INTEGER REFERENCES clients(id) ON DELETE SET NULL")
+    await db.commit()
+
+
+# === Clients (people) ===
+
+@app.get("/clients", response_class=HTMLResponse)
+async def clients_people_list(request: Request, msg: Optional[str] = None):
+    clients = await db.fetchall(
+        """SELECT cl.*,
+                  (SELECT COUNT(*) FROM access_keys ak WHERE ak.client_id = cl.id) AS keys_total,
+                  (SELECT COUNT(*) FROM access_keys ak WHERE ak.client_id = cl.id
+                     AND ak.revoked_at IS NULL AND (ak.expires_at IS NULL OR ak.expires_at > datetime('now'))) AS keys_active
+           FROM clients cl ORDER BY cl.created_at DESC"""
+    )
+    return templates.TemplateResponse(
+        request=request, name="pages/clients.html", context={"clients": clients, "msg": msg})
+
+
+@app.post("/clients/create")
+async def create_client_person(display_name: str = Form(...), telegram_id: str = Form(""), tg_username: str = Form(""), notes: str = Form("")):
+    from urllib.parse import quote
+    tg = int(telegram_id) if telegram_id.strip().lstrip('-').isdigit() else None
+    try:
+        await db.execute(
+            "INSERT INTO clients (telegram_id, tg_username, display_name, status, notes, created_at) VALUES (?,?,?,?,?,datetime('now'))",
+            tg, tg_username.strip().lstrip('@') or None, display_name.strip(), 'active', notes.strip() or None)
+        await db.commit()
+        msg = "client_created"
+    except Exception as e:
+        msg = quote("Ошибка: " + str(e)[:120])
+    return RedirectResponse(f"/clients?msg={msg}", status_code=303)
+
+
+@app.get("/clients/{client_id}", response_class=HTMLResponse)
+async def client_detail_page(request: Request, client_id: int, msg: Optional[str] = None):
+    client = await db.fetchone("SELECT * FROM clients WHERE id = ?", client_id)
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    keys = await db.fetchall(
+        """SELECT ak.*, (SELECT COUNT(*) FROM device_registrations dr WHERE dr.key_id = ak.key_id) AS device_count
+           FROM access_keys ak WHERE ak.client_id = ? ORDER BY ak.created_at DESC""", client_id)
+    devices = await db.fetchall(
+        """SELECT dr.*, ak.key_id AS key_ref FROM device_registrations dr
+           JOIN access_keys ak ON ak.key_id = dr.key_id WHERE ak.client_id = ? ORDER BY dr.registered_at DESC""", client_id)
+    return templates.TemplateResponse(
+        request=request, name="pages/client_detail.html",
+        context={"client": client, "keys": keys, "devices": devices, "msg": msg,
+                 "now": datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+
+
+@app.post("/clients/{client_id}/update")
+async def update_client(client_id: int, display_name: str = Form(...), telegram_id: str = Form(""), tg_username: str = Form(""), notes: str = Form("")):
+    tg = int(telegram_id) if telegram_id.strip().lstrip('-').isdigit() else None
+    await db.execute("UPDATE clients SET display_name=?, telegram_id=?, tg_username=?, notes=? WHERE id=?",
+                     display_name.strip(), tg, tg_username.strip().lstrip('@') or None, notes.strip() or None, client_id)
+    await db.commit()
+    return RedirectResponse(f"/clients/{client_id}?msg=client_updated", status_code=303)
+
+
+@app.post("/clients/{client_id}/toggle-block")
+async def toggle_block_client(client_id: int):
+    cl = await db.fetchone("SELECT status FROM clients WHERE id = ?", client_id)
+    new = 'blocked' if (cl and cl['status'] == 'active') else 'active'
+    await db.execute("UPDATE clients SET status=? WHERE id=?", new, client_id)
+    await db.commit()
+    return RedirectResponse(f"/clients/{client_id}?msg=client_{new}", status_code=303)
+
+
+@app.post("/clients/{client_id}/delete")
+async def delete_client_cascade(client_id: int):
+    keys = await db.fetchall("SELECT key_id FROM access_keys WHERE client_id = ?", client_id)
+    for k in keys:
+        await db.execute("DELETE FROM device_connections WHERE key_id = ?", k["key_id"])
+        await db.execute("DELETE FROM device_registrations WHERE key_id = ?", k["key_id"])
+        await db.execute("DELETE FROM key_server_clients WHERE key_id = ?", k["key_id"])
+    await db.execute("DELETE FROM access_keys WHERE client_id = ?", client_id)
+    await db.execute("DELETE FROM clients WHERE id = ?", client_id)
+    await db.commit()
+    return RedirectResponse("/clients?msg=client_deleted", status_code=303)
+
+
+# === Key lifecycle ===
+
+@app.post("/keys/create")
+async def create_key_for_client(client_id: int = Form(...), expire_days: int = Form(30), max_devices: int = Form(3), custom_date: str = Form("")):
+    import secrets as _sec
+    from urllib.parse import quote
+    client = await db.fetchone("SELECT id FROM clients WHERE id = ?", client_id)
+    if not client:
+        return RedirectResponse("/keys?msg=" + quote("Сначала создай клиента"), status_code=303)
+    if custom_date.strip():
+        cd = custom_date.strip().replace('T', ' ')
+        expires = cd if len(cd) > 10 else cd + ' 23:59:59'
+    else:
+        expires = (datetime.now() + timedelta(days=max(1, expire_days))).strftime('%Y-%m-%d %H:%M:%S')
+    key_id = _sec.token_urlsafe(32)
+    await db.execute(
+        "INSERT INTO access_keys (key_id, client_id, max_devices, expires_at, created_at) VALUES (?,?,?,?,datetime('now'))",
+        key_id, client_id, max(1, max_devices), expires)
+    await db.commit()
+    return RedirectResponse(f"/clients/{client_id}?msg=key_created", status_code=303)
+
+
+@app.post("/keys/{key_id}/extend")
+async def extend_key_form(key_id: str, days: int = Form(30)):
+    from urllib.parse import quote
+    key = await db.fetchone("SELECT expires_at, client_id FROM access_keys WHERE key_id = ?", key_id)
+    if not key:
+        return RedirectResponse("/keys?msg=" + quote("Ключ не найден"), status_code=303)
+    now = datetime.now()
+    fmt = '%Y-%m-%d %H:%M:%S'
+    try:
+        cur = datetime.strptime((key["expires_at"] or '').replace('T', ' ')[:19], fmt)
+    except Exception:
+        cur = now
+    base = cur if cur > now else now
+    new_exp = (base + timedelta(days=max(1, days))).strftime(fmt)
+    await db.execute("UPDATE access_keys SET expires_at = ? WHERE key_id = ?", new_exp, key_id)
+    await db.commit()
+    target = f"/clients/{key['client_id']}" if key["client_id"] else "/keys"
+    return RedirectResponse(f"{target}?msg=key_extended", status_code=303)
+
+
+@app.get("/keys", response_class=HTMLResponse)
+async def keys_list(request: Request, msg: Optional[str] = None):
+    keys = await db.fetchall(
+        """SELECT ak.*,
+                  (SELECT COUNT(*) FROM device_registrations dr WHERE dr.key_id = ak.key_id) AS device_count,
+                  cl.display_name AS client_name, cl.telegram_id AS client_tg, cl.id AS client_pk
+           FROM access_keys ak LEFT JOIN clients cl ON cl.id = ak.client_id
+           ORDER BY ak.created_at DESC"""
+    )
+    clients = await db.fetchall("SELECT id, display_name, tg_username FROM clients ORDER BY display_name")
+    now_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return templates.TemplateResponse(
+        request=request, name="pages/keys.html",
+        context={"keys": keys, "now": now_str, "msg": msg, "clients": clients})
+
+
+@app.post("/devices/create")
+async def create_client_form(
+    key_id: str = Form(...),
+    device_id: str = Form(...),
+    device_name: str = Form(""),
+    last_ip: str = Form(""),
+):
+    """Добавить устройство вручную (например, перенос из старой системы)."""
+    key = await db.fetchone("SELECT key_id FROM access_keys WHERE key_id = ?", key_id)
+    if not key:
+        return RedirectResponse("/clients?msg=client_nokey", status_code=303)
+    try:
+        await db.execute(
+            """INSERT INTO device_registrations
+               (key_id, device_id, device_name, last_ip, registered_at, last_seen_at)
+               VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))""",
+            key_id, device_id, device_name or None, last_ip or None,
+        )
+        await db.commit()
+        msg = "client_added"
+    except Exception:
+        msg = "client_exists"
+    return RedirectResponse(f"/clients?msg={msg}", status_code=303)
+
+@app.post("/devices/delete")
+async def delete_client_form(key_id: str = Form(...), device_id: str = Form(...)):
+    """Удалить устройство вместе с историей подключений."""
+    await db.execute(
+        "DELETE FROM device_connections WHERE key_id = ? AND device_id = ?",
+        key_id, device_id,
+    )
+    await db.execute(
+        "DELETE FROM device_registrations WHERE key_id = ? AND device_id = ?",
+        key_id, device_id,
+    )
+    await db.commit()
+    return RedirectResponse("/clients?msg=client_deleted", status_code=303)
+
+
+# === SSH operations (web UI) ===
+
+from .ssh import SSHTransport
+
+PROTOCOL_RESTART_CMDS = {
+    "wdtt": "systemctl restart wdtt",
+    "aivpn": "systemctl restart aivpn-server",
+    "awg": "awg-quick down awg0 && awg-quick up awg0",
+}
+
+PROTOCOL_LOG_CMDS = {
+    "agent": '{ echo "=== hydra-agent.log (last 200) ==="; tail -200 /var/log/hydra-agent.log 2>/dev/null; echo; echo "=== cron runs (hydra) ==="; journalctl -n 300 --no-pager 2>/dev/null | grep -i hydra | tail -20; echo; echo "=== buffer status ==="; ls -la /var/lib/hydra-agent/ 2>/dev/null; wc -l /var/lib/hydra-agent/buffer.ndjson 2>/dev/null; }',
+    "wdtt": '{ echo "=== События (подключения/ошибки, без [СТАТ]) ==="; journalctl -u wdtt -n 3000 --no-pager -q | grep -v "\[СТАТ\]" | tail -80; echo; echo "=== Свежая статистика (последние 10) ==="; journalctl -u wdtt -n 40 --no-pager -q | grep "\[СТАТ\]" | tail -10; }',
+    "aivpn": '{ echo "=== События (без DEBUG) ==="; journalctl -u aivpn-server -n 400 --no-pager -q | grep -v " DEBUG " | tail -100; }',
+    "awg": '{ awg show awg0 2>/dev/null; echo; echo "=== dmesg (awg0) ==="; dmesg | grep awg0 | tail -100; }',
+}
+
