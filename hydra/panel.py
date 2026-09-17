@@ -1111,7 +1111,7 @@ async def sync_time_form(server_id: str):
 CONFIG_DIRS = {
     "wdtt": "/etc/wdtt",
     "aivpn": "/etc/aivpn",
-    "awg": "/etc/wireguard /etc/amnezia-wg",
+    "awg": "/etc/amnezia/amneziawg /etc/wireguard /etc/amnezia-wg",
 }
 
 
@@ -1144,6 +1144,27 @@ async def server_configs(request: Request, server_id: str, source: str = "wdtt")
     except Exception as e:
         error = str(e)
     
+    # Парсим текущие значения для формы редактирования
+    import re as _re
+    awg_params = {}
+    raw_content = ""
+    edit_path = ""
+    
+    if not error:
+        try:
+            async with SSHTransport(server["ip"], key_path=manager.ssh_key_path) as ssh:
+                conf_path = await _find_config(ssh, source)
+                if conf_path:
+                    edit_path = conf_path
+                    cat = await ssh.run(f"cat {conf_path}")
+                    raw_content = cat.stdout or ""
+                    if source == "awg":
+                        for key in AWG_PARAMS:
+                            m = _re.search(rf"^{key}\s*=\s*(\S+)", raw_content, _re.M)
+                            awg_params[key] = m.group(1) if m else ""
+        except Exception:
+            pass
+    
     return templates.TemplateResponse(
         request=request,
         name="pages/server_configs.html",
@@ -1154,5 +1175,127 @@ async def server_configs(request: Request, server_id: str, source: str = "wdtt")
             "listing": listing,
             "files": files,
             "error": error,
+            "msg": request.query_params.get("msg"),
+            "awg_params": awg_params,
+            "raw_content": raw_content,
+            "edit_path": edit_path,
+            "awg_param_list": AWG_PARAMS,
         },
     )
+
+
+# === Config editing with backup + rollback ===
+
+import base64 as _b64
+import re as _re
+
+AWG_PARAMS = ["Jc", "Jmin", "Jmax", "S1", "S2", "S3", "S4", "MTU", "ListenPort"]
+
+CONFIG_PATHS = {
+    "wdtt": ["/etc/wdtt/server.json", "/etc/wdtt/passwords.json"],
+    "aivpn": ["/etc/aivpn/server.json", "/etc/aivpn/clients.json"],
+    "awg": ["/etc/amnezia/amneziawg/awg0.conf", "/etc/wireguard/awg0.conf", "/etc/amnezia-wg/awg0.conf"],
+}
+
+SERVICE_CHECK = {
+    "wdtt": "systemctl is-active wdtt",
+    "aivpn": "systemctl is-active aivpn-server",
+    "awg": "awg show awg0",
+}
+
+
+async def _find_config(ssh, source: str):
+    """Найти первый существующий конфиг протокола."""
+    for path in CONFIG_PATHS.get(source, []):
+        r = await ssh.run(f"test -f {path} && echo yes")
+        if r.stdout.strip() == "yes":
+            return path
+    return None
+
+
+@app.post("/servers/{server_id}/config/apply")
+async def apply_config(request: Request, server_id: str):
+    """Применить правку конфига: бекап → правка → рестарт → проверка → откат."""
+    from urllib.parse import quote
+    from datetime import datetime as _dt
+    
+    form = await request.form()
+    source = form.get("source", "awg")
+    
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        return RedirectResponse("/servers?error=Server+not+found", status_code=303)
+    
+    try:
+        async with SSHTransport(server["ip"], key_path=manager.ssh_key_path) as ssh:
+            conf_path = await _find_config(ssh, source)
+            if not conf_path:
+                return RedirectResponse(
+                    f"/servers/{server_id}/configs?source={source}&msg=" + quote("Конфиг не найден"),
+                    status_code=303,
+                )
+            
+            # 1. Текущее содержимое
+            cur = await ssh.run(f"cat {conf_path}")
+            old_conf = cur.stdout
+            
+            # 2. Формируем новый конфиг
+            if source == "awg":
+                new_conf = old_conf
+                for key in AWG_PARAMS:
+                    val = form.get(key)
+                    if val and val.strip():
+                        try:
+                            int(val)
+                        except ValueError:
+                            return RedirectResponse(
+                                f"/servers/{server_id}/configs?source={source}&msg=" + quote(f"{key}: не число"),
+                                status_code=303,
+                            )
+                        new_conf = _re.sub(rf"^{key}\s*=\s*\S+", f"{key} = {val}", new_conf, flags=_re.M)
+            else:
+                new_conf = form.get("raw_config", "")
+                try:
+                    import json as _j
+                    _j.loads(new_conf)
+                except Exception as e:
+                    return RedirectResponse(
+                        f"/servers/{server_id}/configs?source={source}&msg=" + quote(f"Невалидный JSON: {str(e)[:100]}"),
+                        status_code=303,
+                    )
+            
+            if new_conf == old_conf:
+                return RedirectResponse(
+                    f"/servers/{server_id}/configs?source={source}&msg=Без+изменений",
+                    status_code=303,
+                )
+            
+            # 3. Бекап
+            ts = _dt.now().strftime("%Y%m%d-%H%M%S")
+            backup_path = f"{conf_path}.hydra-backup-{ts}"
+            await ssh.run(f"cp -p {conf_path} {backup_path}")
+            
+            # 4. Запись нового конфига (base64 для надёжности)
+            b64 = _b64.b64encode(new_conf.encode()).decode()
+            await ssh.run(f"echo '{b64}' | base64 -d > {conf_path}")
+            
+            # 5. Перезапуск сервиса
+            restart_cmd = PROTOCOL_RESTART_CMDS.get(source, "true")
+            await ssh.run(restart_cmd)
+            
+            # 6. Проверка
+            import asyncio as _aio
+            await _aio.sleep(2)
+            check = await ssh.run(SERVICE_CHECK.get(source, "true"))
+            
+            if check.exit_code != 0 or "inactive" in check.stdout:
+                # Откат
+                await ssh.run(f"cp -p {backup_path} {conf_path}")
+                await ssh.run(restart_cmd)
+                msg = quote(f"Сервис не поднялся — выполнен откат из {backup_path}")
+            else:
+                msg = f"config_applied_{source}"
+    except Exception as e:
+        msg = quote("SSH ошибка: " + str(e))
+    
+    return RedirectResponse(f"/servers/{server_id}/configs?source={source}&msg={msg}", status_code=303)
