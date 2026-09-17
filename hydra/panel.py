@@ -1180,6 +1180,8 @@ async def server_configs(request: Request, server_id: str, source: str = "wdtt")
             "raw_content": raw_content,
             "edit_path": edit_path,
             "awg_param_list": AWG_PARAMS,
+            "awg_param_types": AWG_PARAM_TYPES,
+            "awg_param_groups": AWG_PARAM_GROUPS,
         },
     )
 
@@ -1189,7 +1191,40 @@ async def server_configs(request: Request, server_id: str, source: str = "wdtt")
 import base64 as _b64
 import re as _re
 
-AWG_PARAMS = ["Jc", "Jmin", "Jmax", "S1", "S2", "S3", "S4", "MTU", "ListenPort"]
+AWG_PARAMS = [
+    "Jc", "Jmin", "Jmax",
+    "S1", "S2", "S3", "S4",
+    "I1", "I2", "I3", "I4", "I5",
+    "H1", "H2", "H3", "H4",
+    "HeaderProtectionKey",
+    "ContentPaddingAddition",
+    "RandomTrailers", "DisableCookies",
+    "RekeyAfterTime", "RekeyTimeout", "RejectAfterTime", "KeepaliveTimeout", "MaxHandshakeAttempts",
+    "MTU", "ListenPort",
+]
+
+AWG_PARAM_TYPES = {
+    "Jc": "uint16", "Jmin": "uint16", "Jmax": "uint16",
+    "S1": "uint16", "S2": "uint16", "S3": "uint16", "S4": "uint16",
+    "I1": "cps", "I2": "cps", "I3": "cps", "I4": "cps", "I5": "cps",
+    "H1": "range", "H2": "range", "H3": "range", "H4": "range",
+    "HeaderProtectionKey": "base64",
+    "ContentPaddingAddition": "range",
+    "RandomTrailers": "toggle", "DisableCookies": "toggle",
+    "RekeyAfterTime": "range", "RekeyTimeout": "range", "RejectAfterTime": "range",
+    "KeepaliveTimeout": "range", "MaxHandshakeAttempts": "range",
+    "MTU": "uint16", "ListenPort": "uint16",
+}
+
+AWG_PARAM_GROUPS = [
+    ("Анти-DPI базовый", ["Jc", "Jmin", "Jmax", "S1", "S2", "S3", "S4"]),
+    ("Маскировка handshake", ["I1", "I2", "I3", "I4", "I5"]),
+    ("Идентификаторы сообщений", ["H1", "H2", "H3", "H4"]),
+    ("Защита заголовков", ["HeaderProtectionKey"]),
+    ("Поведение трафика", ["ContentPaddingAddition", "RandomTrailers", "DisableCookies"]),
+    ("Таймеры", ["RekeyAfterTime", "RekeyTimeout", "RejectAfterTime", "KeepaliveTimeout", "MaxHandshakeAttempts"]),
+    ("Интерфейс", ["MTU", "ListenPort"]),
+]
 
 CONFIG_PATHS = {
     "wdtt": ["/etc/wdtt/server.json", "/etc/wdtt/passwords.json"],
@@ -1245,14 +1280,56 @@ async def apply_config(request: Request, server_id: str):
                 for key in AWG_PARAMS:
                     val = form.get(key)
                     if val and val.strip():
-                        try:
-                            int(val)
-                        except ValueError:
-                            return RedirectResponse(
-                                f"/servers/{server_id}/configs?source={source}&msg=" + quote(f"{key}: не число"),
-                                status_code=303,
-                            )
-                        new_conf = _re.sub(rf"^{key}\s*=\s*\S+", f"{key} = {val}", new_conf, flags=_re.M)
+                        param_type = AWG_PARAM_TYPES.get(key, "uint16")
+                        valid = True
+                        
+                        if param_type == "uint16":
+                            try:
+                                n = int(val)
+                                if not (0 <= n <= 65535):
+                                    valid = False
+                            except ValueError:
+                                valid = False
+                            if not valid:
+                                return RedirectResponse(
+                                    f"/servers/{server_id}/configs?source={source}&msg=" + quote(f"{key}: число 0-65535"),
+                                    status_code=303,
+                                )
+                            new_conf = _re.sub(rf"^{key}\s*=\s*\S+", f"{key} = {val}", new_conf, flags=_re.M)
+                        
+                        elif param_type == "range":
+                            if not _re.match(r"^\d+(-\d+)?$", val):
+                                return RedirectResponse(
+                                    f"/servers/{server_id}/configs?source={source}&msg=" + quote(f"{key}: формат a или a-b"),
+                                    status_code=303,
+                                )
+                            new_conf = _re.sub(rf"^{key}\s*=\s*\S+", f"{key} = {val}", new_conf, flags=_re.M)
+                        
+                        elif param_type == "cps":
+                            # I1-I5: формат "3:40" или "2:30,5:40"
+                            if not _re.match(r"^\d+:\d+(,\d+:\d+)*$", val):
+                                return RedirectResponse(
+                                    f"/servers/{server_id}/configs?source={source}&msg=" + quote(f"{key}: формат count:size или count:size,count:size"),
+                                    status_code=303,
+                                )
+                            new_conf = _re.sub(rf"^{key}\s*=\s*\S+", f"{key} = {val}", new_conf, flags=_re.M)
+                        
+                        elif param_type == "base64":
+                            # HeaderProtectionKey: 44 символа base64
+                            if not _re.match(r"^[A-Za-z0-9+/]{43}=$", val):
+                                return RedirectResponse(
+                                    f"/servers/{server_id}/configs?source={source}&msg=" + quote(f"{key}: base64 44 символа"),
+                                    status_code=303,
+                                )
+                            new_conf = _re.sub(rf"^{key}\s*=\s*\S+", f"{key} = {val}", new_conf, flags=_re.M)
+                        
+                        elif param_type == "toggle":
+                            if val not in ("on", "off"):
+                                return RedirectResponse(
+                                    f"/servers/{server_id}/configs?source={source}&msg=" + quote(f"{key}: on или off"),
+                                    status_code=303,
+                                )
+                            new_conf = _re.sub(rf"^{key}\s*=\s*\S+", f"{key} = {val}", new_conf, flags=_re.M)
             else:
                 new_conf = form.get("raw_config", "")
                 try:
