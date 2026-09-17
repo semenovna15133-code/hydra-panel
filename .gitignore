@@ -44,3 +44,4 @@ Thumbs.db
 .env.local
 keys/
 test_ssh_smoke.py
+scripts/.cookies

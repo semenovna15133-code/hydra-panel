@@ -1436,3 +1436,157 @@ async def database_backup():
         media_type="application/octet-stream",
         filename=f"hydra-backup-{_dt.now().strftime('%Y%m%d-%H%M%S')}.db",
     )
+
+
+# === Hydra Auth v1 ===
+
+from .core import auth
+
+AUTH_PUBLIC_PATHS = {"/login", "/setup", "/favicon.ico"}
+AUTH_PUBLIC_PREFIXES = ("/api/v1/agent/", "/api/v1/client/", "/static")
+
+
+@app.on_event("startup")
+async def _init_auth_tables():
+    await auth.ensure_tables(db)
+
+
+@app.middleware("http")
+async def hydra_auth_middleware(request: Request, call_next):
+    path = request.url.path
+    if path in AUTH_PUBLIC_PATHS or path.startswith(AUTH_PUBLIC_PREFIXES):
+        return await call_next(request)
+    if path == "/setup":
+        if await auth.has_admin(db):
+            return RedirectResponse("/login", status_code=303)
+        return await call_next(request)
+    token = request.cookies.get("hydra_session")
+    if token and await auth.get_session(db, token):
+        return await call_next(request)
+    cli = request.headers.get("x-hydra-token")
+    if cli and await auth.check_cli_token(db, cli):
+        return await call_next(request)
+    if path.startswith("/api/"):
+        return JSONResponse({"detail": "Unauthorized"}, status_code=401)
+    return RedirectResponse("/login", status_code=303)
+
+
+def _client_ip(request: Request) -> str:
+    return request.client.host if request.client else ""
+
+
+def _set_session_cookie(resp, token: str, remember: bool):
+    resp.set_cookie(
+        "hydra_session", token,
+        httponly=True, samesite="lax", path="/",
+        max_age=30 * 24 * 3600 if remember else 12 * 3600,
+    )
+    return resp
+
+
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request, error: Optional[str] = None):
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/login.html",
+        context={"error": error, "no_admin": not await auth.has_admin(db)},
+    )
+
+
+@app.post("/login")
+async def login_submit(request: Request):
+    from urllib.parse import quote
+    form = await request.form()
+    password = form.get("password", "")
+    remember = form.get("remember") == "on"
+    ip = _client_ip(request)
+    
+    if await auth.is_rate_limited(db, ip):
+        return RedirectResponse("/login?error=" + quote("Слишком много попыток. Повтори через 15 минут."), status_code=303)
+    
+    ok = await auth.check_admin_password(db, password)
+    await auth.record_attempt(db, ip, ok)
+    if not ok:
+        return RedirectResponse("/login?error=" + quote("Неверный пароль"), status_code=303)
+    
+    token = await auth.create_session(db, remember, request.headers.get("user-agent", "")[:200], ip)
+    resp = RedirectResponse("/", status_code=303)
+    return _set_session_cookie(resp, token, remember)
+
+
+@app.get("/setup", response_class=HTMLResponse)
+async def setup_page(request: Request):
+    return templates.TemplateResponse(request=request, name="pages/setup.html", context={})
+
+
+@app.post("/setup")
+async def setup_submit(request: Request, password: str = Form(...), password2: str = Form(...)):
+    from urllib.parse import quote
+    if await auth.has_admin(db):
+        return RedirectResponse("/login", status_code=303)
+    if len(password) < 8:
+        return RedirectResponse("/setup?error=" + quote("Пароль минимум 8 символов"), status_code=303)
+    if password != password2:
+        return RedirectResponse("/setup?error=" + quote("Пароли не совпадают"), status_code=303)
+    
+    await auth.set_admin_password(db, password)
+    cli_token = await auth.get_or_create_cli_token(db)
+    token = await auth.create_session(db, True, request.headers.get("user-agent", "")[:200], _client_ip(request))
+    
+    resp = templates.TemplateResponse(
+        request=request,
+        name="pages/setup_done.html",
+        context={"cli_token": cli_token},
+    )
+    return _set_session_cookie(resp, token, True)
+
+
+@app.post("/logout")
+async def logout_submit(request: Request):
+    token = request.cookies.get("hydra_session")
+    if token:
+        await auth.delete_session(db, auth.token_hash(token))
+    resp = RedirectResponse("/login", status_code=303)
+    resp.delete_cookie("hydra_session", path="/")
+    return resp
+
+
+@app.get("/sessions", response_class=HTMLResponse)
+async def sessions_page(request: Request):
+    current = request.cookies.get("hydra_session") or ""
+    sessions = await auth.list_sessions(db)
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/sessions.html",
+        context={"sessions": sessions, "current_hash": auth.token_hash(current)},
+    )
+
+
+@app.post("/sessions/revoke")
+async def sessions_revoke(request: Request, token_hash: str = Form(...)):
+    current = request.cookies.get("hydra_session") or ""
+    is_current = auth.token_hash(current) == token_hash
+    await auth.delete_session(db, token_hash)
+    if is_current:
+        resp = RedirectResponse("/login", status_code=303)
+        resp.delete_cookie("hydra_session", path="/")
+        return resp
+    return RedirectResponse("/sessions", status_code=303)
+
+
+@app.post("/sessions/revoke-all")
+async def sessions_revoke_all(request: Request):
+    await auth.delete_all_sessions(db)
+    resp = RedirectResponse("/login", status_code=303)
+    resp.delete_cookie("hydra_session", path="/")
+    return resp
+
+
+@app.post("/cli/rotate")
+async def cli_rotate(request: Request):
+    token = await auth.rotate_cli_token(db)
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/setup_done.html",
+        context={"cli_token": token, "rotated": True},
+    )
