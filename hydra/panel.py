@@ -1323,26 +1323,6 @@ async def apply_config(request: Request, server_id: str):
 
 # === Database console (read-only) ===
 
-@app.get("/database", response_class=HTMLResponse)
-async def database_console(request: Request, result: Optional[str] = None, error: Optional[str] = None):
-    """Read-only SQL console."""
-    import base64 as _b64mod
-    import json as _jsonmod
-    tables = await db.fetchall(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name"
-    )
-    decoded_result = None
-    if result:
-        try:
-            decoded_result = _jsonmod.loads(_b64mod.b64decode(result).decode())
-        except Exception:
-            decoded_result = None
-    return templates.TemplateResponse(
-        request=request,
-        name="pages/database.html",
-        context={"tables": tables, "result": decoded_result, "error": error},
-    )
-
 
 @app.post("/database/query")
 async def database_query(request: Request, query: str = Form(...)):
@@ -1892,3 +1872,142 @@ PROTOCOL_LOG_CMDS = {
     "awg": '{ awg show awg0 2>/dev/null; echo; echo "=== dmesg (awg0) ==="; dmesg | grep awg0 | tail -100; }',
 }
 
+
+
+# === Backups: auto + rotation + restore + offsite ===
+
+import os
+from fastapi import UploadFile, File
+from .core import backups
+
+DB_FILE_PATH = os.environ.get("HYDRA_DB_PATH", "./panel.db")
+
+
+def _backup_cfg() -> dict:
+    cfg = {"keep": 3, "github_repo": "", "github_token": ""}
+    try:
+        import yaml as _y
+        with open(os.environ.get("HYDRA_PANEL_YAML", "./panel.yaml")) as f:
+            data = _y.safe_load(f) or {}
+        b = data.get("backup") or {}
+        for k in ("keep", "github_repo", "github_token"):
+            if k in b:
+                cfg[k] = b[k]
+    except Exception:
+        pass
+    cfg["github_repo"] = os.environ.get("HYDRA_GH_REPO") or cfg["github_repo"]
+    cfg["github_token"] = os.environ.get("HYDRA_GH_TOKEN") or cfg["github_token"]
+    return cfg
+
+
+async def _backup_worker():
+    import asyncio as _aio
+    while True:
+        try:
+            cfg = _backup_cfg()
+            today = datetime.now().strftime("%Y-%m-%d")
+            has_today = any(b["auto"] and b["mtime"].startswith(today) for b in backups.list_backups())
+            if not has_today:
+                name = backups.create_backup(DB_FILE_PATH)
+                backups.rotate(int(cfg.get("keep", 3)))
+                if cfg.get("github_repo") and cfg.get("github_token"):
+                    try:
+                        backups.push_github(cfg["github_repo"], cfg["github_token"], name)
+                    except Exception:
+                        pass
+        except Exception:
+            pass
+        await _aio.sleep(3600)
+
+
+@app.on_event("startup")
+async def _start_backup_worker():
+    import asyncio as _aio
+    _aio.create_task(_backup_worker())
+
+
+@app.get("/database", response_class=HTMLResponse)
+async def database_console(request: Request, result: Optional[str] = None, error: Optional[str] = None, msg: Optional[str] = None):
+    import base64 as _b64mod
+    import json as _jsonmod
+    tables = await db.fetchall(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name"
+    )
+    decoded_result = None
+    if result:
+        try:
+            decoded_result = _jsonmod.loads(_b64mod.b64decode(result).decode())
+        except Exception:
+            decoded_result = None
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/database.html",
+        context={"tables": tables, "result": decoded_result, "error": error, "msg": msg,
+                 "backups": backups.list_backups(), "backup_cfg": _backup_cfg()},
+    )
+
+
+@app.post("/database/backup-now")
+async def backup_now():
+    from urllib.parse import quote
+    cfg = _backup_cfg()
+    name = backups.create_backup(DB_FILE_PATH)
+    backups.rotate(int(cfg.get("keep", 3)))
+    extra = ""
+    if cfg.get("github_repo") and cfg.get("github_token"):
+        try:
+            res = backups.push_github(cfg["github_repo"], cfg["github_token"], name)
+            extra = ", GitHub: ok" if res.get("ok") else f", GitHub: {res.get('error')}"
+        except Exception as e:
+            extra = f", GitHub ошибка: {str(e)[:60]}"
+    return RedirectResponse("/database?msg=" + quote(f"Бэкап {name} создан{extra}"), status_code=303)
+
+
+@app.post("/database/restore")
+async def database_restore(name: str = Form(...)):
+    from urllib.parse import quote
+    try:
+        backups.restore(name, DB_FILE_PATH)
+        msg = quote(f"Восстановлено из {name}. Перезапусти панель и войди заново")
+    except Exception as e:
+        msg = quote("Ошибка восстановления: " + str(e)[:120])
+    return RedirectResponse(f"/database?msg={msg}", status_code=303)
+
+
+@app.post("/database/backup-upload")
+async def backup_upload(file: UploadFile = File(...)):
+    from urllib.parse import quote
+    backups.ensure_dir()
+    ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+    name = f"uploaded-{ts}.db"
+    path = os.path.join(backups.BACKUP_DIR, name)
+    data = await file.read()
+    if len(data) > 500 * 1024 * 1024:
+        return RedirectResponse("/database?msg=" + quote("Файл больше 500 МБ"), status_code=303)
+    with open(path, "wb") as f:
+        f.write(data)
+    if not backups.verify(path):
+        os.remove(path)
+        return RedirectResponse("/database?msg=" + quote("Загруженный файл — не валидная SQLite БД"), status_code=303)
+    return RedirectResponse("/database?msg=" + quote(f"Бэкап {name} загружен — можно восстанавливать"), status_code=303)
+
+
+@app.post("/database/backup-delete")
+async def backup_delete(name: str = Form(...)):
+    from urllib.parse import quote
+    path = os.path.join(backups.BACKUP_DIR, name)
+    if os.path.exists(path):
+        os.remove(path)
+        msg = quote(f"Бэкап {name} удалён")
+    else:
+        msg = quote("Файл не найден")
+    return RedirectResponse(f"/database?msg={msg}", status_code=303)
+
+
+@app.get("/database/backup-file")
+async def backup_file(name: str):
+    from fastapi.responses import FileResponse
+    path = os.path.join(backups.BACKUP_DIR, name)
+    if not os.path.exists(path):
+        raise HTTPException(status_code=404, detail="Not found")
+    return FileResponse(path, media_type="application/octet-stream", filename=name)

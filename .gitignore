@@ -1,47 +1,41 @@
-# Python
-__pycache__/
-*.py[cod]
+
 *$py.class
-*.so
-.Python
+backups/
 build/
+*.db
 develop-eggs/
 dist/
 downloads/
+.DS_Store
+*.egg
+*.egg-info/
 eggs/
-.eggs/
+env/
+ENV/
+.env.local
+# IDE
+.idea/
+.installed.cfg
+keys/
 lib/
 lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual environment
-.venv/
-venv/
-ENV/
-env/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
 # OS
-.DS_Store
-Thumbs.db
-
+parts/
 # Project specific
-*.db
+__pycache__/
+*.py[cod]
+# Python
+scripts/.cookies
+sdist/
+*.so
 *.sqlite
 *.sqlite3
-.env
-.env.local
-keys/
+*.swo
+*.swp
 test_ssh_smoke.py
-scripts/.cookies
+Thumbs.db
+var/
+.venv/
+# Virtual environment
+.vscode/
+wheels/
