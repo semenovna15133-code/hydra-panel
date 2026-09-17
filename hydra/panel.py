@@ -1868,7 +1868,7 @@ PROTOCOL_RESTART_CMDS = {
 
 PROTOCOL_LOG_CMDS = {
     "agent": '{ echo "=== hydra-agent.log (last 200) ==="; tail -200 /var/log/hydra-agent.log 2>/dev/null; echo; echo "=== cron runs (hydra) ==="; journalctl -n 300 --no-pager 2>/dev/null | grep -i hydra | tail -20; echo; echo "=== buffer status ==="; ls -la /var/lib/hydra-agent/ 2>/dev/null; wc -l /var/lib/hydra-agent/buffer.ndjson 2>/dev/null; }',
-    "wdtt": '{ echo "=== События (подключения/ошибки, без [СТАТ]) ==="; journalctl -u wdtt -n 3000 --no-pager -q | grep -v "\[СТАТ\]" | tail -80; echo; echo "=== Свежая статистика (последние 10) ==="; journalctl -u wdtt -n 40 --no-pager -q | grep "\[СТАТ\]" | tail -10; }',
+    "wdtt": '{ echo "=== События (подключения/ошибки, без [СТАТ]) ==="; journalctl -u wdtt -n 3000 --no-pager -q | grep -v "[СТАТ]" | tail -80; echo; echo "=== Свежая статистика (последние 10) ==="; journalctl -u wdtt -n 40 --no-pager -q | grep "\[СТАТ\]" | tail -10; }',
     "aivpn": '{ echo "=== События (без DEBUG) ==="; journalctl -u aivpn-server -n 400 --no-pager -q | grep -v " DEBUG " | tail -100; }',
     "awg": '{ awg show awg0 2>/dev/null; echo; echo "=== dmesg (awg0) ==="; dmesg | grep awg0 | tail -100; }',
 }
