@@ -1,147 +1,197 @@
 {% extends "base.html" %}
 
 {% block title %}{{ server.id }} — Hydra Panel{% endblock %}
-{% block page_title %}Сервер: {{ server.id }}{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <nav class="flex" aria-label="Breadcrumb">
-        <ol class="flex items-center space-x-2 text-sm">
-            <li><a href="/servers" class="text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">Серверы</a></li>
-            <li class="text-gray-500 dark:text-gray-400">/</li>
-            <li class="text-gray-900 dark:text-white font-medium">{{ server.id }}</li>
-        </ol>
+<div x-data="{ busy: false }" class="space-y-8">
+
+    <!-- Breadcrumbs -->
+    <nav class="fade-up flex items-center gap-2 text-sm">
+        <a href="/servers" class="text-slate-500 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">Серверы</a>
+        <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+        <span class="font-semibold text-slate-900 dark:text-white">{{ server.id }}</span>
     </nav>
 
-    <div class="bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700 sm:rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Информация о сервере</h3>
-            <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                <div class="overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-900/50 px-4 py-5 ring-1 ring-gray-200 dark:ring-gray-700">
-                    <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">IP-адрес</dt>
-                    <dd class="mt-1 text-xl font-semibold tracking-tight text-gray-900 dark:text-white font-mono">{{ server.ip }}</dd>
+    <!-- Баннер результата -->
+    {% if msg %}
+    <div class="fade-up flex items-start gap-3 rounded-xl border p-4 backdrop-blur
+                {% if msg in ['protocols_ok', 'agent_ok', 'agent_exists'] %}border-emerald-500/30 bg-emerald-500/10
+                {% elif msg == 'protocols_partial' %}border-amber-500/30 bg-amber-500/10
+                {% else %}border-rose-500/30 bg-rose-500/10{% endif %}">
+        {% if msg in ['protocols_ok', 'agent_ok', 'agent_exists'] %}
+            <svg class="h-5 w-5 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <p class="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                {% if msg == 'protocols_ok' %}Все протоколы установлены и зарегистрированы{% elif msg == 'agent_ok' %}Агент мониторинга установлен и запущен{% else %}Агент мониторинга уже установлен{% endif %}
+            </p>
+        {% elif msg == 'protocols_partial' %}
+            <svg class="h-5 w-5 shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+            <p class="text-sm font-medium text-amber-600 dark:text-amber-400">Часть протоколов не установилась — проверь SSH-доступ</p>
+        {% else %}
+            <svg class="h-5 w-5 shrink-0 text-rose-500" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9.252 3.376c-.866 1.5.217 3.374 1.948 3.374h.009c1.731 0 2.814-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374z" /></svg>
+            <p class="text-sm font-medium text-rose-600 dark:text-rose-400">{{ msg }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Шапка + действия -->
+    <div class="fade-up d1 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex items-center gap-4">
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-violet-500 to-fuchsia-500 text-white shadow-glow">
+                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z" />
+                </svg>
+            </div>
+            <div>
+                <div class="flex items-center gap-3">
+                    <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{{ server.id }}</h2>
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 ring-1 ring-inset ring-emerald-500/30">
+                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>{{ server.status }}
+                    </span>
                 </div>
-                <div class="overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-900/50 px-4 py-5 ring-1 ring-gray-200 dark:ring-gray-700">
-                    <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Локация</dt>
-                    <dd class="mt-1 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ server.location or '—' }}</dd>
-                </div>
-                <div class="overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-900/50 px-4 py-5 ring-1 ring-gray-200 dark:ring-gray-700">
-                    <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Город</dt>
-                    <dd class="mt-1 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ server.city or '—' }}</dd>
-                </div>
-                <div class="overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-900/50 px-4 py-5 ring-1 ring-gray-200 dark:ring-gray-700">
-                    <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Канал</dt>
-                    <dd class="mt-1 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ server.bandwidth_mbps }} Мбит/с</dd>
-                </div>
-            </dl>
+                <p class="mt-0.5 font-mono text-sm text-slate-500 dark:text-slate-400">{{ server.ip }}:{{ server.ssh_port }}</p>
+            </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+            <form method="post" action="/servers/{{ server.id }}/install-protocols" @submit="busy = true">
+                <button type="submit" :disabled="busy"
+                        class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-glow-sm transition-all hover:shadow-glow hover:brightness-110 active:scale-95 disabled:opacity-60 disabled:cursor-wait">
+                    <svg x-show="!busy" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                    <svg x-show="busy" x-cloak class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                    <span x-text="busy ? 'Установка через SSH…' : 'Установить протоколы'"></span>
+                </button>
+            </form>
+            <form method="post" action="/servers/{{ server.id }}/install-agent" @submit="busy = true">
+                <button type="submit" :disabled="busy"
+                        class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 ring-1 ring-inset ring-slate-300/60 dark:ring-white/10 glass-soft transition-all hover:bg-white/60 dark:hover:bg-white/5 active:scale-95 disabled:opacity-60 disabled:cursor-wait">
+                    <svg x-show="!busy" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75z" /></svg>
+                    <svg x-show="busy" x-cloak class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                    <span x-text="busy ? 'Установка агента…' : 'Установить агент'"></span>
+                </button>
+            </form>
         </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700 sm:rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Управление сервером</h3>
-            <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Агент мониторинга</h4>
-                    {% if server.agent_installed %}
-                        <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400">✓ Установлен</span>
-                    {% else %}
-                        <form method="post" action="/api/v1/servers/{{ server.id }}/install">
-                            <button type="submit" class="rounded-md bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-primary-500">Установить агента</button>
-                        </form>
-                    {% endif %}
-                </div>
-                <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Установить протокол</h4>
-                    <div class="flex flex-wrap gap-2">
-                        {% set installed_protocols = protocols|map(attribute='protocol')|list %}
-                        {% for proto in ['WDTT', 'AIVPN', 'AWG'] %}
-                            {% if proto not in installed_protocols %}
-                                <form method="post" action="/api/v1/servers/{{ server.id }}/clients/{{ proto }}">
-                                    <button type="submit" class="rounded-md bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500">{{ proto }}</button>
-                                </form>
-                            {% else %}
-                                <span class="inline-flex items-center rounded-md bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs font-medium text-gray-500 dark:text-gray-400">{{ proto }} ✓</span>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Токены агента</h4>
-                    <div class="flex gap-2">
-                        <form method="post" action="/api/v1/servers/{{ server.id }}/tokens/rotate">
-                            <button type="submit" class="rounded-md bg-amber-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-amber-500">Ротация</button>
-                        </form>
-                        <form method="post" action="/api/v1/servers/{{ server.id }}/tokens/revoke">
-                            <button type="submit" class="rounded-md bg-red-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-red-500">Отозвать все</button>
-                        </form>
-                    </div>
-                </div>
-                <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Прогноз нагрузки</h4>
-                    <a href="/api/v1/forecast/{{ server.id }}" target="_blank" class="rounded-md bg-purple-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-purple-500 inline-block">Показать прогноз</a>
-                </div>
-            </div>
+    <!-- Инфо-карточки -->
+    <div class="grid grid-cols-2 gap-4 xl:grid-cols-4">
+        <div class="glass fade-up d2 rounded-2xl p-4">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">IP-адрес</p>
+            <p class="mt-1.5 font-mono text-lg font-bold text-slate-900 dark:text-white">{{ server.ip }}</p>
+        </div>
+        <div class="glass fade-up d3 rounded-2xl p-4">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Локация</p>
+            <p class="mt-1.5 text-lg font-bold text-slate-900 dark:text-white">{{ server.location or '—' }}{% if server.city %} · {{ server.city }}{% endif %}</p>
+        </div>
+        <div class="glass fade-up d4 rounded-2xl p-4">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Канал</p>
+            <p class="mt-1.5 text-lg font-bold text-slate-900 dark:text-white">{{ server.bandwidth_mbps }} <span class="text-sm font-medium text-slate-500">Мбит/с</span></p>
+        </div>
+        <div class="glass fade-up d5 rounded-2xl p-4">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Агент мониторинга</p>
+            <p class="mt-1.5 flex items-center gap-2 text-lg font-bold {% if server.agent_installed %}text-emerald-500{% else %}text-amber-500{% endif %}">
+                <span class="h-2 w-2 rounded-full {% if server.agent_installed %}bg-emerald-500{% else %}bg-amber-500{% endif %}"></span>
+                {% if server.agent_installed %}Установлен{% else %}Не установлен{% endif %}
+            </p>
         </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700 sm:rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Протоколы</h3>
-            {% if protocols %}
-            <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                {% for protocol in protocols %}
-                <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white uppercase">{{ protocol.protocol }}</h4>
-                        <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400">{{ protocol.status }}</span>
-                    </div>
-                    <dl class="mt-3 space-y-1 text-sm">
-                        <div class="flex justify-between"><dt class="text-gray-500 dark:text-gray-400">Порт</dt><dd class="font-mono text-gray-900 dark:text-white">{{ protocol.port }}</dd></div>
-                        <div class="flex justify-between"><dt class="text-gray-500 dark:text-gray-400">Макс. подключений</dt><dd class="text-gray-900 dark:text-white">{{ protocol.max_connections }}</dd></div>
-                    </dl>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <p class="mt-5 text-sm text-gray-500 dark:text-gray-400">Протоколы не установлены. Используйте кнопки выше для установки.</p>
-            {% endif %}
+    <!-- Протоколы -->
+    <div class="glass fade-up d4 overflow-hidden rounded-2xl">
+        <div class="flex items-center justify-between px-6 py-4">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Протоколы</h3>
+            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">{{ protocols|length }} активно</span>
         </div>
+        {% if protocols %}
+        <div class="grid grid-cols-1 gap-4 p-6 pt-0 sm:grid-cols-3">
+            {% set proto_styles = {
+                'wdtt': 'from-indigo-500 to-violet-600',
+                'aivpn': 'from-cyan-500 to-teal-600',
+                'awg': 'from-fuchsia-500 to-pink-600'
+            } %}
+            {% for protocol in protocols %}
+            <div class="glass-soft group rounded-xl p-4 transition-transform duration-300 hover:-translate-y-1">
+                <div class="flex items-center justify-between">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br {{ proto_styles.get(protocol.protocol, 'from-slate-500 to-slate-600') }} text-white shadow-glow-sm transition-transform group-hover:scale-110">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3" />
+                        </svg>
+                    </div>
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 ring-1 ring-inset ring-emerald-500/30">
+                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>{{ protocol.status }}
+                    </span>
+                </div>
+                <p class="mt-3 text-lg font-bold uppercase tracking-tight text-slate-900 dark:text-white">{{ protocol.protocol }}</p>
+                <dl class="mt-2 space-y-1 text-xs">
+                    <div class="flex justify-between"><dt class="text-slate-500 dark:text-slate-400">Порт</dt><dd class="font-mono font-semibold text-slate-900 dark:text-white">{{ protocol.port }}</dd></div>
+                    <div class="flex justify-between"><dt class="text-slate-500 dark:text-slate-400">Лимит подключений</dt><dd class="font-semibold text-slate-900 dark:text-white">{{ protocol.max_connections }}</dd></div>
+                </dl>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-10 text-center">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Протоколы не установлены. Нажми «Установить протоколы» — установка идемпотентна и безопасна.</p>
+        </div>
+        {% endif %}
     </div>
 
-    <div class="bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700 sm:rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Метрики</h3>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Последние {{ metrics|length }} точек данных. Обновляются каждую минуту с агента.</p>
-            {% if metrics %}
-            <div class="mt-5 overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                    <thead class="bg-gray-50 dark:bg-gray-900/50">
-                        <tr>
-                            <th class="py-2 px-3 text-left font-semibold text-gray-900 dark:text-gray-200">Время</th>
-                            <th class="py-2 px-3 text-left font-semibold text-gray-900 dark:text-gray-200">CPU</th>
-                            <th class="py-2 px-3 text-left font-semibold text-gray-900 dark:text-gray-200">Память</th>
-                            <th class="py-2 px-3 text-left font-semibold text-gray-900 dark:text-gray-200">Сеть</th>
-                            <th class="py-2 px-3 text-left font-semibold text-gray-900 dark:text-gray-200">Задержка</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                        {% for metric in metrics %}
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
-                            <td class="py-2 px-3 font-mono text-gray-500 dark:text-gray-400">{{ metric.timestamp }}</td>
-                            <td class="py-2 px-3 text-gray-900 dark:text-white">{{ "%.1f"|format(metric.cpu_percent) }}%</td>
-                            <td class="py-2 px-3 text-gray-900 dark:text-white">{{ "%.1f"|format(metric.memory_percent) }}%</td>
-                            <td class="py-2 px-3 text-gray-900 dark:text-white">{{ "%.1f"|format(metric.network_rx_mbps + metric.network_tx_mbps) }} Мбит/с</td>
-                            <td class="py-2 px-3 text-gray-900 dark:text-white">{{ "%.0f"|format(metric.latency_ms) }} мс</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <p class="mt-5 text-sm text-gray-500 dark:text-gray-400">Метрик пока нет. Установите агента мониторинга на сервер.</p>
-            {% endif %}
+    <!-- Метрики -->
+    <div class="glass fade-up d5 overflow-hidden rounded-2xl">
+        <div class="flex items-center justify-between px-6 py-4">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Метрики</h3>
+            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <span class="relative flex h-2 w-2">
+                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60"></span>
+                    <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                </span>
+                обновление каждую минуту
+            </span>
         </div>
+        {% if metrics %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200/60 dark:divide-white/5">
+                <thead>
+                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        <th class="py-3 pl-6 pr-3">Время</th>
+                        <th class="px-3 py-3">CPU</th>
+                        <th class="px-3 py-3">Память</th>
+                        <th class="px-3 py-3">Сеть</th>
+                        <th class="px-3 py-3 pr-6">Задержка</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200/60 dark:divide-white/5">
+                    {% for metric in metrics %}
+                    <tr class="transition-colors hover:bg-white/50 dark:hover:bg-white/[0.03]">
+                        <td class="whitespace-nowrap py-3 pl-6 pr-3 font-mono text-xs text-slate-500 dark:text-slate-400">{{ metric.timestamp }}</td>
+                        <td class="whitespace-nowrap px-3 py-3">
+                            <div class="flex items-center gap-2">
+                                <div class="h-1.5 w-14 overflow-hidden rounded-full bg-slate-200/60 dark:bg-white/10">
+                                    <div class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500" style="width: {{ metric.cpu_percent }}%"></div>
+                                </div>
+                                <span class="text-sm font-medium text-slate-900 dark:text-white">{{ "%.1f"|format(metric.cpu_percent) }}%</span>
+                            </div>
+                        </td>
+                        <td class="whitespace-nowrap px-3 py-3">
+                            <div class="flex items-center gap-2">
+                                <div class="h-1.5 w-14 overflow-hidden rounded-full bg-slate-200/60 dark:bg-white/10">
+                                    <div class="h-full rounded-full bg-gradient-to-r from-cyan-500 to-teal-500" style="width: {{ metric.memory_percent }}%"></div>
+                                </div>
+                                <span class="text-sm font-medium text-slate-900 dark:text-white">{{ "%.1f"|format(metric.memory_percent) }}%</span>
+                            </div>
+                        </td>
+                        <td class="whitespace-nowrap px-3 py-3 text-sm text-slate-500 dark:text-slate-400">{{ "%.2f"|format(metric.network_rx_mbps + metric.network_tx_mbps) }} Мбит/с</td>
+                        <td class="whitespace-nowrap px-3 py-3 pr-6 text-sm text-slate-500 dark:text-slate-400">{{ "%.0f"|format(metric.latency_ms) }} мс</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-10 text-center">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Метрик пока нет. Установи агент мониторинга — данные появятся через минуту.</p>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

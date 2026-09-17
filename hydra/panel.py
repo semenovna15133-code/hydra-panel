@@ -538,7 +538,7 @@ async def servers_list(request: Request, error: Optional[str] = None, deleted: O
 
 
 @app.get("/servers/{server_id}", response_class=HTMLResponse)
-async def server_detail(request: Request, server_id: str):
+async def server_detail(request: Request, server_id: str, msg: Optional[str] = None):
     """Server detail page."""
     server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
     if not server:
@@ -562,7 +562,7 @@ async def server_detail(request: Request, server_id: str):
     return templates.TemplateResponse(
         request=request,
         name="pages/server_detail.html",
-        context={"server": server, "protocols": protocols, "metrics": metrics}
+        context={"server": server, "protocols": protocols, "metrics": metrics, "msg": msg}
     )
 
 
@@ -711,3 +711,37 @@ async def revoke_key_ui(key_id: str):
     
     from fastapi.responses import RedirectResponse
     return RedirectResponse(url="/keys", status_code=303)
+
+
+@app.post("/servers/{server_id}/install-protocols")
+async def install_protocols_form(server_id: str):
+    """Install all protocols from web UI (idempotent)."""
+    from urllib.parse import quote
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        return RedirectResponse("/servers?error=Server+not+found", status_code=303)
+    try:
+        results = await manager.install_all_protocols(server_id)
+        res = results.get("results", {})
+        ok = all(r.get("success") for r in res.values())
+        msg = "protocols_ok" if ok else "protocols_partial"
+    except Exception as e:
+        msg = quote("Ошибка установки: " + str(e))
+    return RedirectResponse(f"/servers/{server_id}?msg={msg}", status_code=303)
+
+
+@app.post("/servers/{server_id}/install-agent")
+async def install_agent_form(request: Request, server_id: str):
+    """Install monitoring agent from web UI (idempotent)."""
+    from urllib.parse import quote
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        return RedirectResponse("/servers?error=Server+not+found", status_code=303)
+    try:
+        panel_url = str(request.base_url).rstrip("/")
+        result = await manager.install_agent(server_id=server_id, panel_url=panel_url)
+        status = result.get("status", "unknown")
+        msg = {"success": "agent_ok", "already_installed": "agent_exists"}.get(status, quote("Агент: " + status))
+    except Exception as e:
+        msg = quote("Ошибка агента: " + str(e))
+    return RedirectResponse(f"/servers/{server_id}?msg={msg}", status_code=303)
