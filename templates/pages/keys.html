@@ -1,107 +1,52 @@
 {% extends "base.html" %}
 
 {% block title %}Ключи доступа — Hydra Panel{% endblock %}
-{% block page_title %}Ключи доступа{% endblock %}
 
 {% block content %}
-<div x-data="{ openCreate: false, openRevoke: false, revokeKeyId: '' }">
-    <div class="sm:flex sm:items-center">
-        <div class="sm:flex-auto">
-            <h1 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Ключи доступа</h1>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Универсальные ключи доступа для аутентификации клиентов.</p>
-        </div>
-        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <button type="button" @click="openCreate = true" class="block rounded-md bg-primary-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-500 transition-colors">
-                Создать ключ
-            </button>
-        </div>
+<div>
+    <div class="fade-up">
+        <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Ключи доступа</h2>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Универсальные ключи для аутентификации клиентов</p>
     </div>
 
-    <div x-show="openCreate" x-cloak class="relative z-10" role="dialog">
-        <div class="fixed inset-0 bg-gray-900/70" @click="openCreate = false"></div>
-        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div class="flex min-h-full items-center justify-center p-4">
-                <div class="relative w-full max-w-lg rounded-lg bg-white dark:bg-gray-800 px-4 pb-4 pt-5 shadow-xl sm:p-6 ring-1 ring-gray-200 dark:ring-gray-700">
-                    <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Создать ключ доступа</h3>
-                    <form method="post" action="/api/v1/keys/create" class="mt-5 space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Срок действия (дней)</label>
-                            <input type="number" name="days_valid" value="30" min="1" max="365" required class="mt-1 block w-full rounded-md border-0 py-1.5 px-3 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-primary-500 sm:text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Максимум устройств</label>
-                            <input type="number" name="max_devices" value="3" min="1" max="10" required class="mt-1 block w-full rounded-md border-0 py-1.5 px-3 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-primary-500 sm:text-sm">
-                        </div>
-                        <div class="mt-5 flex justify-end gap-3">
-                            <button type="button" @click="openCreate = false" class="rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">Отмена</button>
-                            <button type="submit" class="rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500">Создать</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div x-show="openRevoke" x-cloak class="relative z-10" role="dialog">
-        <div class="fixed inset-0 bg-gray-900/70" @click="openRevoke = false"></div>
-        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div class="flex min-h-full items-center justify-center p-4">
-                <div class="relative w-full max-w-md rounded-lg bg-white dark:bg-gray-800 px-4 pb-4 pt-5 shadow-xl sm:p-6 ring-1 ring-gray-200 dark:ring-gray-700">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 sm:mx-0 sm:h-10 sm:w-10">
-                            <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                            </svg>
-                        </div>
-                        <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Отозвать ключ</h3>
-                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Ключ <span class="font-mono text-xs break-all" x-text="revokeKeyId"></span> будет отозван. Все устройства потеряют доступ.</p>
-                        </div>
-                    </div>
-                    <form method="post" :action="'/api/v1/keys/' + revokeKeyId + '/revoke'">
-                        <div class="mt-5 flex justify-end gap-3">
-                            <button type="button" @click="openRevoke = false" class="rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">Отмена</button>
-                            <button type="submit" class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500">Отозвать</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="mt-8">
-        {% if keys %}
-        <div class="hidden sm:block overflow-hidden bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700 sm:rounded-lg">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-900/50">
-                    <tr>
-                        <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 sm:pl-6">ID ключа</th>
-                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Устройств</th>
-                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Создан</th>
-                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Истекает</th>
-                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Статус</th>
-                        <th class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-gray-200">Действия</th>
+    {% if keys %}
+    <!-- Desktop таблица -->
+    <div class="glass fade-up d2 mt-8 hidden overflow-hidden rounded-2xl sm:block">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200/60 dark:divide-white/5">
+                <thead>
+                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        <th class="py-3.5 pl-6 pr-3">ID ключа</th>
+                        <th class="px-3 py-3.5">Устройств</th>
+                        <th class="px-3 py-3.5">Создан</th>
+                        <th class="px-3 py-3.5">Истекает</th>
+                        <th class="px-3 py-3.5 pr-6">Статус</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                <tbody class="divide-y divide-slate-200/60 dark:divide-white/5">
                     {% for key in keys %}
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
-                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-6 font-mono">{{ key.key_id[:12] }}...</td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">{{ key.device_count }}</td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">{{ key.created_at }}</td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">{{ key.expires_at or 'Никогда' }}</td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm">
-                            {% if key.revoked_at %}
-                                <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900/30 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-400">Отозван</span>
-                            {% elif key.expires_at and key.expires_at < now %}
-                                <span class="inline-flex items-center rounded-md bg-yellow-50 dark:bg-yellow-900/30 px-2 py-1 text-xs font-medium text-yellow-700 dark:text-yellow-400">Истёк</span>
-                            {% else %}
-                                <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400">Активен</span>
-                            {% endif %}
+                    <tr class="transition-colors hover:bg-white/50 dark:hover:bg-white/[0.03]">
+                        <td class="whitespace-nowrap py-4 pl-6 pr-3 font-mono text-sm font-semibold text-slate-900 dark:text-white">{{ key.key_id[:14] }}…</td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500 dark:text-slate-400">
+                            <span class="inline-flex items-center rounded-full bg-white/60 dark:bg-white/5 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 ring-1 ring-inset ring-slate-300/60 dark:ring-white/10">
+                                {{ key.device_count }} / {{ key.max_devices }}
+                            </span>
                         </td>
-                        <td class="whitespace-nowrap px-3 py-4 text-right text-sm">
-                            {% if not key.revoked_at %}
-                            <button type="button" @click="openRevoke = true; revokeKeyId = '{{ key.key_id }}'" class="text-red-600 dark:text-red-400 hover:text-red-500">Отозвать</button>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500 dark:text-slate-400">{{ key.created_at[:16] }}</td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500 dark:text-slate-400">{{ key.expires_at[:16] if key.expires_at else 'Никогда' }}</td>
+                        <td class="whitespace-nowrap px-3 py-4 pr-6">
+                            {% if key.revoked_at %}
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-rose-500/10 px-2.5 py-1 text-xs font-semibold text-rose-600 dark:text-rose-400 ring-1 ring-inset ring-rose-500/30">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>Отозван
+                                </span>
+                            {% elif key.expires_at and key.expires_at < now %}
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-600 dark:text-amber-400 ring-1 ring-inset ring-amber-500/30">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>Истёк
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 ring-1 ring-inset ring-emerald-500/30">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Активен
+                                </span>
                             {% endif %}
                         </td>
                     </tr>
@@ -109,40 +54,49 @@
                 </tbody>
             </table>
         </div>
+    </div>
 
-        <ul role="list" class="sm:hidden space-y-3">
-            {% for key in keys %}
-            <li class="bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700 rounded-lg p-4">
-                <div class="flex items-center justify-between">
-                    <p class="font-mono text-sm text-gray-900 dark:text-white">{{ key.key_id[:12] }}...</p>
-                    {% if key.revoked_at %}
-                        <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900/30 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-400">Отозван</span>
-                    {% else %}
-                        <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400">Активен</span>
-                    {% endif %}
-                </div>
-                <dl class="mt-3 grid grid-cols-3 gap-2 text-xs">
-                    <div><dt class="text-gray-500 dark:text-gray-400">Устройств</dt><dd class="text-gray-900 dark:text-white font-semibold">{{ key.device_count }}</dd></div>
-                    <div><dt class="text-gray-500 dark:text-gray-400">Создан</dt><dd class="text-gray-900 dark:text-white">{{ key.created_at[:10] }}</dd></div>
-                    <div><dt class="text-gray-500 dark:text-gray-400">Истекает</dt><dd class="text-gray-900 dark:text-white">{{ (key.expires_at or 'Никогда')[:10] }}</dd></div>
-                </dl>
-                {% if not key.revoked_at %}
-                <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                    <button type="button" @click="openRevoke = true; revokeKeyId = '{{ key.key_id }}'" class="text-sm text-red-600 dark:text-red-400 font-medium">Отозвать ключ</button>
-                </div>
+    <!-- Mobile карточки -->
+    <ul class="fade-up d2 mt-6 space-y-3 sm:hidden">
+        {% for key in keys %}
+        <li class="glass rounded-2xl p-4">
+            <div class="flex items-start justify-between gap-3">
+                <p class="min-w-0 truncate font-mono text-sm font-semibold text-slate-900 dark:text-white">{{ key.key_id[:14] }}…</p>
+                {% if key.revoked_at %}
+                    <span class="shrink-0 rounded-full bg-rose-500/10 px-2.5 py-1 text-xs font-semibold text-rose-600 dark:text-rose-400 ring-1 ring-inset ring-rose-500/30">Отозван</span>
+                {% elif key.expires_at and key.expires_at < now %}
+                    <span class="shrink-0 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-600 dark:text-amber-400 ring-1 ring-inset ring-amber-500/30">Истёк</span>
+                {% else %}
+                    <span class="shrink-0 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 ring-1 ring-inset ring-emerald-500/30">Активен</span>
                 {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <div class="bg-white dark:bg-gray-800 shadow ring-1 ring-gray-200 dark:ring-gray-700 sm:rounded-lg p-12 text-center">
-            <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            </div>
+            <dl class="mt-3 grid grid-cols-3 gap-3 text-xs">
+                <div>
+                    <dt class="text-slate-500 dark:text-slate-400">Устройств</dt>
+                    <dd class="mt-0.5 font-semibold text-slate-900 dark:text-white">{{ key.device_count }} / {{ key.max_devices }}</dd>
+                </div>
+                <div>
+                    <dt class="text-slate-500 dark:text-slate-400">Создан</dt>
+                    <dd class="mt-0.5 font-medium text-slate-900 dark:text-white">{{ key.created_at[:10] }}</dd>
+                </div>
+                <div>
+                    <dt class="text-slate-500 dark:text-slate-400">Истекает</dt>
+                    <dd class="mt-0.5 font-medium text-slate-900 dark:text-white">{{ key.expires_at[:10] if key.expires_at else '—' }}</dd>
+                </div>
+            </dl>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="glass fade-up d2 mt-8 rounded-2xl p-12 text-center">
+        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-glow-sm">
+            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
             </svg>
-            <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Ключей доступа пока нет</p>
-            <button type="button" @click="openCreate = true" class="mt-4 rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500">Создать первый ключ</button>
         </div>
-        {% endif %}
+        <p class="mt-4 text-sm font-semibold text-slate-900 dark:text-white">Ключей пока нет</p>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Создай первый ключ доступа через API или кнопку создания</p>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
