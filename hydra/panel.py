@@ -960,3 +960,113 @@ async def server_logs(request: Request, server_id: str, source: str = "agent"):
             "sources": list(PROTOCOL_LOG_CMDS.keys()),
         },
     )
+
+
+@app.post("/api/v1/agent/batch")
+async def agent_batch(request: Request, authorization: str = Header(None)):
+    """Приём пакета метрик от агента: JSON-массив или NDJSON."""
+    import hashlib as _hashlib
+    import json as _json
+    from datetime import datetime as _dt
+
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing token")
+    token = authorization[7:]
+
+    server = await db.fetchone(
+        """SELECT s.id FROM servers s
+           JOIN agent_tokens t ON t.server_id = s.id
+           WHERE t.token_hash = ? AND (t.expires_at IS NULL OR t.expires_at > datetime('now'))""",
+        _hashlib.sha256(token.encode()).hexdigest(),
+    )
+    if not server:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    body = (await request.body()).decode("utf-8", errors="replace").strip()
+    if not body:
+        return {"status": "ok", "inserted": 0}
+
+    items = []
+    try:
+        parsed = _json.loads(body)
+        if isinstance(parsed, list):
+            items = parsed
+        elif isinstance(parsed, dict):
+            items = [parsed]
+    except Exception:
+        # buffer.json = конкатенированные pretty JSON объекты
+        decoder = _json.JSONDecoder()
+        idx, n = 0, len(body)
+        while idx < n:
+            while idx < n and body[idx] in " \t\r\n":
+                idx += 1
+            if idx >= n:
+                break
+            try:
+                obj, end_idx = decoder.raw_decode(body, idx)
+                if isinstance(obj, dict):
+                    items.append(obj)
+                elif isinstance(obj, list):
+                    items.extend(obj)
+                idx = end_idx
+            except ValueError:
+                idx += 1
+
+    inserted = 0
+    for m in items:
+        if not isinstance(m, dict):
+            continue
+        try:
+            await db.execute(
+                """INSERT OR IGNORE INTO metrics
+                   (server_id, timestamp,
+                    cpu_percent, memory_percent,
+                    network_rx_mbps, network_tx_mbps,
+                    connections_wdtt, connections_aivpn, connections_awg,
+                    status_wdtt, status_aivpn, status_awg,
+                    latency_ms)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                server["id"],
+                m.get("timestamp") or _dt.now().strftime("%Y-%m-%d %H:%M:%S"),
+                float(m.get("cpu_percent", 0) or 0),
+                float(m.get("memory_percent", 0) or 0),
+                float(m.get("network_rx_mbps", 0) or 0),
+                float(m.get("network_tx_mbps", 0) or 0),
+                int(m.get("connections_wdtt", 0) or 0),
+                int(m.get("connections_aivpn", 0) or 0),
+                int(m.get("connections_awg", 0) or 0),
+                str(m.get("status_wdtt") or "unknown"),
+                str(m.get("status_aivpn") or "unknown"),
+                str(m.get("status_awg") or "unknown"),
+                float(m.get("latency_ms", 0) or 0),
+            )
+            inserted += 1
+        except Exception as e:
+            continue
+
+    await db.commit()
+    return {"status": "ok", "inserted": inserted, "parsed": len(items)}
+    inserted = 0
+    for m in items:
+        if not isinstance(m, dict):
+            continue
+        try:
+            await db.execute(
+                """INSERT OR IGNORE INTO metrics
+                   (server_id, timestamp, cpu_percent, memory_percent,
+                    network_rx_mbps, network_tx_mbps, latency_ms)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                server["id"],
+                m.get("timestamp") or _dt.now().strftime("%Y-%m-%d %H:%M:%S"),
+                float(m.get("cpu_percent", 0) or 0),
+                float(m.get("memory_percent", 0) or 0),
+                float(m.get("network_rx_mbps", 0) or 0),
+                float(m.get("network_tx_mbps", 0) or 0),
+                float(m.get("latency_ms", 0) or 0),
+            )
+            inserted += 1
+        except Exception:
+            continue
+
+    await db.commit()
+    return {"status": "ok", "inserted": inserted}
