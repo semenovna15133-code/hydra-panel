@@ -744,6 +744,16 @@ async def install_agent_form(request: Request, server_id: str):
         panel_url = str(request.base_url).rstrip("/")
         result = await manager.install_agent(server_id=server_id, panel_url=panel_url)
         status = result.get("status", "unknown")
+        if status in ("success", "already_installed"):
+            # Синхронизируем флаг с реальным состоянием на сервере
+            await db.execute("UPDATE servers SET agent_installed = 1 WHERE id = ?", server_id)
+            await db.commit()
+            # Взятие под управление: выставляем часовой пояс панели
+            try:
+                async with SSHTransport(server["ip"], key_path=manager.ssh_key_path) as ssh:
+                    await ssh.run(f"timedatectl set-timezone {PANEL_TIMEZONE}")
+            except Exception:
+                pass
         msg = {"success": "agent_ok", "already_installed": "agent_exists"}.get(status, quote("Агент: " + status))
     except Exception as e:
         msg = quote("Ошибка агента: " + str(e))
@@ -876,8 +886,8 @@ PROTOCOL_RESTART_CMDS = {
 
 PROTOCOL_LOG_CMDS = {
     "agent": '{ echo "=== hydra-agent.log (last 200) ==="; tail -200 /var/log/hydra-agent.log 2>/dev/null; echo; echo "=== cron runs (hydra) ==="; journalctl -n 300 --no-pager 2>/dev/null | grep -i hydra | tail -20; echo; echo "=== buffer status ==="; ls -la /var/lib/hydra-agent/ 2>/dev/null; wc -l /var/lib/hydra-agent/buffer.ndjson 2>/dev/null; }',
-    "wdtt": "journalctl -u wdtt -n 200 --no-pager",
-    "aivpn": "journalctl -u aivpn-server -n 200 --no-pager",
+    "wdtt": '{ echo "=== События (подключения/ошибки, без [СТАТ]) ==="; journalctl -u wdtt -n 3000 --no-pager -q | grep -v "\[СТАТ\]" | tail -80; echo; echo "=== Свежая статистика (последние 10) ==="; journalctl -u wdtt -n 40 --no-pager -q | grep "\[СТАТ\]" | tail -10; }',
+    "aivpn": '{ echo "=== События (без DEBUG) ==="; journalctl -u aivpn-server -n 400 --no-pager -q | grep -v " DEBUG " | tail -100; }',
     "awg": '{ awg show awg0 2>/dev/null; echo; echo "=== dmesg (awg0) ==="; dmesg | grep awg0 | tail -100; }',
 }
 
@@ -1070,3 +1080,79 @@ async def agent_batch(request: Request, authorization: str = Header(None)):
 
     await db.commit()
     return {"status": "ok", "inserted": inserted}
+
+
+# === Timezone management ===
+
+PANEL_TIMEZONE = "Europe/Moscow"
+
+
+@app.post("/servers/{server_id}/sync-time")
+async def sync_time_form(server_id: str):
+    """Выставить часовой пояс панели на сервере."""
+    from urllib.parse import quote
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        return RedirectResponse("/servers?error=Server+not+found", status_code=303)
+    try:
+        async with SSHTransport(server["ip"], key_path=manager.ssh_key_path) as ssh:
+            result = await ssh.run(f"timedatectl set-timezone {PANEL_TIMEZONE} && date")
+        if result.exit_code == 0:
+            msg = "time_synced"
+        else:
+            msg = quote("Ошибка времени: " + (result.stderr or result.stdout)[:200])
+    except Exception as e:
+        msg = quote("SSH ошибка: " + str(e))
+    return RedirectResponse(f"/servers/{server_id}?msg={msg}", status_code=303)
+
+
+# === Protocol configs viewer (read-only) ===
+
+CONFIG_DIRS = {
+    "wdtt": "/etc/wdtt",
+    "aivpn": "/etc/aivpn",
+    "awg": "/etc/wireguard /etc/amnezia-wg",
+}
+
+
+@app.get("/servers/{server_id}/configs", response_class=HTMLResponse)
+async def server_configs(request: Request, server_id: str, source: str = "wdtt"):
+    """Просмотр конфигов протокола на сервере (read-only)."""
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        raise HTTPException(status_code=404, detail="Server not found")
+    
+    dirs = CONFIG_DIRS.get(source, "/etc/wdtt").split()
+    listing = ""
+    files = {}
+    error = None
+    
+    try:
+        async with SSHTransport(server["ip"], key_path=manager.ssh_key_path) as ssh:
+            for d in dirs:
+                ls = await ssh.run(f"ls -la {d} 2>/dev/null")
+                if ls.stdout.strip():
+                    listing += f"=== {d} ===\n{ls.stdout}\n"
+                    names = await ssh.run(
+                        f"find {d} -maxdepth 1 -type f -size -64k 2>/dev/null"
+                    )
+                    for path in (names.stdout or "").split():
+                        cat = await ssh.run(f"cat '{path}' 2>/dev/null")
+                        files[path] = cat.stdout or "(пусто или бинарный)"
+            if not listing:
+                listing = "(каталоги конфигов не найдены)"
+    except Exception as e:
+        error = str(e)
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/server_configs.html",
+        context={
+            "server": server,
+            "source": source,
+            "sources": ["wdtt", "aivpn", "awg"],
+            "listing": listing,
+            "files": files,
+            "error": error,
+        },
+    )

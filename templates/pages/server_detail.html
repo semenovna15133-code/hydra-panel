@@ -3,7 +3,7 @@
 {% block title %}{{ server.id }} — Hydra Panel{% endblock %}
 
 {% block content %}
-<div x-data="{ busy: false, openReboot: false }" class="space-y-8">
+<div x-data="{ busy: false, openReboot: false, showAll: false }" class="space-y-8">
 
     <!-- Модалка подтверждения перезагрузки -->
     <div x-show="openReboot" x-cloak class="relative z-50">
@@ -43,13 +43,13 @@
     <!-- Баннер результата -->
     {% if msg %}
     <div class="fade-up flex items-start gap-3 rounded-xl border p-4 backdrop-blur
-                {% if msg in ['protocols_ok', 'agent_ok', 'agent_exists', 'reboot_started', 'token_rotated'] or msg.startswith('service_restarted') %}border-emerald-500/30 bg-emerald-500/10
+                {% if msg in ['protocols_ok', 'agent_ok', 'agent_exists', 'reboot_started', 'token_rotated', 'time_synced'] or msg.startswith('service_restarted') %}border-emerald-500/30 bg-emerald-500/10
                 {% elif msg == 'protocols_partial' %}border-amber-500/30 bg-amber-500/10
                 {% else %}border-rose-500/30 bg-rose-500/10{% endif %}">
-        {% if msg in ['protocols_ok', 'agent_ok', 'agent_exists', 'reboot_started', 'token_rotated'] or msg.startswith('service_restarted') %}
+        {% if msg in ['protocols_ok', 'agent_ok', 'agent_exists', 'reboot_started', 'token_rotated', 'time_synced'] or msg.startswith('service_restarted') %}
             <svg class="h-5 w-5 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             <p class="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                {% if msg == 'protocols_ok' %}Все протоколы установлены и зарегистрированы{% elif msg == 'agent_ok' %}Агент мониторинга установлен и запущен{% elif msg == 'agent_exists' %}Агент мониторинга уже установлен{% elif msg == 'reboot_started' %}Перезагрузка инициирована — сервер вернётся в строй через 1-2 минуты{% elif msg == 'token_rotated' %}Токен агента ротирован — агент получит новый при следующем heartbeat{% elif msg.startswith('service_restarted') %}Сервис {{ msg.replace('service_restarted_', '') }} перезапущен{% else %}Операция выполнена{% endif %}
+                {% if msg == 'protocols_ok' %}Все протоколы установлены и зарегистрированы{% elif msg == 'agent_ok' %}Агент мониторинга установлен и запущен{% elif msg == 'agent_exists' %}Агент мониторинга уже установлен{% elif msg == 'reboot_started' %}Перезагрузка инициирована — сервер вернётся в строй через 1-2 минуты{% elif msg == 'token_rotated' %}Токен агента ротирован — агент получит новый при следующем heartbeat{% elif msg.startswith('service_restarted') %}Сервис {{ msg.replace('service_restarted_', '') }} перезапущен{% elif msg == 'time_synced' %}Часовой пояс сервера установлен: Europe/Moscow (московское время){% else %}Операция выполнена{% endif %}
             </p>
         {% elif msg == 'protocols_partial' %}
             <svg class="h-5 w-5 shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
@@ -96,6 +96,18 @@
                     <span x-text="busy ? 'Установка агента…' : 'Установить агент'"></span>
                 </button>
             </form>
+            <form method="post" action="/servers/{{ server.id }}/sync-time">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 rounded-xl glass-soft px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 ring-1 ring-inset ring-slate-300/60 dark:ring-white/10 hover:bg-white/60 dark:hover:bg-white/5 active:scale-95 transition-all">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Время: МСК
+                </button>
+            </form>
+            <a href="/servers/{{ server.id }}/configs"
+               class="inline-flex items-center gap-2 rounded-xl glass-soft px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 ring-1 ring-inset ring-slate-300/60 dark:ring-white/10 hover:bg-white/60 dark:hover:bg-white/5 active:scale-95 transition-all">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg>
+                Конфиги
+            </a>
             <a href="/servers/{{ server.id }}/logs"
                class="inline-flex items-center gap-2 rounded-xl glass-soft px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 ring-1 ring-inset ring-slate-300/60 dark:ring-white/10 hover:bg-white/60 dark:hover:bg-white/5 active:scale-95 transition-all">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
@@ -213,7 +225,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-200/60 dark:divide-white/5">
                     {% for metric in metrics %}
-                    <tr class="transition-colors hover:bg-white/50 dark:hover:bg-white/[0.03]">
+                    <tr x-show="showAll || {{ loop.index }} <= 15" class="transition-colors hover:bg-white/50 dark:hover:bg-white/[0.03]">
                         <td class="whitespace-nowrap py-3 pl-6 pr-3 font-mono text-xs text-slate-500 dark:text-slate-400">{{ metric.timestamp }}</td>
                         <td class="whitespace-nowrap px-3 py-3">
                             <div class="flex items-center gap-2">
@@ -238,6 +250,14 @@
                 </tbody>
             </table>
         </div>
+        {% if metrics|length > 15 %}
+        <div class="border-t border-slate-200/60 dark:border-white/5 px-6 py-3 text-center">
+            <button type="button" @click="showAll = !showAll"
+                    class="text-sm font-semibold text-indigo-500 hover:text-indigo-400 transition-colors">
+                <span x-text="showAll ? 'Свернуть до 15 строк' : 'Показать все {{ metrics|length }} строк'"></span>
+            </button>
+        </div>
+        {% endif %}
         {% else %}
         <div class="p-10 text-center">
             <p class="text-sm text-slate-500 dark:text-slate-400">Метрик пока нет. Установи агент мониторинга — данные появятся через минуту.</p>
