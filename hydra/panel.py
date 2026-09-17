@@ -862,3 +862,101 @@ async def delete_client_form(key_id: str = Form(...), device_id: str = Form(...)
     )
     await db.commit()
     return RedirectResponse("/clients?msg=client_deleted", status_code=303)
+
+
+# === SSH operations (web UI) ===
+
+from .ssh import SSHTransport
+
+PROTOCOL_RESTART_CMDS = {
+    "wdtt": "systemctl restart wdtt",
+    "aivpn": "systemctl restart aivpn-server",
+    "awg": "awg-quick down awg0 && awg-quick up awg0",
+}
+
+PROTOCOL_LOG_CMDS = {
+    "agent": '{ echo "=== hydra-agent.log (last 200) ==="; tail -200 /var/log/hydra-agent.log 2>/dev/null; echo; echo "=== cron runs (hydra) ==="; journalctl -n 300 --no-pager 2>/dev/null | grep -i hydra | tail -20; echo; echo "=== buffer status ==="; ls -la /var/lib/hydra-agent/ 2>/dev/null; wc -l /var/lib/hydra-agent/buffer.ndjson 2>/dev/null; }',
+    "wdtt": "journalctl -u wdtt -n 200 --no-pager",
+    "aivpn": "journalctl -u aivpn-server -n 200 --no-pager",
+    "awg": '{ awg show awg0 2>/dev/null; echo; echo "=== dmesg (awg0) ==="; dmesg | grep awg0 | tail -100; }',
+}
+
+
+@app.post("/servers/{server_id}/reboot")
+async def reboot_server_form(server_id: str):
+    """Перезагрузка VPS через SSH (с задержкой для корректного закрытия сессии)."""
+    from urllib.parse import quote
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        return RedirectResponse("/servers?error=Server+not+found", status_code=303)
+    try:
+        async with SSHTransport(server["ip"], key_path=manager.ssh_key_path) as ssh:
+            await ssh.run("nohup sh -c 'sleep 2 && reboot' >/dev/null 2>&1 &")
+        msg = "reboot_started"
+    except Exception as e:
+        msg = quote("Ошибка перезагрузки: " + str(e))
+    return RedirectResponse(f"/servers/{server_id}?msg={msg}", status_code=303)
+
+
+@app.post("/servers/{server_id}/restart-service")
+async def restart_service_form(server_id: str, protocol: str = Form(...)):
+    """Перезапуск сервиса протокола на сервере."""
+    from urllib.parse import quote
+    cmd = PROTOCOL_RESTART_CMDS.get(protocol)
+    if not cmd:
+        return RedirectResponse(f"/servers/{server_id}?msg=unknown_protocol", status_code=303)
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        return RedirectResponse("/servers?error=Server+not+found", status_code=303)
+    try:
+        async with SSHTransport(server["ip"], key_path=manager.ssh_key_path) as ssh:
+            result = await ssh.run(cmd)
+        if result.exit_code == 0:
+            msg = f"service_restarted_{protocol}"
+        else:
+            msg = quote(f"Сервис ответил ошибкой: {(result.stderr or result.stdout)[:200]}")
+    except Exception as e:
+        msg = quote("SSH ошибка: " + str(e))
+    return RedirectResponse(f"/servers/{server_id}?msg={msg}", status_code=303)
+
+
+@app.post("/servers/{server_id}/rotate-token")
+async def rotate_token_form(server_id: str):
+    """Ротация токена агента (старый в grace-периоде, агент получит новый по X-New-Token)."""
+    from urllib.parse import quote
+    try:
+        await manager.generate_agent_token(server_id)
+        msg = "token_rotated"
+    except Exception as e:
+        msg = quote("Ошибка ротации: " + str(e))
+    return RedirectResponse(f"/servers/{server_id}?msg={msg}", status_code=303)
+
+
+@app.get("/servers/{server_id}/logs", response_class=HTMLResponse)
+async def server_logs(request: Request, server_id: str, source: str = "agent"):
+    """Страница логов сервера (SSH tail/journalctl)."""
+    server = await db.fetchone("SELECT * FROM servers WHERE id = ?", server_id)
+    if not server:
+        raise HTTPException(status_code=404, detail="Server not found")
+    
+    cmd = PROTOCOL_LOG_CMDS.get(source, PROTOCOL_LOG_CMDS["agent"])
+    logs = ""
+    error = None
+    try:
+        async with SSHTransport(server["ip"], key_path=manager.ssh_key_path) as ssh:
+            result = await ssh.run(cmd)
+        logs = result.stdout or result.stderr or "(пусто)"
+    except Exception as e:
+        error = str(e)
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/server_logs.html",
+        context={
+            "server": server,
+            "source": source,
+            "logs": logs,
+            "error": error,
+            "sources": list(PROTOCOL_LOG_CMDS.keys()),
+        },
+    )
