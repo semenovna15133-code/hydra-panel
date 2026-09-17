@@ -1363,7 +1363,7 @@ async def database_backup():
 
 # === Hydra Auth v1 ===
 
-from .core import auth
+from .core import auth, secrets
 
 AUTH_PUBLIC_PATHS = {"/login", "/setup", "/favicon.ico"}
 AUTH_PUBLIC_PREFIXES = ("/api/v1/agent/", "/api/v1/client/", "/static")
@@ -1372,6 +1372,7 @@ AUTH_PUBLIC_PREFIXES = ("/api/v1/agent/", "/api/v1/client/", "/static")
 @app.on_event("startup")
 async def _init_auth_tables():
     await auth.ensure_tables(db)
+    await secrets.ensure_table(db)
 
 
 @app.middleware("http")
@@ -1904,15 +1905,15 @@ async def _backup_worker():
     import asyncio as _aio
     while True:
         try:
-            cfg = _backup_cfg()
             today = datetime.now().strftime("%Y-%m-%d")
             has_today = any(b["auto"] and b["mtime"].startswith(today) for b in backups.list_backups())
             if not has_today:
+                repo, token, meta = await _get_github_creds()
                 name = backups.create_backup(DB_FILE_PATH)
-                backups.rotate(int(cfg.get("keep", 3)))
-                if cfg.get("github_repo") and cfg.get("github_token"):
+                backups.rotate(int((meta or {}).get("keep", 3)))
+                if repo and token:
                     try:
-                        backups.push_github(cfg["github_repo"], cfg["github_token"], name)
+                        backups.push_github(repo, token, name)
                     except Exception:
                         pass
         except Exception:
@@ -2011,3 +2012,100 @@ async def backup_file(name: str):
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="Not found")
     return FileResponse(path, media_type="application/octet-stream", filename=name)
+
+
+# === Backup settings wizard (GitHub offsite) ===
+
+async def _get_github_creds():
+    """Читает GitHub credentials: secrets (зашифровано) -> env fallback."""
+    token, meta = await secrets.get_secret(db, "github")
+    if token and meta and meta.get("repo"):
+        return meta["repo"], token, meta
+    repo = os.environ.get("HYDRA_GH_REPO")
+    tok = os.environ.get("HYDRA_GH_TOKEN")
+    if repo and tok:
+        return repo, tok, {"source": "env"}
+    return None, None, {}
+
+
+def _github_ping(repo: str, token: str):
+    """Проверка доступа к репо без создания файлов."""
+    import json
+    import urllib.request
+    import urllib.error
+    req = urllib.request.Request(
+        f"https://api.github.com/repos/{repo}",
+        headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "User-Agent": "hydra-panel"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            data = json.loads(r.read())
+            perms = data.get("permissions", {})
+            if not perms.get("push"):
+                return False, "нет права push (нужно Contents: Read and write)"
+            return True, f"доступ ok, приватность: {'private' if data.get('private') else 'PUBLIC!'}"
+    except urllib.error.HTTPError as e:
+        return False, f"HTTP {e.code}: {'токен невалиден' if e.code == 401 else 'репо не найдено или нет доступа' if e.code == 404 else e.reason}"
+    except Exception as e:
+        return False, f"сеть: {str(e)[:80]}"
+
+
+@app.get("/settings/backup", response_class=HTMLResponse)
+async def settings_backup_page(request: Request, msg: Optional[str] = None):
+    repo, token, meta = await _get_github_creds()
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/settings_backup.html",
+        context={
+            "msg": msg,
+            "configured": bool(repo and token),
+            "repo": repo or "",
+            "meta": meta,
+            "source": meta.get("source", "secrets") if meta else "secrets",
+            "fingerprint": secrets.master_fingerprint(),
+        },
+    )
+
+
+@app.post("/settings/backup/test")
+async def settings_backup_test(repo: str = Form(...), token: str = Form(...)):
+    from urllib.parse import quote
+    ok, detail = _github_ping(repo.strip(), token.strip())
+    msg = quote(f"Проверка: {detail}") if ok else quote(f"Ошибка: {detail}")
+    return RedirectResponse(f"/settings/backup?msg={msg}", status_code=303)
+
+
+@app.post("/settings/backup/save")
+async def settings_backup_save(repo: str = Form(...), token: str = Form(...), keep: int = Form(3)):
+    from urllib.parse import quote
+    repo = repo.strip()
+    token = token.strip()
+    ok, detail = _github_ping(repo, token)
+    if not ok:
+        return RedirectResponse("/settings/backup?msg=" + quote(f"Не сохранено: {detail}"), status_code=303)
+    await secrets.set_secret(db, "github", token, {"repo": repo, "keep": keep, "saved_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+    return RedirectResponse("/settings/backup?msg=" + quote(f"Сохранено зашифрованно. {detail}"), status_code=303)
+
+
+@app.post("/settings/backup/push-now")
+async def settings_backup_push_now():
+    from urllib.parse import quote
+    repo, token, meta = await _get_github_creds()
+    if not repo or not token:
+        return RedirectResponse("/settings/backup?msg=" + quote("Сначала сохрани credentials"), status_code=303)
+    name = backups.create_backup(DB_FILE_PATH)
+    keep = int((meta or {}).get("keep", 3))
+    backups.rotate(keep)
+    try:
+        res = backups.push_github(repo, token, name)
+        msg = quote(f"{name} -> GitHub: {'ok' if res.get('ok') else res.get('error')}")
+    except Exception as e:
+        msg = quote(f"{name} -> ошибка: {str(e)[:80]}")
+    return RedirectResponse(f"/settings/backup?msg={msg}", status_code=303)
+
+
+@app.post("/settings/backup/delete")
+async def settings_backup_delete():
+    from urllib.parse import quote
+    await secrets.delete_secret(db, "github")
+    return RedirectResponse("/settings/backup?msg=" + quote("GitHub credentials удалены из панели (env fallback останется, если задан)"), status_code=303)
