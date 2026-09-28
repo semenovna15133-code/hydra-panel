@@ -1,0 +1,708 @@
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/data/api/ApiClient.kt:10:18 Unresolved reference: converter
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/data/api/ApiClient.kt:66:39 Unresolved reference: asConverterFactory
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/data/repo/PanelRepository.kt:43:41 Unresolved reference: isRedirect
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/data/repo/PanelRepository.kt:106:42 Unresolved reference: string
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/data/repo/PanelRepository.kt:107:22 Overload resolution ambiguity: 
+public inline operator fun <T : Any, R : ClosedRange<TypeVariable(T)>> TypeVariable(R).contains(element: TypeVariable(T)?): Boolean where R : Iterable<TypeVariable(T)> defined in kotlin.ranges
+public inline operator fun <T : Any, R : OpenEndRange<TypeVariable(T)>> TypeVariable(R).contains(element: TypeVariable(T)?): Boolean where R : Iterable<TypeVariable(T)> defined in kotlin.ranges
+public operator fun <T> Array<out TypeVariable(T)>.contains(element: TypeVariable(T)): Boolean defined in kotlin.collections
+public operator fun CharArray.contains(element: Char): Boolean defined in kotlin.collections
+public operator fun CharSequence.contains(char: Char, ignoreCase: Boolean = ...): Boolean defined in kotlin.text
+public operator fun <T> Iterable<TypeVariable(T)>.contains(element: TypeVariable(T)): Boolean defined in kotlin.collections
+public inline operator fun <K, V> Map<out TypeVariable(K), TypeVariable(V)>.contains(key: TypeVariable(K)): Boolean defined in kotlin.collections
+public inline operator fun CharRange.contains(element: Char?): Boolean defined in kotlin.ranges
+public operator fun <T> Sequence<TypeVariable(T)>.contains(element: TypeVariable(T)): Boolean defined in kotlin.sequences
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/data/repo/PanelRepository.kt:107:31 Too many characters in a character literal ''name="password"''
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/data/repo/PanelRepository.kt:433:13 Unresolved reference: isNull
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/components/Common.kt:143:30 Unresolved reference: launch
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/components/Common.kt:145:31 Suspend function 'invoke' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/components/Common.kt:217:31 Unresolved reference: CoroutineScope
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/components/Common.kt:220:40 Suspend function 'invoke' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/components/Common.kt:222:36 Suspend function 'showSnackbar' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/components/Common.kt:223:36 Suspend function 'showSnackbar' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:4:1 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:4:9 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:4:10 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:4:17 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:4:18 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:4:28 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:4:29 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:4:35 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:4:36 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:4:37 imports are only allowed in the beginning of file
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:27:60 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:53:9 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:53:25 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:54:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:55:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:58:56 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:60:26 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:61:28 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:68:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:68:41 Unresolved reference: PaddingValues
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:68:85 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:70:80 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:71:25 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:71:38 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:72:29 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:73:29 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:73:45 Unresolved reference: width
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:74:29 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:75:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:75:75 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:76:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:82:51 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:82:77 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:86:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:86:95 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:92:121 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:114:60 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:151:9 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:151:25 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:152:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:153:26 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:154:18 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:154:46 Unresolved reference: PaddingValues
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:154:90 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:157:39 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:158:29 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:158:45 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:159:33 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:160:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:161:37 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:161:53 Unresolved reference: width
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:162:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:162:79 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:165:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:168:55 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:168:81 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:172:37 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:172:53 Unresolved reference: height
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:172:68 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:172:96 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:174:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:174:94 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:175:59 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:176:33 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:176:49 Unresolved reference: height
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:177:33 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:177:61 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:178:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:179:93 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:182:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:182:104 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:192:70 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:202:63 Suspend function 'downloadKeyConf' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:203:55 Suspend function 'showSnackbar' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:210:35 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:211:25 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:211:41 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:212:29 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:213:33 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:213:49 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:214:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:214:92 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:215:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:216:55 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:216:81 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:218:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:257:17 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:257:74 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:280:19 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:281:9 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:281:25 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:282:13 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:283:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:284:17 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:284:33 Unresolved reference: width
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:285:17 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:285:33 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:286:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:286:87 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:288:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:296:39 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:296:65 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:300:13 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:300:29 Unresolved reference: height
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:301:13 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:301:41 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:302:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:303:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:304:30 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:305:22 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:306:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:307:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:328:13 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:328:90 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:329:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:329:50 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:329:66 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:329:109 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:330:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:330:46 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:330:84 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:331:49 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:332:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:332:50 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:332:66 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:332:115 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:333:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:333:52 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:333:68 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:333:96 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:349:13 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:349:42 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:350:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:350:50 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:350:88 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:351:49 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:352:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:352:56 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:352:94 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:353:49 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:4:1 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:4:9 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:4:10 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:4:17 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:4:18 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:4:28 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:4:29 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:4:35 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:4:36 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:4:37 imports are only allowed in the beginning of file
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:28:60 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:49:85 Unresolved reference: parseIso
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:67:9 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:67:25 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:68:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:69:26 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:72:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:72:37 Unresolved reference: fillMaxSize
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:72:69 Unresolved reference: PaddingValues
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:72:113 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:74:25 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:74:53 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:75:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:75:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:75:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:76:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:76:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:76:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:80:25 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:80:53 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:81:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:81:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:81:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:82:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:82:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:83:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:90:84 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:91:29 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:91:42 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:92:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:93:33 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:93:49 Unresolved reference: width
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:94:33 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:95:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:95:70 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:96:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:97:55 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:97:81 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:99:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:99:111 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:100:59 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:105:77 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:4:1 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:4:9 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:4:10 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:4:17 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:4:18 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:4:28 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:4:29 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:4:45 imports are only allowed in the beginning of file
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:92:15 Unexpected tokens (use ';' to separate expressions on the same line)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:117:2 Expecting '}'
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:20:60 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:38:31 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:65:55 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:70:36 Unresolved reference: horizontalScroll
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:82:97 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:93:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:4:1 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:4:9 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:4:10 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:4:17 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:4:18 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:4:28 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:4:29 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:4:35 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:4:36 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:4:47 imports are only allowed in the beginning of file
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:50:60 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:83:41 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:97:39 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:107:51 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:4:1 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:4:9 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:4:10 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:4:17 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:4:18 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:4:28 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:4:29 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:4:35 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:4:36 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:4:37 imports are only allowed in the beginning of file
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:27:60 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:54:9 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:54:25 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:55:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:56:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:57:56 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:58:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:63:112 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:66:26 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:67:25 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:79:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:79:41 Unresolved reference: PaddingValues
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:79:85 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:80:85 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:84:35 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:85:25 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:85:41 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:86:29 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:87:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:88:33 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:88:49 Unresolved reference: width
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:89:33 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:89:49 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:90:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:91:63 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:92:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:93:55 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:93:81 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:96:29 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:96:45 Unresolved reference: height
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:97:29 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:97:57 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:98:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:100:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:102:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:104:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:106:71 Suspend function 'downloadKeyConf' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:107:63 Suspend function 'showSnackbar' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:123:17 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:124:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:4:1 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:4:9 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:4:10 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:4:17 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:4:18 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:4:28 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:4:29 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:4:35 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:4:36 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:4:47 imports are only allowed in the beginning of file
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:41:60 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:55:35 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:119:25 Try catch is not supported around composable function invocations.
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:127:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:127:81 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:4:1 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:4:9 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:4:10 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:4:17 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:4:18 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:4:28 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:4:29 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:4:35 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:4:36 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:4:37 imports are only allowed in the beginning of file
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:20:60 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:44:9 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:44:25 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:45:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:46:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:46:53 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:52:51 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:55:13 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:55:29 Unresolved reference: height
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:56:26 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:57:18 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:57:31 Unresolved reference: fillMaxSize
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:58:17 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:59:45 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:59:68 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:61:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:73:60 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:102:9 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:102:25 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:103:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:104:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:104:53 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:110:51 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:113:13 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:113:29 Unresolved reference: height
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:114:26 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:117:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:117:37 Unresolved reference: fillMaxSize
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:117:69 Unresolved reference: PaddingValues
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:118:43 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:122:43 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:123:33 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:123:49 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:123:87 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:124:69 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:125:37 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:125:53 Unresolved reference: height
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:126:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:126:101 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:136:43 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:137:33 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:137:49 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:138:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:139:37 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:139:53 Unresolved reference: height
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:140:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:140:91 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:149:39 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:150:29 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:150:45 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:151:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:151:86 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:167:67 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:168:55 Cannot find a parameter with this name: autoCorrectEnabled
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:187:17 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:187:94 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:188:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:189:39 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:189:65 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:191:25 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:192:29 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:192:46 Unresolved reference: width
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:192:82 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:193:29 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:195:72 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:4:1 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:4:9 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:4:10 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:4:17 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:4:18 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:4:28 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:4:29 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:4:35 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:4:36 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:4:37 imports are only allowed in the beginning of file
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:20:60 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:41:9 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:41:25 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:42:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:43:26 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:44:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:44:41 Unresolved reference: PaddingValues
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:44:85 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:46:21 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:46:49 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:47:25 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:47:38 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:48:29 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:48:86 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:55:87 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:69:19 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:70:9 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:70:25 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:71:13 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:72:17 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:72:33 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:73:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:74:47 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:75:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:76:39 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:76:65 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:78:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:81:17 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:81:33 Unresolved reference: height
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:83:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:86:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:86:65 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:86:91 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:88:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:88:86 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:89:43 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:4:1 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:4:9 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:4:10 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:4:17 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:4:18 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:4:28 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:4:29 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:4:35 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:4:36 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:4:37 imports are only allowed in the beginning of file
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:26:60 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:59:9 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:59:25 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:60:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:61:26 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:62:18 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:62:46 Unresolved reference: PaddingValues
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:62:90 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:65:39 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:66:29 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:66:42 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:67:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:68:33 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:68:49 Unresolved reference: width
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:69:33 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:69:49 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:70:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:70:94 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:71:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:72:55 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:72:81 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:81:39 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:82:29 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:82:45 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:84:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:84:122 The integer literal does not conform to the expected type Nothing
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:85:33 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:85:46 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:85:86 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:86:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:86:143 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:87:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:87:93 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:87:119 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:94:25 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:94:53 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:95:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:95:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:95:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:96:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:96:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:96:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:97:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:97:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:97:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:104:39 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:105:29 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:105:42 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:106:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:107:33 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:107:49 Unresolved reference: width
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:108:33 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:108:49 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:109:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:109:89 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:110:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:110:118 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:111:63 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:113:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:123:39 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:124:29 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:124:45 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:125:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:126:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:127:51 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:135:39 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:136:29 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:136:45 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:137:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:137:90 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:138:50 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:138:73 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:139:59 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:139:229 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:140:57 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:140:85 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:140:111 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:147:21 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:147:50 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:148:25 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:148:53 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:149:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:149:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:149:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:149:102 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:150:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:150:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:150:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:150:98 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:152:25 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:152:53 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:153:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:153:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:153:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:153:90 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:154:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:154:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:154:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:154:91 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:156:25 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:156:53 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:157:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:157:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:157:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:157:100 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:158:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:158:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:158:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:158:95 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:160:25 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:160:53 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:161:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:161:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:161:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:161:108 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:162:29 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:162:42 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:162:56 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:162:111 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:164:25 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:164:97 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:4:1 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:4:9 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:4:10 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:4:17 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:4:18 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:4:28 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:4:29 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:4:35 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:4:36 Expecting a top level declaration
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:4:37 imports are only allowed in the beginning of file
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:26:60 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:54:9 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:54:25 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:55:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:56:26 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:57:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:57:41 Unresolved reference: PaddingValues
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:57:85 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:61:39 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:62:29 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:62:45 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:63:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:63:91 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:64:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:64:70 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:71:69 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:72:25 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:72:41 Unresolved reference: padding
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:73:29 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:74:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:75:33 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:75:49 Unresolved reference: width
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:76:33 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:77:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:77:70 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:78:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:78:109 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:79:63 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:81:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:84:33 Unresolved reference: Spacer
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:84:49 Unresolved reference: height
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:85:33 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:91:51 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:128:13 Unresolved reference: Column
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:128:90 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:129:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:129:46 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:129:62 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:129:135 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:130:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:130:46 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:130:62 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:130:110 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:131:17 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:131:45 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:132:21 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:132:34 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:132:48 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:132:79 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:132:95 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:132:141 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:133:21 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:133:34 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:133:48 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:133:81 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:133:97 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:133:142 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:135:17 Unresolved reference: Row
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:135:45 Unresolved reference: Arrangement
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:136:21 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:136:34 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:136:48 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:136:77 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:136:115 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:136:168 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:137:21 Unresolved reference: Box
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:137:34 Unresolved reference: weight
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:137:48 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:137:81 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:137:119 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:137:167 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:139:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:139:50 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:139:66 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:139:163 Unresolved reference: fillMaxWidth
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:140:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:140:129 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:140:155 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:28:60 Composable calls are not allowed inside the calculation parameter of inline fun <T> remember(crossinline calculation: () -> TypeVariable(T)): TypeVariable(T)
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:74:13 None of the following functions can be called with the arguments supplied: 
+public fun Text(text: AnnotatedString, modifier: Modifier = ..., color: Color = ..., fontSize: TextUnit = ..., fontStyle: FontStyle? = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., letterSpacing: TextUnit = ..., textDecoration: TextDecoration? = ..., textAlign: TextAlign? = ..., lineHeight: TextUnit = ..., overflow: TextOverflow = ..., softWrap: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., inlineContent: Map<String, InlineTextContent> = ..., onTextLayout: (TextLayoutResult) -> Unit = ..., style: TextStyle = ...): Unit defined in androidx.compose.material3
+public fun Text(text: String, modifier: Modifier = ..., color: Color = ..., fontSize: TextUnit = ..., fontStyle: FontStyle? = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., letterSpacing: TextUnit = ..., textDecoration: TextDecoration? = ..., textAlign: TextAlign? = ..., lineHeight: TextUnit = ..., overflow: TextOverflow = ..., softWrap: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., onTextLayout: ((TextLayoutResult) -> Unit)? = ..., style: TextStyle = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:134:47 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:139:54 Suspend function 'downloadBackup' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:183:9 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:183:44 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:183:60 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:208:62 Mixing named and positioned arguments is not allowed
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:250:13 None of the following functions can be called with the arguments supplied: 
+public fun Text(text: AnnotatedString, modifier: Modifier = ..., color: Color = ..., fontSize: TextUnit = ..., fontStyle: FontStyle? = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., letterSpacing: TextUnit = ..., textDecoration: TextDecoration? = ..., textAlign: TextAlign? = ..., lineHeight: TextUnit = ..., overflow: TextOverflow = ..., softWrap: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., inlineContent: Map<String, InlineTextContent> = ..., onTextLayout: (TextLayoutResult) -> Unit = ..., style: TextStyle = ...): Unit defined in androidx.compose.material3
+public fun Text(text: String, modifier: Modifier = ..., color: Color = ..., fontSize: TextUnit = ..., fontStyle: FontStyle? = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., letterSpacing: TextUnit = ..., textDecoration: TextDecoration? = ..., textAlign: TextAlign? = ..., lineHeight: TextUnit = ..., overflow: TextOverflow = ..., softWrap: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., onTextLayout: ((TextLayoutResult) -> Unit)? = ..., style: TextStyle = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:262:47 Unresolved reference: sp
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:267:52 Suspend function 'revokeSession' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:269:46 Suspend function 'showSnackbar' should be called only from a coroutine or another suspend function
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 1m 18s

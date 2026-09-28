@@ -1,41 +1,7 @@
+# Logs and temp files
+*.log
 
-*$py.class
-backups/
+# Android/Gradle build artifacts
+.gradle/
 build/
-*.db
-develop-eggs/
-dist/
-downloads/
-.DS_Store
-*.egg
-*.egg-info/
-eggs/
-env/
-ENV/
-.env.local
-# IDE
-.idea/
-.installed.cfg
-keys/
-lib/
-lib64/
-# OS
-parts/
-# Project specific
-__pycache__/
-*.py[cod]
-# Python
-scripts/.cookies
-sdist/
-*.so
-*.sqlite
-*.sqlite3
-*.swo
-*.swp
-test_ssh_smoke.py
-Thumbs.db
-var/
-.venv/
-# Virtual environment
-.vscode/
-wheels/
+local.properties
