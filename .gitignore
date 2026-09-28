@@ -4,4 +4,7 @@
 # Android/Gradle build artifacts
 .gradle/
 build/
+local.propertieshydra-release.jks
+app/build/
+.gradle/
 local.properties

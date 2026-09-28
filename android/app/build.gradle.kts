@@ -16,10 +16,21 @@ android {
         vectorDrawables { useSupportLibrary = true }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("../hydra-release.jks")
+            storePassword = System.getenv("HYDRA_STORE_PASS") ?: "HydraPanel!2026"
+            keyAlias = "hydra"
+            keyPassword = System.getenv("HYDRA_KEY_PASS") ?: "HydraPanel!2026"
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false // Compose + kotlinx-serialization: keep rules не настраивались, отключаем R8 ради стабильности
+            isShrinkResources = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
