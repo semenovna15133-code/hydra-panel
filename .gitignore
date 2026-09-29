@@ -1,2 +1,18 @@
-#Compressed files
-*.zip
+# Android/Gradle Build Artifacts
+build/
+.gradle/
+*.class
+*.dex
+local.properties
+
+# IDE & Editor Files
+.idea/
+*.iml
+.vscode/
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+
+# Compressed Archives (specific to this project's accidental commit)
+apk-transfer.zip

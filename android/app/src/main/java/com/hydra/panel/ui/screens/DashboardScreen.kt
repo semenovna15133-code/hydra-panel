@@ -71,32 +71,35 @@ fun DashboardScreen(onOpenServer: (String) -> Unit, onRefreshSignal: Int = 0) {
             if (loading) LoadingBlock("Сводка панели…")
             val d = data
             if (d != null) {
-                LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    item { NeonHeader("Обзор инфраструктуры", "${d.servers.size} серверов · обновление вручную ⟳") }
                     item {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Box(Modifier.weight(1f)) { StatCard("Серверы", d.servers.size.toString()) }
-                            Box(Modifier.weight(1f)) { StatCard("Клиенты (conn.)", d.totalConnections.toString()) }
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Box(Modifier.weight(1f)) { HudStat("Серверы", d.servers.size.toString(), accent = MaterialTheme.colorScheme.primary) }
+                            Box(Modifier.weight(1f)) { HudStat("Онлайн", d.servers.count { it.status?.lowercase() in setOf("active","ok","up","running","healthy") }.toString(), accent = com.hydra.panel.ui.theme.StatusGreen) }
                         }
                     }
                     item {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Box(Modifier.weight(1f)) { StatCard("Активные ключи", d.activeKeys.toString()) }
-                            Box(Modifier.weight(1f)) { StatCard("Алерты", d.alertsCount.toString(), color = if (d.alertsCount > 0) statusColor("critical") else statusColor("active")) }
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Box(Modifier.weight(1f)) { HudStat("Активные ключи", d.activeKeys.toString(), accent = MaterialTheme.colorScheme.secondary) }
+                            Box(Modifier.weight(1f)) { HudStat("Подключения", d.totalConnections.toString(), accent = MaterialTheme.colorScheme.tertiary) }
                         }
                     }
+                    item { HudStat("Алерты", d.alertsCount.toString(), sub = if (d.alertsCount > 0) "требуют внимания" else "всё спокойно", accent = if (d.alertsCount > 0) com.hydra.panel.ui.theme.StatusRed else com.hydra.panel.ui.theme.StatusGreen) }
+                    item { NeonDivider() }
                     item { SectionTitle("Серверы") }
                     items(d.servers) { s ->
-                        ClickableCard(onClick = { onOpenServer(s.id) }, modifier = Modifier.fillMaxWidth()) {
-                            Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                                StatusDot(s.status)
-                                Spacer(Modifier.width(10.dp))
+                        GlassCard(onClick = { onOpenServer(s.id) }, glow = statusTint(s.status, 0.45f), modifier = Modifier.fillMaxWidth()) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                GlowStatusDot(s.status)
+                                Spacer(Modifier.width(12.dp))
                                 Column(Modifier.weight(1f)) {
-                                    Text(s.id, style = MaterialTheme.typography.titleSmall)
+                                    Text(s.id, style = MaterialTheme.typography.titleMedium)
                                     Text("${s.ip} · ${s.location ?: "—"}${if (s.city != null) ", ${s.city}" else ""}",
                                         fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
-                                Text(if (s.agentInstalled == true) "агент ✓" else "без агента", fontSize = 11.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                ChipBadge(if (s.agentInstalled == true) "AGENT" else "NO AGENT",
+                                    color = if (s.agentInstalled == true) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline)
                             }
                         }
                     }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.filled.Dashboard
@@ -16,6 +17,12 @@ import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -73,11 +80,16 @@ fun MainNav(onLoggedOut: () -> Unit) {
     val showBar = topLevel.any { it.route == currentRoute }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
-            if (showBar) NavigationBar {
+            if (showBar) NavigationBar(
+                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
+                tonalElevation = 0.dp,
+            ) {
                 topLevel.forEach { d ->
+                    val selected = currentRoute == d.route
                     NavigationBarItem(
-                        selected = currentRoute == d.route,
+                        selected = selected,
                         onClick = {
                             nav.navigate(d.route) {
                                 popUpTo(TopDest.Dashboard.route) { saveState = true }
@@ -85,8 +97,25 @@ fun MainNav(onLoggedOut: () -> Unit) {
                                 restoreState = true
                             }
                         },
-                        icon = { Icon(d.icon, contentDescription = d.label) },
-                        label = { Text(d.label) },
+                        icon = {
+                            Box(contentAlignment = Alignment.Center) {
+                                if (selected) {
+                                    Box(Modifier.size(44.dp).clip(CircleShape)
+                                        .background(Brush.radialGradient(listOf(
+                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.35f), Color.Transparent,
+                                        ))))
+                                }
+                                Icon(d.icon, contentDescription = d.label)
+                            }
+                        },
+                        label = { Text(d.label, style = MaterialTheme.typography.labelSmall) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            indicatorColor = Color.Transparent,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        ),
                     )
                 }
             }
@@ -148,21 +177,33 @@ private fun MoreScreen(nav: NavHostController, onLoggedOut: () -> Unit) {
         "SQL-консоль" to "database",
         "Настройки и бекапы" to "settings",
     )
-    Scaffold(topBar = { CenterAlignedTopAppBar(title = { Text("Ещё") }) }) { p ->
-        Column(Modifier.padding(p).fillMaxSize()) {
+    Scaffold(topBar = { TopAppBar(title = { Text("Ещё", style = MaterialTheme.typography.titleLarge) }) }) { p ->
+        Column(Modifier.padding(p).fillMaxSize().padding(horizontal = 12.dp)) {
+            com.hydra.panel.ui.components.NeonHeader("Разделы панели", "Отчёты, устройства, консоль и настройки")
+            Spacer(Modifier.height(14.dp))
             items.forEach { (label, route) ->
-                ListItem(
-                    headlineContent = { Text(label) },
-                    leadingContent = { Icon(Icons.Filled.ChevronRight, null) },
-                    modifier = Modifier.fillMaxWidth().clickableItem { nav.navigate(route) },
-                )
-                HorizontalDivider()
+                com.hydra.panel.ui.components.GlassCard(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
+                    onClick = { nav.navigate(route) },
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                ) {
+                    ListItem(
+                        headlineContent = { Text(label, style = MaterialTheme.typography.titleMedium) },
+                        trailingContent = { Icon(Icons.Filled.ChevronRight, null, tint = MaterialTheme.colorScheme.primary) },
+                    )
+                }
             }
-            ListItem(
-                headlineContent = { Text("Выйти", color = MaterialTheme.colorScheme.error) },
-                leadingContent = { Icon(Icons.Filled.Logout, null, tint = MaterialTheme.colorScheme.error) },
-                modifier = Modifier.fillMaxWidth().clickableItem(onLoggedOut),
-            )
+            com.hydra.panel.ui.components.GlassCard(
+                modifier = Modifier.fillMaxWidth(),
+                glow = MaterialTheme.colorScheme.error.copy(alpha = 0.5f),
+                onClick = onLoggedOut,
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+            ) {
+                ListItem(
+                    headlineContent = { Text("Выйти", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.titleMedium) },
+                    leadingContent = { Icon(Icons.Filled.Logout, null, tint = MaterialTheme.colorScheme.error) },
+                )
+            }
         }
     }
 }

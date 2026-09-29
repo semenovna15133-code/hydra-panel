@@ -59,10 +59,14 @@ fun ServersScreen(onOpenServer: (String) -> Unit) {
                 if (alerts.isNotEmpty()) {
                     item { SectionTitle("Активные алерты (${alerts.size})") }
                     items(alerts.take(6)) { al ->
-                        VCard(Modifier.fillMaxWidth(), containerColor = MaterialTheme.colorScheme.errorContainer) {
-                            Column(Modifier.padding(12.dp)) {
-                                Text("${al.serverId}: ${al.level}", style = MaterialTheme.typography.titleSmall)
-                                Text(al.message ?: "", fontSize = 12.sp)
+                        GlassCard(Modifier.fillMaxWidth(), glow = MaterialTheme.colorScheme.error.copy(alpha = 0.55f), contentPadding = PaddingValues(12.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                ChipBadge(al.level ?: "alert", color = MaterialTheme.colorScheme.error)
+                                Spacer(Modifier.width(8.dp))
+                                Column(Modifier.weight(1f)) {
+                                    Text(al.serverId ?: "", style = MaterialTheme.typography.titleSmall)
+                                    Text(al.message ?: "", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
                             }
                         }
                     }
@@ -72,32 +76,30 @@ fun ServersScreen(onOpenServer: (String) -> Unit) {
                     item { Text("Серверов пока нет — добавьте первый кнопкой ниже.", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(12.dp)) }
                 }
                 items(servers) { s ->
-                        ClickableCard(onClick = { onOpenServer(s.id) }, modifier = Modifier.fillMaxWidth()) {
-                            Column(Modifier.padding(14.dp)) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    StatusDot(s.status)
-                                    Spacer(Modifier.width(10.dp))
-                                    Column(Modifier.weight(1f)) {
-                                        Text(s.id, style = MaterialTheme.typography.titleSmall)
-                                        Text("${s.ip}:${s.sshPort ?: 22} · ${s.location ?: "—"}", fontSize = 12.sp,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                    }
-                                    OutlinedButton(onClick = { pendingDelete = s.id }) { Text("Удалить") }
-                                }
-                                forecasts[s.id]?.let { f ->
-                                    Spacer(Modifier.height(6.dp))
-                                    Text(
-                                        when (f.status) {
-                                            "ok" -> "Прогноз: запас по CPU, тренд ${Format.num(f.trendCpuPerDay)}%/день"
-                                            "critical" -> "⚠ Прогноз: критическая нагрузка через ~${f.daysUntilCritical} дн."
-                                            else -> "Прогноз: ${f.message ?: f.status ?: "—"}"
-                                        },
-                                        fontSize = 12.sp,
-                                        color = statusColor(if (f.status == "critical") "critical" else if (f.status == "warning") "warning" else "active"),
-                                    )
-                                }
+                    GlassCard(onClick = { onOpenServer(s.id) }, glow = statusTint(s.status, 0.5f), modifier = Modifier.fillMaxWidth()) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            GlowStatusDot(s.status)
+                            Spacer(Modifier.width(12.dp))
+                            Column(Modifier.weight(1f)) {
+                                Text(s.id, style = MaterialTheme.typography.titleMedium)
+                                Text("${s.ip}:${s.sshPort ?: 22} · ${s.location ?: "—"}", fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
+                            TextButton(onClick = { pendingDelete = s.id }) { Text("Удалить", color = MaterialTheme.colorScheme.error, fontSize = 12.sp) }
                         }
+                        forecasts[s.id]?.let { f ->
+                            Spacer(Modifier.height(6.dp))
+                            Text(
+                                when (f.status) {
+                                    "ok" -> "Прогноз: запас по CPU, тренд ${Format.num(f.trendCpuPerDay)}%/день"
+                                    "critical" -> "⚠ Прогноз: критическая нагрузка через ~${f.daysUntilCritical} дн."
+                                    else -> "Прогноз: ${f.message ?: f.status ?: "—"}"
+                                },
+                                fontSize = 12.sp,
+                                color = statusColor(if (f.status == "critical") "critical" else if (f.status == "warning") "warning" else "active"),
+                            )
+                        }
+                    }
                 }
             }
         }
