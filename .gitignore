@@ -15,4 +15,7 @@ local.properties
 Thumbs.db
 
 # Compressed Archives (specific to this project's accidental commit)
+apk-transfer.zipapk-parts/
 apk-transfer.zip
+hydra-panel*.apk
+android/app/build/
