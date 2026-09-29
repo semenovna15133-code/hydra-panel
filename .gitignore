@@ -1,10 +1,2 @@
-# Logs and temp files
-*.log
-
-# Android/Gradle build artifacts
-.gradle/
-build/
-local.propertieshydra-release.jks
-app/build/
-.gradle/
-local.properties
+#Compressed files
+*.zip
