@@ -1,0 +1,266 @@
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/components/Common.kt:27:1 Conflicting overloads: public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt, public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/components/Common.kt:36:56 Overload resolution ambiguity: 
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/components/Common.kt:38:1 Conflicting overloads: public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt, public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/components/Common.kt:38:72 Overload resolution ambiguity: 
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:35:18 Unresolved reference: rememberActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:54:13 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:60:26 Unresolved reference: LoadingBlock
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:70:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:72:29 Unresolved reference: StatusDot
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:105:35 Suspend function 'createClient' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:127:18 Unresolved reference: rememberActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:152:13 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:153:26 Unresolved reference: LoadingBlock
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:160:37 Unresolved reference: StatusDot
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:178:37 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:180:59 Suspend function 'toggleBlockClient' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:182:37 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:190:24 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:192:21 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:195:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:196:64 Suspend function 'extendKey' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:197:56 Suspend function 'revokeKey' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:198:57 Suspend function 'restoreKey' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:199:56 Suspend function 'deleteKey' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:202:63 Suspend function 'downloadKeyConf' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:203:55 Suspend function 'showSnackbar' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:208:24 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:210:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:219:55 Suspend function 'deleteDevice' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:234:35 Suspend function 'updateClient' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:242:35 Suspend function 'createKey' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:247:9 Unresolved reference: ConfirmDialog
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:248:45 Suspend function 'deleteClient' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:257:74 Unresolved reference: MonoText
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:283:17 Unresolved reference: StatusDot
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:304:30 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:305:22 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:330:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:330:46 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:330:84 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:333:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:333:52 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:333:68 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:350:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:350:50 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:350:88 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:352:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:352:56 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:352:94 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:35:18 Unresolved reference: rememberActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:69:13 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:70:26 Unresolved reference: LoadingBlock
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:76:56 Unresolved reference: StatCard
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:77:56 Unresolved reference: StatCard
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:82:56 Unresolved reference: StatCard
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:84:33 Unresolved reference: StatCard
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:85:68 Overload resolution ambiguity: 
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:85:97 Overload resolution ambiguity: 
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:89:28 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:91:25 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:93:33 Unresolved reference: StatusDot
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:106:25 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:107:47 Suspend function 'backupNow' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DatabaseScreen.kt:64:13 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:33:38 Unresolved reference: LoadingBlock
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:34:38 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:35:38 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:36:38 Unresolved reference: StatusDot
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:37:38 Unresolved reference: rememberActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:56:18 Unresolved reference: rememberActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:78:13 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:94:31 Unresolved reference: LoadingBlock
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:99:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:101:29 Unresolved reference: StatusDot
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:111:51 Suspend function 'deleteDevice' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DevicesScreen.kt:117:28 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:37:18 Unresolved reference: rememberActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:55:13 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:66:26 Unresolved reference: LoadingBlock
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:84:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:87:33 Unresolved reference: StatusDot
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:98:78 Suspend function 'extendKey' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:100:37 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:100:85 Suspend function 'restoreKey' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:102:37 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:102:94 Suspend function 'revokeKey' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:106:71 Suspend function 'downloadKeyConf' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:107:63 Suspend function 'showSnackbar' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:124:21 Unresolved reference: MonoText
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:96:74 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:102:41 'if' must have both main and 'else' branches if used as an expression
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:47:13 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:58:26 Unresolved reference: LoadingBlock
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:63:21 Unresolved reference: MonoText
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:85:18 Unresolved reference: rememberActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:105:13 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:116:26 Unresolved reference: LoadingBlock
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:122:32 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:126:69 Unresolved reference: MonoText
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:128:37 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:136:32 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:140:37 Unresolved reference: MonoText
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:142:37 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:149:28 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:175:59 Suspend function 'applyConfigRaw' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LogsConfigsScreens.kt:206:39 Suspend function 'applyConfigAwg' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:26:18 Unresolved reference: rememberActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:42:13 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:43:26 Unresolved reference: LoadingBlock
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:48:29 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:49:51 Suspend function 'generateWeeklyReport' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:55:21 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:56:43 Suspend function 'catchUpReports' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:59:24 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:60:40 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:83:21 Unresolved reference: MonoText
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:37:18 Unresolved reference: rememberActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:60:13 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:61:26 Unresolved reference: LoadingBlock
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:67:33 Unresolved reference: StatusDot
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:79:28 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:84:33 Unresolved reference: SparkLine
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:84:81 Overload resolution ambiguity: 
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:92:28 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:95:56 Unresolved reference: StatCard
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:96:56 Unresolved reference: StatCard
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:97:56 Unresolved reference: StatCard
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:102:28 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:104:25 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:106:33 Unresolved reference: StatusDot
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:113:78 Suspend function 'restartService' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:121:28 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:123:25 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:125:33 Unresolved reference: MonoText
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:127:63 Overload resolution ambiguity: 
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:133:28 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:145:24 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:149:56 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:149:138 Suspend function 'installProtocols' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:150:56 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:150:134 Suspend function 'installAgent' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:153:56 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:153:126 Suspend function 'testSsh' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:154:56 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:154:127 Suspend function 'syncTime' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:157:56 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:157:136 Suspend function 'rotateAgentToken' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:158:56 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:158:131 Suspend function 'revokeTokens' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:164:25 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:172:9 Unresolved reference: ConfirmDialog
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:173:45 Suspend function 'reboot' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:36:18 Unresolved reference: rememberActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:55:13 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:56:26 Unresolved reference: LoadingBlock
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:59:28 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:61:25 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:61:77 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:61:119 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:69:24 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:71:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:74:33 Unresolved reference: StatusDot
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:92:45 Overload resolution ambiguity: 
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+public fun statusColor(status: String?): Color defined in com.hydra.panel.ui.components in file Common.kt
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:104:27 Suspend function 'createServer' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:108:9 Unresolved reference: ConfirmDialog
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:109:45 Suspend function 'deleteServer' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:130:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:130:46 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:130:62 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:136:48 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:136:77 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:136:115 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:137:48 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:137:81 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:137:119 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:139:17 None of the following functions can be called with the arguments supplied: 
+public fun OutlinedTextField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+public fun OutlinedTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = ..., enabled: Boolean = ..., readOnly: Boolean = ..., textStyle: TextStyle = ..., label: (() -> Unit)? = ..., placeholder: (() -> Unit)? = ..., leadingIcon: (() -> Unit)? = ..., trailingIcon: (() -> Unit)? = ..., prefix: (() -> Unit)? = ..., suffix: (() -> Unit)? = ..., supportingText: (() -> Unit)? = ..., isError: Boolean = ..., visualTransformation: VisualTransformation = ..., keyboardOptions: KeyboardOptions = ..., keyboardActions: KeyboardActions = ..., singleLine: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., interactionSource: MutableInteractionSource = ..., shape: Shape = ..., colors: TextFieldColors = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:139:50 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServersScreen.kt:139:66 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:33:18 Unresolved reference: rememberActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:59:52 Unresolved reference: ActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:72:9 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:74:13 None of the following functions can be called with the arguments supplied: 
+public fun Text(text: AnnotatedString, modifier: Modifier = ..., color: Color = ..., fontSize: TextUnit = ..., fontStyle: FontStyle? = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., letterSpacing: TextUnit = ..., textDecoration: TextDecoration? = ..., textAlign: TextAlign? = ..., lineHeight: TextUnit = ..., overflow: TextOverflow = ..., softWrap: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., inlineContent: Map<String, InlineTextContent> = ..., onTextLayout: (TextLayoutResult) -> Unit = ..., style: TextStyle = ...): Unit defined in androidx.compose.material3
+public fun Text(text: String, modifier: Modifier = ..., color: Color = ..., fontSize: TextUnit = ..., fontStyle: FontStyle? = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., letterSpacing: TextUnit = ..., textDecoration: TextDecoration? = ..., textAlign: TextAlign? = ..., lineHeight: TextUnit = ..., overflow: TextOverflow = ..., softWrap: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., onTextLayout: ((TextLayoutResult) -> Unit)? = ..., style: TextStyle = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:79:34 Unresolved reference: LoadingBlock
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:87:13 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:89:39 Suspend function 'saveSettingsYaml' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:99:55 Unresolved reference: ActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:113:9 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:114:9 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:117:17 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:118:39 Suspend function 'backupNow' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:126:9 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:129:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:139:54 Suspend function 'downloadBackup' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:155:9 Unresolved reference: ConfirmDialog
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:158:45 Suspend function 'restoreBackup' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:166:54 Unresolved reference: ActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:192:17 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:193:39 Suspend function 'testGithub' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:197:17 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:198:39 Suspend function 'saveGithub' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:205:17 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:205:101 Suspend function 'pushBackupNow' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:208:17 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:209:39 Suspend function 'deleteGithubCreds' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:221:9 Unresolved reference: ActionButton
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:222:31 Suspend function 'setRecoveryPassphrase' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:225:9 Unresolved reference: SectionTitle
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:227:47 Unresolved reference: MonoText
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:235:56 Unresolved reference: ActionRunner
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:248:9 Unresolved reference: MessageBar
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:250:13 None of the following functions can be called with the arguments supplied: 
+public fun Text(text: AnnotatedString, modifier: Modifier = ..., color: Color = ..., fontSize: TextUnit = ..., fontStyle: FontStyle? = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., letterSpacing: TextUnit = ..., textDecoration: TextDecoration? = ..., textAlign: TextAlign? = ..., lineHeight: TextUnit = ..., overflow: TextOverflow = ..., softWrap: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., inlineContent: Map<String, InlineTextContent> = ..., onTextLayout: (TextLayoutResult) -> Unit = ..., style: TextStyle = ...): Unit defined in androidx.compose.material3
+public fun Text(text: String, modifier: Modifier = ..., color: Color = ..., fontSize: TextUnit = ..., fontStyle: FontStyle? = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., letterSpacing: TextUnit = ..., textDecoration: TextDecoration? = ..., textAlign: TextAlign? = ..., lineHeight: TextUnit = ..., overflow: TextOverflow = ..., softWrap: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., onTextLayout: ((TextLayoutResult) -> Unit)? = ..., style: TextStyle = ...): Unit defined in androidx.compose.material3
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:257:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:263:29 Unresolved reference: MonoText
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:267:52 Suspend function 'revokeSession' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:269:46 Suspend function 'showSnackbar' should be called only from a coroutine or another suspend function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:281:9 Unresolved reference: ConfirmDialog
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:283:45 Suspend function 'revokeAllSessions' should be called only from a coroutine or another suspend function
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 27s

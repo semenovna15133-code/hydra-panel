@@ -1,0 +1,2 @@
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:76:13 None of the following functions can be called with the arguments supplied: 
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:247:13 None of the following functions can be called with the arguments supplied: 

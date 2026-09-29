@@ -1,0 +1,17 @@
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:333:17 None of the following functions can be called with the arguments supplied: 
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:333:76 Unresolved reference: it
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ClientsScreen.kt:333:92 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/DashboardScreen.kt:93:25 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/KeysScreen.kt:85:21 'inline fun <T> LazyListScope.items(items: List<AccessKey>, noinline key: ((item: AccessKey) -> Any)? = ..., noinline contentType: (item: AccessKey) -> Any? = ..., crossinline itemContent: LazyItemScope.(item: AccessKey) -> Unit): Unit' can't be called in this context by implicit receiver. Use the explicit one if necessary
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/LoginScreen.kt:96:74 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:68:1 Modifier 'private' is not applicable to 'local function'
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ReportsScreen.kt:94:2 Expecting '}'
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/ServerDetailScreen.kt:125:25 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:167:1 Modifier 'private' is not applicable to 'local function'
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:236:1 Modifier 'private' is not applicable to 'local function'
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:251:13 None of the following functions can be called with the arguments supplied: 
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:259:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:288:2 Expecting '}'
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:51:22 Unresolved reference: GithubTab
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:52:25 Unresolved reference: SessionsTab
+e: file:///workspace/android/app/src/main/java/com/hydra/panel/ui/screens/SettingsScreen.kt:76:13 None of the following functions can be called with the arguments supplied: 

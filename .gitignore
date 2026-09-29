@@ -1,41 +1,18 @@
-
-*$py.class
-backups/
+# Android/Gradle Build Artifacts
 build/
-*.db
-develop-eggs/
-dist/
-downloads/
-.DS_Store
-*.egg
-*.egg-info/
-eggs/
-env/
-ENV/
-.env.local
-# IDE
+.gradle/
+*.class
+*.dex
+local.properties
+
+# IDE & Editor Files
 .idea/
-.installed.cfg
-keys/
-lib/
-lib64/
-# OS
-parts/
-# Project specific
-__pycache__/
-*.py[cod]
-# Python
-scripts/.cookies
-sdist/
-*.so
-*.sqlite
-*.sqlite3
-*.swo
-*.swp
-test_ssh_smoke.py
-Thumbs.db
-var/
-.venv/
-# Virtual environment
+*.iml
 .vscode/
-wheels/
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+
+# Compressed Archives (specific to this project's accidental commit)
+apk-transfer.zip
