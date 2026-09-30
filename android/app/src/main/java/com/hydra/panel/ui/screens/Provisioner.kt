@@ -26,7 +26,8 @@ import java.util.Base64
  */
 object Provisioner {
 
-    private const val REPO_URL = "https://github.com/hydra-panel/hydra" // замените на свой репозиторий
+    /** Репозиторий панели по умолчанию; можно переопределить в UI при провижининге. */
+    const val DEFAULT_REPO_URL = "https://github.com/hydra-vpn/hydra-panel"
     private const val KEY_FILE = "hydra_bootstrap_key"
 
     suspend fun provision(
@@ -35,17 +36,17 @@ object Provisioner {
         user: String,
         password: String,
         port: Int,
+        repoUrl: String = DEFAULT_REPO_URL,
         onProgress: (String) -> Unit,
     ): String = withContext(Dispatchers.IO) {
-        val keyPath = ensureKey(context)
-        onProgress("SSH: устанавливаю ключ доступа…")
-        bootstrapKey(host, port = 22, user, password, keyPath)
+        onProgress("SSH: подключаюсь к $host…")
+        sshRunPass(host, 22, user, password, null, "echo ok && uname -a")
 
         onProgress("Устанавливаю Docker…")
-        sshRunPass(host, 22, user, password, keyPath, INSTALL_DOCKER_CMD)
+        sshRunPass(host, 22, user, password, null, INSTALL_DOCKER_CMD)
 
         onProgress("Клонирую панель и запускаю сервис…")
-        sshRunPass(host, 22, user, password, keyPath, DEPLOY_CMD(port))
+        sshRunPass(host, 22, user, password, null, DEPLOY_CMD(port, repoUrl))
 
         onProgress("Ожидаю запуска панели…")
         val base = "http://$host:$port"
@@ -90,49 +91,39 @@ object Provisioner {
         return bytes
     }
 
-    private suspend fun bootstrapKey(host: String, port: Int, user: String, password: String, keyPath: String) {
-        // Добавляем публичный ключ в authorized_keys через ssh-copy-id c sshpass; если sshpass нет —
-        // пробуем ssh с интерактивной подачей пароля через stdin (не работает с PasswordAuthentication,
-        // поэтому второй попыткой идём BatchMode и падаем с понятной ошибкой).
-        val copyCmd = listOf(
-            "sshpass", "-p", password, "ssh-copy-id",
-            "-i", "$keyPath.pub", "-o", "StrictHostKeyChecking=no", "-p", port.toString(), "$user@$host",
-        )
-        runSsh(copyCmd)
-    }
-
     private suspend fun sshRunPass(
-        host: String, port: Int, user: String, password: String, keyPath: String, remoteCmd: String,
-    ): String {
-        val cmd = listOf(
-            "sshpass", "-p", password, "ssh",
-            "-i", keyPath, "-o", "StrictHostKeyChecking=no", "-p", port.toString(), "$user@$host",
-            remoteCmd,
-        )
-        return runSsh(cmd)
-    }
-
-    private suspend fun runSsh(cmd: List<String>): String = withContext(Dispatchers.IO) {
+        host: String, port: Int, user: String, password: String, keyPath: String?, remoteCmd: String,
+    ): String = withContext(Dispatchers.IO) {
+        val jsch = com.jcraft.jsch.JSch()
         try {
-            val p = ProcessBuilder(cmd).redirectErrorStream(true).start()
-            val out = BufferedReader(p.inputStream.reader()).readText()
-            val finished = p.waitFor(120, java.util.concurrent.TimeUnit.SECONDS)
-            if (!finished) { p.destroyForcibly(); throw IllegalStateException("SSH таймаут (>120с)") }
-            if (p.exitValue() != 0) {
+            val session = jsch.getSession(user, host, port)
+            session.setConfig("StrictHostKeyChecking", "no")
+            session.setConfig("PreferredAuthentications", "password,keyboard-interactive,publickey")
+            session.setPassword(password)
+            session.connect(15_000)
+            val chan = session.openChannel("exec") as com.jcraft.jsch.ChannelExec
+            chan.setCommand("sudo -n sh -c '" + remoteCmd.replace("'", "'\\''") + "' 2>&1 || sh -c '" + remoteCmd.replace("'", "'\\''") + "' 2>&1")
+            chan.connect(15_000)
+            val out = chan.inputStream.bufferedReader().readText()
+            val status = chan.exitStatus
+            chan.disconnect(); session.disconnect()
+            if (status != 0) {
                 val hint = when {
-                    out.contains("sshpass: command not found", true) || cmd.first() == "sshpass" && out.isBlank() ->
-                        "На телефоне нет helper'а sshpass. Настройте доступ по ключу: добавьте публичный ключ приложения в ~/.ssh/authorized_keys сервера."
-                    out.contains("Permission denied", true) -> "SSH: неверный пароль или запрещён вход по паролю."
-                    else -> out.take(400)
+                    out.contains("Permission denied", true) || out.contains("Auth fail", true) ->
+                        "SSH: неверный логин/пароль или запрещён вход по паролю."
+                    out.isBlank() -> "Команда завершилась с кодом $status без вывода."
+                    else -> out.take(500)
                 }
                 throw IllegalStateException(hint)
             }
             out
-        } catch (e: java.io.IOException) {
-            throw IllegalStateException(
-                "SSH недоступен с устройства (${e.message}). Альтернатива: разверните панель командой " +
-                    "`sudo bash deploy/deploy.sh` на сервере и подключитесь по URL.",
-            )
+        } catch (e: com.jcraft.jsch.JSchException) {
+            val hint = when {
+                e.message?.contains("Auth") == true -> "SSH: аутентификация не пройдена (проверьте root-пароль)."
+                e.message?.contains("timeout") == true -> "SSH: таймаут подключения (порт 22 закрыт/фишволл?)."
+                else -> "SSH ошибка: ${e.message}"
+            }
+            throw IllegalStateException(hint)
         }
     }
 
@@ -168,10 +159,10 @@ object Provisioner {
         fi
     """.trimIndent()
 
-    private fun DEPLOY_CMD(port: Int) = """
+    private fun DEPLOY_CMD(port: Int, repoUrl: String) = """
         set -e
         mkdir -p /opt/hydra
-        if [ ! -d /opt/hydra/repo ]; then git clone $REPO_URL /opt/hydra/repo; else (cd /opt/hydra/repo && git pull --ff-only || true); fi
+        if [ ! -d /opt/hydra/repo ]; then git clone "$repoUrl" /opt/hydra/repo; else (cd /opt/hydra/repo && git pull --ff-only || true); fi
         cd /opt/hydra/repo
         docker build -t hydra-panel:latest . 2>/dev/null || true
         docker rm -f hydra-panel 2>/dev/null || true

@@ -51,14 +51,15 @@ private val fieldColors
  */
 @Composable
 fun LoginScreen(onLoggedIn: () -> Unit) {
-    val repo = PanelRepository.get(LocalContext.current)
     val appCtx = LocalContext.current
+    // PanelRepository.get() до первого логина может бросить — экран обязан отрисуется.
+    val repo = remember { runCatching { PanelRepository.get(appCtx) }.getOrNull() }
     val scope = rememberCoroutineScope()
 
     var provision by remember { mutableStateOf(false) } // режим «новый сервер»
-    var url by remember { mutableStateOf(repo.sessionStore.baseUrl ?: "") }
+    var url by remember { mutableStateOf(repo?.sessionStore?.baseUrl ?: "") }
     var password by remember { mutableStateOf("") }
-    var cliToken by remember { mutableStateOf(repo.sessionStore.cliToken ?: "") }
+    var cliToken by remember { mutableStateOf(repo?.sessionStore?.cliToken ?: "") }
     var useCli by remember { mutableStateOf(false) }
 
     // поля провижининга нового сервера
@@ -67,6 +68,7 @@ fun LoginScreen(onLoggedIn: () -> Unit) {
     var sshPass by remember { mutableStateOf("") }
     var adminPass by remember { mutableStateOf("") }
     var panelPort by remember { mutableStateOf("8000") }
+    var repoUrl by remember { mutableStateOf(Provisioner.DEFAULT_REPO_URL) }
 
     var busy by remember { mutableStateOf(false) }
     var info by remember { mutableStateOf<String?>(null) }
@@ -100,6 +102,9 @@ fun LoginScreen(onLoggedIn: () -> Unit) {
                         color = MaterialTheme.colorScheme.primary,
                     )
                     Text("Мобильный контроль VPN-инфраструктуры", style = MaterialTheme.typography.bodySmall)
+                    Text("v${com.hydra.panel.BuildConfig.VERSION_NAME} (${com.hydra.panel.BuildConfig.VERSION_CODE})",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f))
                 }
 
                 Spacer(Modifier.height(28.dp))
@@ -151,8 +156,8 @@ fun LoginScreen(onLoggedIn: () -> Unit) {
                                 busy = true; error = null; info = null
                                 val trimmed = normalize(url)
                                 scope.launch {
-                                    repo.sessionStore.baseUrl = trimmed
-                                    repo.sessionStore.cliToken = if (useCli) cliToken.trim() else null
+                                    repo?.sessionStore?.baseUrl = trimmed
+                                    repo?.sessionStore?.cliToken = if (useCli) cliToken.trim() else null
                                     PanelRepository.reset()
                                     val r = PanelRepository.recreate(appCtx)
                                     val outcome = try {
@@ -214,6 +219,12 @@ fun LoginScreen(onLoggedIn: () -> Unit) {
                             visualTransformation = PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                             colors = fieldColors)
+                        OutlinedTextField(value = repoUrl, onValueChange = { repoUrl = it },
+                            label = { Text("Git-репозиторий панели") }, singleLine = true,
+                            supportingText = { Text("Сюда же можно вставить приватный URL вида https://user:token@github.com/me/repo") },
+                            modifier = Modifier.fillMaxWidth(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+                            colors = fieldColors)
 
                         GradientButton(text = if (busy) "" else "Развернуть и войти", enabled = !busy, busy = busy,
                             onClick = {
@@ -228,10 +239,11 @@ fun LoginScreen(onLoggedIn: () -> Unit) {
                                         info = "Подключаюсь по SSH и разворачиваю панель…"
                                         val baseUrl = Provisioner.provision(appCtx, cleanHost,
                                             sshUser.trim().ifBlank { "root" }, sshPass,
-                                            panelPort.toIntOrNull()?.coerceIn(1, 65535) ?: 8000) { msg -> info = msg }
+                                            panelPort.toIntOrNull()?.coerceIn(1, 65535) ?: 8000,
+                                            repoUrl.trim().ifBlank { Provisioner.DEFAULT_REPO_URL }) { msg -> info = msg }
                                         info = "Панель поднялась: $baseUrl — создаю администратора…"
-                                        repo.sessionStore.baseUrl = baseUrl
-                                        repo.sessionStore.cliToken = null
+                                        repo?.sessionStore?.baseUrl = baseUrl
+                                        repo?.sessionStore?.cliToken = null
                                         PanelRepository.reset()
                                         val r = PanelRepository.recreate(appCtx)
                                         if (!r.hasAdminViaSetupCheck(baseUrl)) {

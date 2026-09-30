@@ -588,6 +588,10 @@
       jars="/root/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.9.22/d6c44cd08d8f3f9bece8101216dbe6553365c6e3/kotlin-stdlib-1.9.22.jar"
       resolved="org.jetbrains.kotlin:kotlin-stdlib:1.9.22"/>
   <library
+      name="com.github.mwiede:jsch:0.2.17@jar"
+      jars="/root/.gradle/caches/modules-2/files-2.1/com.github.mwiede/jsch/0.2.17/1572f8ac4023895c2232160fddd4bfdd8c8e214d/jsch-0.2.17.jar"
+      resolved="com.github.mwiede:jsch:0.2.17"/>
+  <library
       name="org.jetbrains:annotations:23.0.0@jar"
       jars="/root/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/23.0.0/8cc20c07506ec18e0834947b84a864bfc094484e/annotations-23.0.0.jar"
       resolved="org.jetbrains:annotations:23.0.0"/>
