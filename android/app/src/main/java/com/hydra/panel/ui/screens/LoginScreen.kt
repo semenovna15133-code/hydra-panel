@@ -51,14 +51,15 @@ private val fieldColors
  */
 @Composable
 fun LoginScreen(onLoggedIn: () -> Unit) {
-    val repo = PanelRepository.get(LocalContext.current)
     val appCtx = LocalContext.current
+    // PanelRepository.get() до первого логина может бросить — экран обязан отрисуется.
+    val repo = remember { runCatching { PanelRepository.get(appCtx) }.getOrNull() }
     val scope = rememberCoroutineScope()
 
     var provision by remember { mutableStateOf(false) } // режим «новый сервер»
-    var url by remember { mutableStateOf(repo.sessionStore.baseUrl ?: "") }
+    var url by remember { mutableStateOf(repo?.sessionStore?.baseUrl ?: "") }
     var password by remember { mutableStateOf("") }
-    var cliToken by remember { mutableStateOf(repo.sessionStore.cliToken ?: "") }
+    var cliToken by remember { mutableStateOf(repo?.sessionStore?.cliToken ?: "") }
     var useCli by remember { mutableStateOf(false) }
 
     // поля провижининга нового сервера
@@ -155,8 +156,8 @@ fun LoginScreen(onLoggedIn: () -> Unit) {
                                 busy = true; error = null; info = null
                                 val trimmed = normalize(url)
                                 scope.launch {
-                                    repo.sessionStore.baseUrl = trimmed
-                                    repo.sessionStore.cliToken = if (useCli) cliToken.trim() else null
+                                    repo?.sessionStore?.baseUrl = trimmed
+                                    repo?.sessionStore?.cliToken = if (useCli) cliToken.trim() else null
                                     PanelRepository.reset()
                                     val r = PanelRepository.recreate(appCtx)
                                     val outcome = try {
@@ -241,8 +242,8 @@ fun LoginScreen(onLoggedIn: () -> Unit) {
                                             panelPort.toIntOrNull()?.coerceIn(1, 65535) ?: 8000,
                                             repoUrl.trim().ifBlank { Provisioner.DEFAULT_REPO_URL }) { msg -> info = msg }
                                         info = "Панель поднялась: $baseUrl — создаю администратора…"
-                                        repo.sessionStore.baseUrl = baseUrl
-                                        repo.sessionStore.cliToken = null
+                                        repo?.sessionStore?.baseUrl = baseUrl
+                                        repo?.sessionStore?.cliToken = null
                                         PanelRepository.reset()
                                         val r = PanelRepository.recreate(appCtx)
                                         if (!r.hasAdminViaSetupCheck(baseUrl)) {

@@ -1,0 +1,40 @@
+The message received from the daemon indicates that the daemon has disappeared.
+Build request sent: Build{id=df41cd9c-9e28-4a8a-af04-e95734429d98, currentDir=/workspace/android}
+Attempting to read last messages from the daemon log...
+Daemon pid: 23896
+  log file: /root/.gradle/daemon/8.5/daemon-23896.out.log
+----- Last  20 lines from daemon log file - daemon-23896.out.log -----
+2026-09-29T21:40:52.545+0000 [DEBUG] [org.gradle.launcher.daemon.server.DefaultIncomingConnectionHandler] Starting executing command: Build{id=df41cd9c-9e28-4a8a-af04-e95734429d98, currentDir=/workspace/android} with connection: socket connection from /127.0.0.1:38855 to /127.0.0.1:39960.
+2026-09-29T21:40:52.548+0000 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] Command execution: started DaemonCommandExecution[command = Build{id=df41cd9c-9e28-4a8a-af04-e95734429d98, currentDir=/workspace/android}, connection = DefaultDaemonConnection: socket connection from /127.0.0.1:38855 to /127.0.0.1:39960] after 0.0 minutes of idle
+2026-09-29T21:40:52.548+0000 [INFO] [org.gradle.launcher.daemon.server.DaemonRegistryUpdater] Marking the daemon as busy, address: [8b835eb1-08c3-4c31-8cbd-da979c288bc5 port:38855, addresses:[localhost/127.0.0.1]]
+2026-09-29T21:40:52.548+0000 [DEBUG] [org.gradle.launcher.daemon.registry.PersistentDaemonRegistry] Marking busy by address: [8b835eb1-08c3-4c31-8cbd-da979c288bc5 port:38855, addresses:[localhost/127.0.0.1]]
+2026-09-29T21:40:52.548+0000 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Waiting to acquire exclusive lock on daemon addresses registry.
+2026-09-29T21:40:52.549+0000 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Lock acquired on daemon addresses registry.
+2026-09-29T21:40:52.550+0000 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Releasing lock on daemon addresses registry.
+2026-09-29T21:40:52.550+0000 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] resetting idle timer
+2026-09-29T21:40:52.551+0000 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] daemon is running. Sleeping until state changes.
+2026-09-29T21:40:52.602+0000 [INFO] [org.gradle.launcher.daemon.server.exec.StartBuildOrRespondWithBusy] Daemon is about to start building Build{id=df41cd9c-9e28-4a8a-af04-e95734429d98, currentDir=/workspace/android}. Dispatching build started information...
+2026-09-29T21:40:52.602+0000 [DEBUG] [org.gradle.launcher.daemon.server.SynchronizedDispatchConnection] thread 21: dispatching org.gradle.launcher.daemon.protocol.BuildStarted@363aa2b5
+2026-09-29T21:40:52.607+0000 [DEBUG] [org.gradle.launcher.daemon.server.exec.EstablishBuildEnvironment] Configuring env variables: [TMUX_PANE, PATH, JAVA_HOME, TERM, LANG, PS2, ANDROID_HOME, PS1, SUDO_USER, SUDO_GID, MAIL, PYGAME_HIDE_SUPPORT_PROMPT, LOGNAME, PROMPT_COMMAND, PWD, SUDO_UID, TERM_PROGRAM_VERSION, _, SHELL, TERM_PROGRAM, OLDPWD, USER, TIKTOKEN_CACHE_DIR, SUDO_COMMAND, LC_ALL, TMUX, HOME, SHLVL]
+2026-09-29T21:40:52.610+0000 [DEBUG] [org.gradle.launcher.daemon.server.exec.LogToClient] About to start relaying all logs to the client via the connection.
+2026-09-29T21:40:52.610+0000 [INFO] [org.gradle.launcher.daemon.server.exec.LogToClient] The client will now receive all logging from the daemon (pid: 23896). The daemon log file: /root/.gradle/daemon/8.5/daemon-23896.out.log
+2026-09-29T21:40:52.612+0000 [DEBUG] [org.gradle.launcher.daemon.server.exec.RequestStopIfSingleUsedDaemon] Requesting daemon stop after processing Build{id=df41cd9c-9e28-4a8a-af04-e95734429d98, currentDir=/workspace/android}
+2026-09-29T21:40:52.612+0000 [LIFECYCLE] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] Daemon will be stopped at the end of the build 
+2026-09-29T21:40:52.612+0000 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] Stop as soon as idle requested. The daemon is busy: true
+2026-09-29T21:40:52.613+0000 [DEBUG] [org.gradle.launcher.daemon.server.exec.ExecuteBuild] The daemon has started executing the build.
+2026-09-29T21:40:52.613+0000 [DEBUG] [org.gradle.launcher.daemon.server.exec.ExecuteBuild] Executing build with daemon context: DefaultDaemonContext[uid=f81e671f-b1d4-4efb-91fc-fc5d212148dc,javaHome=/usr/lib/jvm/java-17-openjdk-amd64,daemonRegistryDir=/root/.gradle/daemon,pid=23896,idleTimeout=120000,priority=NORMAL,applyInstrumentationAgent=true,daemonOpts=-XX:MaxMetaspaceSize=256m,--add-opens=java.base/java.util=ALL-UNNAMED,--add-opens=java.base/java.lang=ALL-UNNAMED,--add-opens=java.base/java.lang.invoke=ALL-UNNAMED,--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED,--add-opens=java.base/java.nio.charset=ALL-UNNAMED,--add-opens=java.base/java.net=ALL-UNNAMED,--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED,-Xmx768m,-Dfile.encoding=UTF-8,-Duser.country,-Duser.language=en,-Duser.variant]
+2026-09-29T21:40:52.614+0000 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] daemon stop has been requested. Sleeping until state changes.
+----- End of the daemon log -----
+
+JVM crash log found: file:///workspace/android/hs_err_pid23896.log
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed)
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.

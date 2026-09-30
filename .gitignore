@@ -1,21 +1,35 @@
-# Android/Gradle Build Artifacts
-build/
-.gradle/
-*.class
+# Android build artifacts
+android/build/
+android/app/build/
+*.apk
+*.aab
 *.dex
+*.class
+*.jar
+*.aar
+*.ap_
+
+# Gradle cache and configuration
+.gradle/
+build/
+.cxx/
 local.properties
 
-# IDE & Editor Files
+# IDE files
 .idea/
 *.iml
+*.iws
 .vscode/
-
-# OS Generated Files
 .DS_Store
 Thumbs.db
 
-# Compressed Archives (specific to this project's accidental commit)
-apk-transfer.zipapk-parts/
-apk-transfer.zip
-hydra-panel*.apk
-android/app/build/
+# Logs and temp files
+*.log
+hs_err_pid*
+replay_pid*
+*.tmp
+*.swp
+*.swo
+
+# Compressed files (if generated during build/transfer)
+*.zip

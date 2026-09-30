@@ -34,6 +34,8 @@ import androidx.navigation.compose.rememberNavController
 import com.hydra.panel.data.repo.PanelRepository
 import com.hydra.panel.ui.screens.*
 import com.hydra.panel.ui.theme.HydraTheme
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 sealed class TopDest(val route: String, val label: String, val icon: ImageVector) {
     data object Dashboard : TopDest("dashboard", "Дашборд", Icons.Filled.Dashboard)
@@ -57,22 +59,55 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun AppRoot() {
     val context = LocalContext.current
-    val repo = remember { PanelRepository.get(context) }
-    var loggedIn by remember { mutableStateOf(repo.sessionStore.isLoggedIn) }
+    // Инициализация репозитория не должна ронять приложение: при любой ошибке
+    // показываем экран входа (он сам всё пересоздаст после ввода URL).
+    val repo = remember { runCatching { PanelRepository.get(context) }.getOrNull() }
+    var loggedIn by remember { mutableStateOf(repo?.sessionStore?.isLoggedIn == true) }
+    var bootTick by remember { mutableStateOf(0) }
 
-    if (!loggedIn) {
-        LoginScreen(onLoggedIn = { loggedIn = true })
-        return
+    // глобальный тост + бейдж версии
+    LaunchedEffect(Unit) {
+        com.hydra.panel.ui.components.Toaster.toasterScope = this
+        com.hydra.panel.ui.components.Toaster.versionBadge =
+            "v${com.hydra.panel.BuildConfig.VERSION_NAME} (${com.hydra.panel.BuildConfig.VERSION_CODE})"
     }
-    MainNav(onLoggedOut = {
-        PanelRepository.reset()
-        loggedIn = false
-    })
+
+    Box(Modifier.fillMaxSize()) {
+        if (!loggedIn) {
+            LoginScreen(onLoggedIn = {
+                bootTick++
+                loggedIn = runCatching { PanelRepository.get(context).sessionStore.isLoggedIn }.getOrDefault(true)
+            })
+        } else {
+            MainNav(key = bootTick, onLoggedOut = {
+                kotlinx.coroutines.MainScope().launch {
+                    runCatching { PanelRepository.get(context).logout() }
+                }
+                PanelRepository.reset()
+                loggedIn = false
+            })
+        }
+        SnackbarHost(
+            hostState = com.hydra.panel.ui.components.Toaster.host,
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 96.dp),
+            snackbar = { data ->
+                Surface(
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.inverseSurface,
+                    contentColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    Text(data.visuals.message, Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                        style = MaterialTheme.typography.bodyMedium)
+                }
+            },
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainNav(onLoggedOut: () -> Unit) {
+fun MainNav(key: Int = 0, onLoggedOut: () -> Unit) {
     val nav: NavHostController = rememberNavController()
     val backStack by nav.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route
@@ -177,7 +212,20 @@ private fun MoreScreen(nav: NavHostController, onLoggedOut: () -> Unit) {
         "SQL-консоль" to "database",
         "Настройки и бекапы" to "settings",
     )
-    Scaffold(topBar = { TopAppBar(title = { Text("Ещё", style = MaterialTheme.typography.titleLarge) }) }) { p ->
+    Scaffold(topBar = {
+        TopAppBar(
+            title = { Text("Ещё", style = MaterialTheme.typography.titleLarge) },
+            actions = {
+                com.hydra.panel.ui.components.ChipBadge(
+                    com.hydra.panel.ui.components.Toaster.versionBadge.ifBlank {
+                        "v" + com.hydra.panel.BuildConfig.VERSION_NAME
+                    },
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(end = 12.dp),
+                )
+            },
+        )
+    }) { p ->
         Column(Modifier.padding(p).fillMaxSize().padding(horizontal = 12.dp)) {
             com.hydra.panel.ui.components.NeonHeader("Разделы панели", "Отчёты, устройства, консоль и настройки")
             Spacer(Modifier.height(14.dp))

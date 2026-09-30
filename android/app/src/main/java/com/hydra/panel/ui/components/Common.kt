@@ -63,7 +63,23 @@ fun statusColor(status: String?): Color = when (status?.lowercase()) {
 fun statusTint(status: String?, alpha: Float): Color = statusColor(status).copy(alpha = alpha)
 
 
-/** Состояние асинхронного действия: busy + показ результата в Snackbar. */
+/**
+ * Глобальный «тост» поверх всего приложения (показывается из AppRoot).
+ * Позволяет сообщать об ошибках/результатах с любого экрана, включая логин.
+ */
+object Toaster {
+    val host = SnackbarHostState()
+    var versionBadge by mutableStateOf("")
+    fun toast(msg: String) {
+        // fire-and-forget: coroutines не нужны — просто ставим текст; showSnackbar
+        // вызовется из постоянного SnackbarHost в AppRoot через launch ниже.
+        toasterScope?.launch { runCatching { host.showSnackbar(msg) } }
+    }
+
+    internal var toasterScope: CoroutineScope? = null
+}
+
+/** Состояние асинхронного действия: busy + показ результата в глобальный тост. */
 class ActionRunner(val scope: CoroutineScope, private val host: SnackbarHostState) {
     var busy by mutableStateOf(false)
         private set
@@ -77,13 +93,14 @@ class ActionRunner(val scope: CoroutineScope, private val host: SnackbarHostStat
             val msg = outcome.exceptionOrNull()?.let { "Ошибка: ${it.message ?: "сеть"}" }
                 ?: outcome.getOrNull()?.takeIf { it.isNotBlank() }
                 ?: "Готово"
-            host.showSnackbar(msg)
+            runCatching { host.showSnackbar(msg) }
+            if (host !== Toaster.host) Toaster.toast(msg)
         }
     }
 }
 
 @Composable
-fun rememberActionRunner(host: SnackbarHostState): ActionRunner {
+fun rememberActionRunner(host: SnackbarHostState = Toaster.host): ActionRunner {
     val scope = rememberCoroutineScope()
     return remember(host) { ActionRunner(scope, host) }
 }
