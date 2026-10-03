@@ -11,8 +11,8 @@ android {
         applicationId = "com.hydra.panel"
         minSdk = 26
         targetSdk = 34
-        versionCode = 3
-        versionName = "0.3.0"
+        versionCode = 4
+        versionName = "0.4.0"
         vectorDrawables { useSupportLibrary = true }
     }
 
@@ -74,6 +74,9 @@ dependencies {
 
     // Secure token storage
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+    // Background polling (push-уведомления об алертах)
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
