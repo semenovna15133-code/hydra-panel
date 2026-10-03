@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Статус-иконка: стилизованная голова гидры (monochrome, white) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24"
+    android:tint="#FFFFFF">
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M12,2 C9.5,2 7.5,3.6 7,5.8 C5.2,6.3 4,7.8 4,9.6 C4,10.5 4.3,11.3 4.9,11.9 L4.2,13.6 C4,14.2 4.4,14.8 5,14.8 L6.6,14.8 C6.6,17.6 8.4,20 12,22 C15.6,20 17.4,17.6 17.4,14.8 L19,14.8 C19.6,14.8 20,14.2 19.8,13.6 L19.1,11.9 C19.7,11.3 20,10.5 20,9.6 C20,7.8 18.8,6.3 17,5.8 C16.5,3.6 14.5,2 12,2 Z"/>
+    <path android:fillColor="#FF000000"
+        android:pathData="M9.4,8.2 m-1.1,0 a1.1,1.1 0 1,0 2.2,0 a1.1,1.1 0 1,0 -2.2,0"/>
+    <path android:fillColor="#FF000000"
+        android:pathData="M14.6,8.2 m-1.1,0 a1.1,1.1 0 1,0 2.2,0 a1.1,1.1 0 1,0 -2.2,0"/>
+</vector>

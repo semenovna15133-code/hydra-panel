@@ -1,17 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Hydra: три головы над щитом сервера (стилизованно) -->
+<!-- Hydra: трёхглавый дракон (Лернейская гидра) -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp"
     android:viewportWidth="108" android:viewportHeight="108">
-    <group android:scaleX="0.5" android:scaleY="0.5" android:translateX="27" android:translateY="27">
-        <path android:fillColor="#8B5CF6"
-            android:pathData="M54,14 C40,14 30,24 30,36 C30,44 34,50 40,54 L40,90 C40,96 46,100 54,100 C62,100 68,96 68,90 L68,54 C74,50 78,44 78,36 C78,24 68,14 54,14 Z"/>
-        <path android:fillColor="#6366F1"
-            android:pathData="M26,30 C18,30 12,36 12,44 C12,50 15,55 20,58 L24,54 C20,51 18,48 18,44 C18,39 22,36 26,36 Z"/>
-        <path android:fillColor="#6366F1"
-            android:pathData="M82,30 C90,30 96,36 96,44 C96,50 93,55 88,58 L84,54 C88,51 90,48 90,44 C90,39 86,36 82,36 Z"/>
-        <path android:fillColor="#FFFFFF" android:pathData="M46,40 h6 v6 h-6 z"/>
-        <path android:fillColor="#FFFFFF" android:pathData="M58,40 h6 v6 h-6 z"/>
-        <path android:fillColor="#FACC15" android:pathData="M44,64 h20 v6 h-20 z M44,76 h20 v6 h-20 z"/>
-    </group>
+
+    <!-- Тело/основание -->
+    <path android:fillColor="#2DD4BF"
+        android:pathData="M54,96 C38,96 30,88 30,78 C30,70 36,64 44,64 L64,64 C72,64 78,70 78,78 C78,88 70,96 54,96 Z"/>
+    <path android:fillColor="#14B8A6"
+        android:pathData="M54,92 C44,92 38,87 38,79 C38,74 42,70 47,70 L61,70 C66,70 70,74 70,79 C70,87 64,92 54,92 Z"/>
+
+    <!-- Центральная шея + голова -->
+    <path android:fillColor="#34D399"
+        android:pathData="M48,66 L48,38 C48,30 52,26 58,26 L66,26 C70,26 72,29 72,33 L72,38 C72,42 69,44 65,44 L60,44 L60,66 Z"/>
+    <path android:fillColor="#A7F3D0"
+        android:pathData="M58,26 L66,26 C70,26 72,29 72,33 L72,36 L56,30 Z"/>
+    <path android:fillColor="#FDE047"
+        android:pathData="M60,26 L57,18 L63,24 Z M66,26 L66,17 L70,25 Z"/>
+    <path android:fillColor="#0F172A"
+        android:pathData="M66,36 L74,34 L74,40 L66,42 Z"/>
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M68,36 l1.6,2 l1.6,-2 z M71.5,35.5 l1.6,2 l1.6,-2 z"/>
+
+    <!-- Левая шея + голова -->
+    <path android:fillColor="#2DD4BF"
+        android:pathData="M42,66 C38,56 32,50 26,48 L20,46 C16,45 14,42 15,38 C16,34 20,32 24,33 L32,36 C38,38 44,46 46,56 Z"/>
+    <path android:fillColor="#99F6E4"
+        android:pathData="M20,46 L15,38 C16,34 20,32 24,33 L28,35 L22,45 Z"/>
+    <path android:fillColor="#FDE047"
+        android:pathData="M22,33 L18,26 L25,31 Z M27,32 L26,24 L31,30 Z"/>
+    <path android:fillColor="#0F172A"
+        android:pathData="M17,39 L10,37 L11,43 L18,44 Z"/>
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M13,38 l1.4,1.8 l1.4,-1.8 z"/>
+
+    <!-- Правая шея + голова -->
+    <path android:fillColor="#22D3EE"
+        android:pathData="M66,66 C70,56 76,50 82,48 L88,46 C92,45 94,42 93,38 C92,34 88,32 84,33 L76,36 C70,38 64,46 62,56 Z"/>
+    <path android:fillColor="#A5F3FC"
+        android:pathData="M88,46 L93,38 C92,34 88,32 84,33 L80,35 L86,45 Z"/>
+    <path android:fillColor="#FDE047"
+        android:pathData="M86,33 L90,26 L83,31 Z M81,32 L82,24 L77,30 Z"/>
+    <path android:fillColor="#0F172A"
+        android:pathData="M91,39 L98,37 L97,43 L90,44 Z"/>
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M95,38 l-1.4,1.8 l-1.4,-1.8 z"/>
+
+    <!-- Глаза -->
+    <path android:fillColor="#FACC15"
+        android:pathData="M62,32 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0"/>
+    <path android:fillColor="#0F172A"
+        android:pathData="M62,32 m-0.8,0 a0.8,0.8 0 1,0 1.6,0 a0.8,0.8 0 1,0 -1.6,0"/>
+    <path android:fillColor="#FACC15"
+        android:pathData="M24,38 m-1.8,0 a1.8,1.8 0 1,0 3.6,0 a1.8,1.8 0 1,0 -3.6,0"/>
+    <path android:fillColor="#0F172A"
+        android:pathData="M24,38 m-0.7,0 a0.7,0.7 0 1,0 1.4,0 a0.7,0.7 0 1,0 -1.4,0"/>
+    <path android:fillColor="#FACC15"
+        android:pathData="M84,38 m-1.8,0 a1.8,1.8 0 1,0 3.6,0 a1.8,1.8 0 1,0 -3.6,0"/>
+    <path android:fillColor="#0F172A"
+        android:pathData="M84,38 m-0.7,0 a0.7,0.7 0 1,0 1.4,0 a0.7,0.7 0 1,0 -1.4,0"/>
 </vector>

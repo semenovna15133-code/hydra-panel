@@ -48,6 +48,19 @@ sealed class TopDest(val route: String, val label: String, val icon: ImageVector
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.hydra.panel.alerts.AlertNotifier.ensureChannels(this)
+        if (android.os.Build.VERSION.SDK_INT >= 33 &&
+            checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 101)
+        }
+        runCatching {
+            val r = com.hydra.panel.data.repo.PanelRepository.get(applicationContext)
+            r.bindContext(applicationContext)
+            if (r.sessionStore.isLoggedIn && r.sessionStore.pushEnabled) {
+                com.hydra.panel.alerts.AlertPollWorker.schedule(applicationContext, r.sessionStore.pollIntervalMin)
+            }
+        }
         setContent {
             HydraTheme {
                 AppRoot()

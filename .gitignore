@@ -1,35 +1,19 @@
-# Android build artifacts
-android/build/
-android/app/build/
-*.apk
-*.aab
-*.dex
-*.class
-*.jar
-*.aar
-*.ap_
-
-# Gradle cache and configuration
+# Android/Gradle build artifacts
 .gradle/
 build/
-.cxx/
-local.properties
 
-# IDE files
+# IDE and Editor files
 .idea/
 *.iml
-*.iws
-.vscode/
-.DS_Store
-Thumbs.db
-
-# Logs and temp files
-*.log
-hs_err_pid*
-replay_pid*
-*.tmp
 *.swp
 *.swo
 
-# Compressed files (if generated during build/transfer)
-*.zip
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+hs_err_pid*
+# APK binaries are tracked intentionally
+!*.apk
