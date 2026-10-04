@@ -27,7 +27,11 @@ class PanelRepository private constructor(
 
         fun get(context: Context): PanelRepository =
             instance ?: synchronized(this) {
-                instance ?: PanelRepository(ApiClient.create(context), SessionStore(context)).also { instance = it }
+                instance ?: PanelRepository(ApiClient.create(context), SessionStore(context))
+                    .also {
+                        instance = it
+                        it.storeContext = context.applicationContext // worker-контекст для пушей
+                    }
             }
 
         fun reset() { instance = null } // после смены baseUrl/логина пересоздать клиент
@@ -138,6 +142,7 @@ class PanelRepository private constructor(
         }
         val resp = api.login(password, if (remember) "on" else "")
         if ((resp.code() == 303 || resp.code() == 200) && !store.sessionToken.isNullOrEmpty()) {
+            startPushMonitoring()
             return Result.success(Unit)
         }
         // Неверный пароль или rate-limit: панель редиректит /login?error=...
@@ -157,8 +162,21 @@ class PanelRepository private constructor(
 
     suspend fun logout() {
         runCatching { api.logout() }
+        storeContext?.let { com.hydra.panel.alerts.AlertPollWorker.cancel(it) }
         store.clearAuth()
         reset()
+    }
+
+    /** Включить фоновый опрос алертов (нужен Context — прокидывается через [bindContext]). */
+    fun startPushMonitoring() {
+        storeContext?.let { com.hydra.panel.alerts.AlertPollWorker.schedule(it, store.pollIntervalMin) }
+    }
+
+    private var storeContext: Context? = null
+
+    fun bindContext(context: Context) {
+        storeContext = context.applicationContext
+        com.hydra.panel.alerts.AlertNotifier.ensureChannels(context)
     }
 
     // ───────── Servers ─────────

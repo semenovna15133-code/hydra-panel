@@ -28,7 +28,7 @@ import java.io.File
 fun SettingsScreen(onLoggedOut: () -> Unit) {
     val repo = PanelRepository.get(LocalContext.current)
     val context = LocalContext.current
-    val tabStates = listOf("Панель", "БД и бэкапы", "GitHub", "Сессии")
+    val tabStates = listOf("Панель", "Пуши", "БД и бэкапы", "GitHub", "Сессии")
     var tab by remember { mutableStateOf(0) }
     val host = remember { SnackbarHostState() }
     val runner = rememberActionRunner(host)
@@ -47,10 +47,82 @@ fun SettingsScreen(onLoggedOut: () -> Unit) {
             HorizontalDivider()
             when (tab) {
                 0 -> { YamlTab(repo, runner) }
-                1 -> { BackupsTab(repo, runner, host, context) }
-                2 -> { GithubTab(repo, runner) }
+                1 -> { PushTab(context, repo) }
+                2 -> { BackupsTab(repo, runner, host, context) }
+                3 -> { GithubTab(repo, runner) }
                 else -> { SessionsTab(repo, runner, host, onLoggedOut) }
             }
+        }
+    }
+}
+
+
+// ───────── Пуш-уведомления об алертах ─────────
+
+@Composable
+private fun PushTab(context: android.content.Context, repo: PanelRepository) {
+    val store = repo.sessionStore
+    var pushOn by remember { mutableStateOf(store.pushEnabled) }
+    var cpu by remember { mutableStateOf(store.alertCpuPct.toFloat()) }
+    var ram by remember { mutableStateOf(store.alertRamPct.toFloat()) }
+    var lat by remember { mutableStateOf(store.alertLatencyMs.toFloat()) }
+    var interval by remember { mutableStateOf(store.pollIntervalMin.toFloat()) }
+
+    LaunchedEffect(Unit) {
+        if (android.os.Build.VERSION.SDK_INT >= 33 &&
+            context.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) !=
+                android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
+            (context as? android.app.Activity)?.requestPermissions(
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 101)
+        }
+    }
+
+    LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        item {
+            Card {
+                Row(Modifier.padding(16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Пуш об алертах", style = MaterialTheme.typography.titleMedium)
+                        Text("Фоновая проверка панели: новые алерты + пороги CPU/RAM/латентности",
+                            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Switch(checked = pushOn, onCheckedChange = {
+                        pushOn = it; store.pushEnabled = it
+                        if (it) com.hydra.panel.alerts.AlertPollWorker.schedule(context, store.pollIntervalMin)
+                        else com.hydra.panel.alerts.AlertPollWorker.cancel(context)
+                    })
+                }
+            }
+        }
+        item { ThresholdSlider("Порог CPU, %", cpu, 50f..100f) { v -> cpu = v; store.alertCpuPct = v.toInt() } }
+        item { ThresholdSlider("Порог RAM, %", ram, 50f..100f) { v -> ram = v; store.alertRamPct = v.toInt() } }
+        item { ThresholdSlider("Порог латентности, мс", lat, 50f..2000f) { v -> lat = v; store.alertLatencyMs = v.toInt() } }
+        item { ThresholdSlider("Интервал проверки, мин", interval, 15f..240f) { v ->
+            interval = v; store.pollIntervalMin = v.toInt()
+            if (store.pushEnabled) com.hydra.panel.alerts.AlertPollWorker.schedule(context, v.toInt())
+        } }
+        item {
+            OutlinedButton(onClick = {
+                com.hydra.panel.alerts.AlertNotifier.postMessage(
+                    context, "test-push", "✅ Тестовое уведомление Hydra",
+                    "Канал «Алерты серверов» работает. Пороги: CPU ${'$'}{store.alertCpuPct}%, RAM ${'$'}{store.alertRamPct}%")
+            }, modifier = Modifier.fillMaxWidth()) { Text("Отправить тестовый пуш") }
+        }
+        item {
+            Text("Android ограничивает фоновые задачи: минимальный реальный интервал — 15 минут. " +
+                 "Для мгновенных алертов на сервере настрой webhook в панели (Telegram/Email) — приложение покажет их при следующем открытии.",
+                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+@Composable
+private fun ThresholdSlider(label: String, value: Float, range: ClosedFloatingPointRange<Float>, onChange: (Float) -> Unit) {
+    Card {
+        Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+            Text("$label: ${'$'}{value.toInt()}", style = MaterialTheme.typography.titleSmall)
+            Slider(value = value.coerceIn(range.start, range.endInclusive), onValueChange = onChange, valueRange = range)
         }
     }
 }
