@@ -1,17 +1,2 @@
-# Android/Gradle build artifacts
-.gradle/
-build/
-
-# IDE and Editor files
-.idea/
-*.iml
-*.swp
-*.swo
-
-# System files
-.DS_Store
-Thumbs.db
-
-# Logs and temporary files
-*.log
-hs_err_pid*
+# Compiled/Binary files
+*.apk
