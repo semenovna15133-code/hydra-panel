@@ -68,6 +68,7 @@ fun LoginScreen(onLoggedIn: () -> Unit) {
     var sshPass by remember { mutableStateOf("") }
     var adminPass by remember { mutableStateOf("") }
     var panelPort by remember { mutableStateOf("8000") }
+    var sshPort by remember { mutableStateOf("22") }
     var repoUrl by remember { mutableStateOf(Provisioner.DEFAULT_REPO_URL) }
 
     var busy by remember { mutableStateOf(false) }
@@ -200,12 +201,22 @@ fun LoginScreen(onLoggedIn: () -> Unit) {
                                     modifier = Modifier.fillMaxWidth(), colors = fieldColors)
                             }
                             Box(Modifier.weight(1f)) {
-                                OutlinedTextField(value = panelPort, onValueChange = { panelPort = it.filter(Char::isDigit) },
+                                OutlinedTextField(value = sshPort, onValueChange = { sshPort = it.filter(Char::isDigit).take(5) },
+                                    label = { Text("Порт SSH") }, singleLine = true,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    colors = fieldColors)
+                            }
+                        }
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Box(Modifier.weight(1f)) {
+                                OutlinedTextField(value = panelPort, onValueChange = { panelPort = it.filter(Char::isDigit).take(5) },
                                     label = { Text("Порт панели") }, singleLine = true,
                                     modifier = Modifier.fillMaxWidth(),
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                     colors = fieldColors)
                             }
+                            Box(Modifier.weight(1f)) { }
                         }
                         OutlinedTextField(value = sshPass, onValueChange = { sshPass = it },
                             label = { Text("Root-пароль SSH (одноразовый bootstrap)") }, singleLine = true,
@@ -232,6 +243,7 @@ fun LoginScreen(onLoggedIn: () -> Unit) {
                                 if (host.isBlank()) { error = "Укажи адрес сервера"; return@GradientButton }
                                 if (sshPass.isBlank()) { error = "Нужен root-пароль для bootstrap"; return@GradientButton }
                                 if (adminPass.length < 8) { error = "Пароль администратора минимум 8 символов"; return@GradientButton }
+                                val sshPortInt = sshPort.trim().toIntOrNull()?.takeIf { it in 1..65535 } ?: 22
                                 busy = true; error = null; info = null
                                 val cleanHost = host.trim().removePrefix("http://").removePrefix("https://").substringBefore('/')
                                 scope.launch {
@@ -240,7 +252,8 @@ fun LoginScreen(onLoggedIn: () -> Unit) {
                                         val baseUrl = Provisioner.provision(appCtx, cleanHost,
                                             sshUser.trim().ifBlank { "root" }, sshPass,
                                             panelPort.toIntOrNull()?.coerceIn(1, 65535) ?: 8000,
-                                            repoUrl.trim().ifBlank { Provisioner.DEFAULT_REPO_URL }) { msg -> info = msg }
+                                            repoUrl.trim().ifBlank { Provisioner.DEFAULT_REPO_URL },
+                                            sshPort = sshPortInt) { msg -> info = msg }
                                         info = "Панель поднялась: $baseUrl — создаю администратора…"
                                         repo?.sessionStore?.baseUrl = baseUrl
                                         repo?.sessionStore?.cliToken = null

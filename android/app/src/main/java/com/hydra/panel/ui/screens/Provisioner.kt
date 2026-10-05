@@ -37,16 +37,17 @@ object Provisioner {
         password: String,
         port: Int,
         repoUrl: String = DEFAULT_REPO_URL,
+        sshPort: Int = 22,
         onProgress: (String) -> Unit,
     ): String = withContext(Dispatchers.IO) {
-        onProgress("SSH: подключаюсь к $host…")
-        sshRunPass(host, 22, user, password, null, "echo ok && uname -a")
+        onProgress("SSH: подключаюсь к $host:$sshPort…")
+        sshRunPass(host, sshPort, user, password, null, "echo ok && uname -a")
 
         onProgress("Устанавливаю Docker…")
-        sshRunPass(host, 22, user, password, null, INSTALL_DOCKER_CMD)
+        sshRunPass(host, sshPort, user, password, null, INSTALL_DOCKER_CMD)
 
         onProgress("Клонирую панель и запускаю сервис…")
-        sshRunPass(host, 22, user, password, null, DEPLOY_CMD(port, repoUrl))
+        sshRunPass(host, sshPort, user, password, null, DEPLOY_CMD(port, repoUrl))
 
         onProgress("Ожидаю запуска панели…")
         val base = "http://$host:$port"
