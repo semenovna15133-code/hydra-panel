@@ -27,7 +27,7 @@ import java.util.Base64
 object Provisioner {
 
     /** Репозиторий панели по умолчанию; можно переопределить в UI при провижининге. */
-    const val DEFAULT_REPO_URL = "https://github.com/hydra-vpn/hydra-panel"
+    const val DEFAULT_REPO_URL = "https://github.com/semenovna15133-code/hydra-panel"
     private const val KEY_FILE = "hydra_bootstrap_key"
 
     suspend fun provision(
