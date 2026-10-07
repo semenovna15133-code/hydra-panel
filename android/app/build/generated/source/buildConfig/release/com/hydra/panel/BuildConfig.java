@@ -7,6 +7,6 @@ public final class BuildConfig {
   public static final boolean DEBUG = false;
   public static final String APPLICATION_ID = "com.hydra.panel";
   public static final String BUILD_TYPE = "release";
-  public static final int VERSION_CODE = 4;
-  public static final String VERSION_NAME = "0.4.0";
+  public static final int VERSION_CODE = 6;
+  public static final String VERSION_NAME = "0.6.0";
 }

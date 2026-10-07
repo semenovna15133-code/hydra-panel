@@ -4,7 +4,7 @@
             "outputFile": "com.hydra.panel.app-mergeReleaseResources-56:/values-v23/values-v23.xml",
             "map": [
                 {
-                    "source": "/tmp/gradle-home/caches/transforms-3/e5a20f1fc905537ac2a8b3c08e5cd9c7/transformed/work-runtime-2.9.0/res/values-v23/values-v23.xml",
+                    "source": "/root/.gradle/caches/transforms-3/e5a20f1fc905537ac2a8b3c08e5cd9c7/transformed/work-runtime-2.9.0/res/values-v23/values-v23.xml",
                     "from": {
                         "startLines": "2,3",
                         "startColumns": "4,4",

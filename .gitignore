@@ -1,2 +1,12 @@
-# Compiled/Binary files
-*.apk
+# Android/Gradle Build Artifacts
+build/
+.gradle/
+*.dex
+*.class
+*.ap_
+*.prof
+*.profm
+
+# Logs and Crash Reports
+*.log
+hs_err_pid*.log
