@@ -1,0 +1,4 @@
+/* Hydra Control Panel — базовые стили (v0.7.0) */
+:root { --bg:#0d1117; --fg:#e6edf3; --accent:#58a6ff; }
+body { margin:0; font-family: system-ui, sans-serif; background:var(--bg); color:var(--fg); }
+a { color: var(--accent); }

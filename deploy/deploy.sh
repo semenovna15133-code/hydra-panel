@@ -38,10 +38,10 @@ echo "[2/7] Creating hydra user and directories..."
 if ! id hydra >/dev/null 2>&1 || ! getent group hydra >/dev/null 2>&1; then
     useradd -r -U -s /usr/sbin/nologin -d /nonexistent -M hydra
 fi
-mkdir -p /opt/hydra /etc/hydra /var/lib/hydra /opt/hydra/keys
-chown hydra:hydra /opt/hydra /etc/hydra /var/lib/hydra /opt/hydra/keys
+mkdir -p /opt/hydra /etc/hydra /var/lib/hydra /opt/hydra/keys /var/log/hydra
+chown hydra:hydra /opt/hydra /etc/hydra /var/lib/hydra /opt/hydra/keys /var/log/hydra
 chmod 755 /opt/hydra
-chmod 750 /etc/hydra /var/lib/hydra /opt/hydra/keys
+chmod 750 /etc/hydra /var/lib/hydra /opt/hydra/keys /var/log/hydra
 
 echo "[3/7] Cloning repository and setting up venv..."
 cd /opt/hydra
@@ -103,6 +103,25 @@ sed "s/panel\\.hydra\\.example/$DOMAIN/g" /opt/hydra/repo/deploy/systemd/hydra-p
 systemctl daemon-reload
 systemctl enable hydra-panel
 systemctl start hydra-panel
+
+echo ""
+echo "--- Diagnostics (v0.7.0): verifying panel actually started ---"
+sleep 3
+if systemctl is-active --quiet hydra-panel; then
+    echo "✓ hydra-panel is active"
+    if curl -sk --max-time 10 "https://127.0.0.1/health" | grep -q '"ok"'; then
+        echo "✓ /health responds OK"
+    else
+        echo "⚠ /health не отвечает — смотрите journalctl -u hydra-panel -n 50 и /var/log/hydra/panel.log"
+    fi
+else
+    echo "✗ hydra-panel НЕ запущена. Причины видны в логе ошибок запуска:"
+    echo "=== journalctl -u hydra-panel -n 50 --no-pager ==="
+    journalctl -u hydra-panel -n 50 --no-pager || true
+    echo "=== /var/log/hydra/panel.log (tail -50) ==="
+    tail -50 /var/log/hydra/panel.log 2>/dev/null || echo "(лог-файл ещё не создан — ошибка на этапе импорта модуля, см. journalctl выше)"
+    exit 1
+fi
 
 echo ""
 echo "✓ Deployment complete!"

@@ -2,17 +2,64 @@ from fastapi import FastAPI, HTTPException, Header, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
+import logging
 import os
+import sys
 from datetime import datetime
-from fastapi import FastAPI, HTTPException, Header, Request
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional
 from .core.db import Database
 from .core.server_manager import ServerManager
 
 DB_PATH = os.environ.get("HYDRA_DB_PATH", "panel.db")
+
+# === Logging (v0.7.0): errors during panel startup on a fresh server must be
+# visible in journalctl / HYDRA_LOG_FILE, not swallowed by a bare crash loop ===
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+    stream=sys.stderr,
+)
+log = logging.getLogger("hydra.panel")
+
+_log_file = os.environ.get("HYDRA_LOG_FILE", "")
+if _log_file:
+    try:
+        Path(_log_file).parent.mkdir(parents=True, exist_ok=True)
+        _fh = logging.FileHandler(_log_file)
+        _fh.setFormatter(logging.Formatter("%(asctime)s %(levelname)s [%(name)s] %(message)s"))
+        logging.getLogger().addHandler(_fh)
+        log.info("file logging enabled: %s", _log_file)
+    except OSError as e:
+        # не роняем панель из-за лога — пишем в stderr и продолжаем
+        log.error("failed to open HYDRA_LOG_FILE=%s: %s: %s", _log_file, type(e).__name__, e)
+
+
+def _resolve_dir(env_var: str, *candidates: str, kind: str) -> Path:
+    """Resolve a resource directory relative to the repo package location.
+
+    systemd запускает uvicorn с WorkingDirectory=/opt/hydra, а репозиторий лежит
+    в /opt/hydra/repo — относительные пути "templates"/"static" там не существуют.
+    Ищем явно, логируем каждый кандидат, при неудаче падаем с понятной ошибкой.
+    """
+    override = os.environ.get(env_var, "")
+    pkg_root = Path(__file__).resolve().parent.parent  # .../repo
+    cand_list = []
+    if override:
+        cand_list.append(Path(override))
+    for c in candidates:
+        cand_list += [Path.cwd() / c, pkg_root / c]
+
+    tried = []
+    for p in cand_list:
+        tried.append(str(p))
+        if p.is_dir():
+            log.info("%s directory resolved: %s", kind, p)
+            return p
+    msg = f"{kind} directory not found. Tried: {', '.join(tried)}"
+    log.critical(msg)
+    raise RuntimeError(msg)
 
 
 # Pydantic models
@@ -53,16 +100,35 @@ class AgentMetrics(BaseModel):
     latency_ms: float
 
 
+try:
+    from . import __version__ as PANEL_VERSION
+except Exception:  # pragma: no cover
+    PANEL_VERSION = "0.7.0"
+
 # Application setup
 app = FastAPI(
     title="Hydra Control Panel",
     description="Multi-protocol VPN server management",
-    version="0.1.0",
+    version=PANEL_VERSION,
 )
 
-# Setup templates and static files
-templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Setup templates and static files.
+# v0.7.0: раньше здесь был статичный StaticFiles(directory="static") — при старте
+# из /opt/hydra (WorkingDirectory в systemd) папки "static" нет и импорт модуля
+# падал с невнятным RuntimeError("Directory 'static' does not exist"), из-за чего
+# панель не поднималась, а причина терялась в crash-loop journalctl.
+try:
+    _templates_dir = _resolve_dir("HYDRA_TEMPLATES_DIR", "templates", kind="templates")
+    _static_dir = _resolve_dir("HYDRA_STATIC_DIR", "static", kind="static")
+    templates = Jinja2Templates(directory=str(_templates_dir))
+    if not _static_dir.is_dir():
+        _static_dir.mkdir(parents=True, exist_ok=True)
+        log.warning("static dir %s did not exist, created empty one", _static_dir)
+    app.mount("/static", StaticFiles(directory=str(_static_dir)), name="static")
+    log.info("hydra-panel v%s module initialized (cwd=%s)", PANEL_VERSION, os.getcwd())
+except Exception:
+    log.exception("FATAL: panel module initialization failed — see reason above")
+    raise
 
 
 # Global state
@@ -78,11 +144,21 @@ async def startup():
     # Пути настраиваются через переменные окружения
     db_path = os.environ.get("HYDRA_DB_PATH", DB_PATH)
     ssh_key = os.environ.get("HYDRA_SSH_KEY", "/opt/hydra/keys/panel_key")
-    
-    db = Database(db_path)
-    await db.connect()
-    await db.init_schema()
-    manager = ServerManager(db, ssh_key)
+
+    log.info("startup: db_path=%s ssh_key=%s", db_path, ssh_key)
+    try:
+        db = Database(db_path)
+        await db.connect()
+        await db.init_schema()
+        manager = ServerManager(db, ssh_key)
+        log.info("startup complete: hydra-panel v%s ready", PANEL_VERSION)
+    except Exception:
+        log.exception(
+            "FATAL: startup failed (db_path=%s). Check permissions on the DB "
+            "directory and that HYDRA_DB_PATH points to a writable location.",
+            db_path,
+        )
+        raise
 
 
 @app.on_event("shutdown")
@@ -1868,7 +1944,7 @@ PROTOCOL_RESTART_CMDS = {
 
 PROTOCOL_LOG_CMDS = {
     "agent": '{ echo "=== hydra-agent.log (last 200) ==="; tail -200 /var/log/hydra-agent.log 2>/dev/null; echo; echo "=== cron runs (hydra) ==="; journalctl -n 300 --no-pager 2>/dev/null | grep -i hydra | tail -20; echo; echo "=== buffer status ==="; ls -la /var/lib/hydra-agent/ 2>/dev/null; wc -l /var/lib/hydra-agent/buffer.ndjson 2>/dev/null; }',
-    "wdtt": '{ echo "=== События (подключения/ошибки, без [СТАТ]) ==="; journalctl -u wdtt -n 3000 --no-pager -q | grep -v "[СТАТ]" | tail -80; echo; echo "=== Свежая статистика (последние 10) ==="; journalctl -u wdtt -n 40 --no-pager -q | grep "\[СТАТ\]" | tail -10; }',
+    "wdtt": '{ echo "=== События (подключения/ошибки, без [СТАТ]) ==="; journalctl -u wdtt -n 3000 --no-pager -q | grep -vF "[СТАТ]" | tail -80; echo; echo "=== Свежая статистика (последние 10) ==="; journalctl -u wdtt -n 40 --no-pager -q | grep -F "[СТАТ]" | tail -10; }',
     "aivpn": '{ echo "=== События (без DEBUG) ==="; journalctl -u aivpn-server -n 400 --no-pager -q | grep -v " DEBUG " | tail -100; }',
     "awg": '{ awg show awg0 2>/dev/null; echo; echo "=== dmesg (awg0) ==="; dmesg | grep awg0 | tail -100; }',
 }

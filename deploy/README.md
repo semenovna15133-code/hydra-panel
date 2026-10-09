@@ -29,6 +29,23 @@ Production deployment scripts for Hydra Control Panel on Ubuntu 24.04.
 3. Verify:
    curl https://panel.hydra.example/health
 
+## Troubleshooting (v0.7.0)
+
+If the panel does not start on a fresh server, v0.7.0 logs every startup failure with a
+full traceback to both journalctl and `/var/log/hydra/panel.log`:
+
+   journalctl -u hydra-panel -n 50 --no-pager
+   tail -50 /var/log/hydra/panel.log
+
+Known root cause fixed in 0.7.0: `hydra.panel` used relative paths (`templates`, `static`)
+while systemd ran uvicorn with `WorkingDirectory=/opt/hydra` (repo lives in `/opt/hydra/repo`),
+and the `static/` directory did not exist in the repo at all — module import crashed with
+`RuntimeError: Directory 'static' does not exist` before any log line was written, so the
+service sat in a silent crash-loop. Now resource directories are resolved relative to the
+package location (overridable via `HYDRA_TEMPLATES_DIR` / `HYDRA_STATIC_DIR`), `static/` is
+shipped in the repo, and deploy.sh verifies the service is active and prints the error log
+instead of claiming success.
+
 ## Files
 
 - deploy.sh - main deployment script

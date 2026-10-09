@@ -1,2 +1,4 @@
 # Compiled/Binary files
 *.apk
+__pycache__/
+*.pyc
