@@ -160,16 +160,80 @@ object Provisioner {
         fi
     """.trimIndent()
 
+    // v0.7.2 — полный переписанный деплой без Docker и с внятными ошибками:
+    //  * В v0.7.1 здесь был дохлый Docker-путь: в репозитории никогда не было Dockerfile,
+    //    `docker build ... || true` всегда молча проваливался, а fallback на pip ставил
+    //    кривое окружение (в requirements.txt были только cryptography/pyyaml, без
+    //    fastapi/uvicorn) и панель умирала со "No module named uvicorn".
+    //  * Теперь: python3-venv -> pip install -r requirements.txt (полный список) ->
+    //    systemd unit с WorkingDirectory=репозиторий; если systemd недоступен — nohup.
+    //  * Каждая ошибка выводится с понятным текстом и уходит в IllegalStateException
+    //    на экран приложения.
     private fun DEPLOY_CMD(port: Int, repoUrl: String) = """
         set -e
+        export DEBIAN_FRONTEND=noninteractive
+        log(){ echo "[deploy] ${'$'}1"; }
+        die(){ echo "[deploy][ERROR] ${'$'}1"; exit 1; }
+
+        command -v git >/dev/null 2>&1 || { apt-get update -y >/dev/null 2>&1 || true; apt-get install -y git >/dev/null 2>&1 || die "не удалось установить git (проверьте доступ к apt-репозиториям)"; }
         mkdir -p /opt/hydra
-        if [ ! -d /opt/hydra/repo ]; then git clone "$repoUrl" /opt/hydra/repo; else (cd /opt/hydra/repo && git pull --ff-only || true); fi
+        if [ ! -d /opt/hydra/repo/.git ]; then
+          rm -rf /opt/hydra/repo
+          git clone --depth 1 "$repoUrl" /opt/hydra/repo || die "git clone не удался — проверьте URL репозитория и доступ сервера к github.com"
+        else
+          ( cd /opt/hydra/repo && git fetch --depth 1 origin && git reset --hard origin/HEAD ) || die "git pull не удался"
+        fi
         cd /opt/hydra/repo
-        docker build -t hydra-panel:latest . 2>/dev/null || true
-        docker rm -f hydra-panel 2>/dev/null || true
-        docker run -d --name hydra-panel --restart unless-stopped -p $port:8000 -v /opt/hydra/data:/data hydra-panel:latest 2>/dev/null || {
-          pip3 install -q -r requirements.txt || python3 -m pip install -q -r requirements.txt
-          mkdir -p /var/log/hydra; HYDRA_LOG_FILE=/var/log/hydra/panel.log nohup python3 -m uvicorn hydra.panel:app --host 0.0.0.0 --port $port >/var/log/hydra/panel.log 2>&1 &
-        }
+
+        # Python >= 3.11 (проверяем реально исполняемым тестом, а не парсингом --version)
+        PYBIN=""
+        for c in python3.13 python3.12 python3 python3.11; do
+          if command -v "${'$'}c" >/dev/null 2>&1 && "${'$'}c" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)' >/dev/null 2>&1; then
+            PYBIN="${'$'}c"; break
+          fi
+        done
+        [ -n "${'$'}PYBIN" ] || { apt-get update -y >/dev/null 2>&1 || true; apt-get install -y python3 python3-venv >/dev/null 2>&1 || die "на сервере нет Python >= 3.11 и apt не смог его установить"; PYBIN=python3; }
+        "${'$'}PYBIN" -m venv --help >/dev/null 2>&1 || { apt-get update -y >/dev/null || true; apt-get install -y python3-venv || die "не удалось установить python3-venv"; }
+        log "python: $("${'$'}PYBIN" -V 2>&1)"
+
+        [ -d /opt/hydra/venv ] || "${'$'}PYBIN" -m venv /opt/hydra/venv || die "не удалось создать venv"
+        /opt/hydra/venv/bin/pip install -q --upgrade pip setuptools wheel || die "pip upgrade не удался (нет доступа к pypi.org?)"
+        /opt/hydra/venv/bin/pip install -q -r requirements.txt || die "установка зависимостей из requirements.txt не удалась (см. вывод pip выше)"
+        /opt/hydra/venv/bin/python -c "import uvicorn, fastapi, aiosqlite, asyncssh" || die "питон-окружение собрано, но модулы панели не импортируются"
+
+        mkdir -p /var/log/hydra
+        pkill -f "uvicorn hydra.panel:app" 2>/dev/null || true
+
+        cat > /etc/systemd/system/hydra-panel.service <<UNIT
+[Unit]
+Description=Hydra Control Panel
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/hydra/repo
+ExecStart=/opt/hydra/venv/bin/python -m uvicorn hydra.panel:app --host 0.0.0.0 --port $port
+Restart=unless-stopped
+Environment=HYDRA_DB_PATH=/opt/hydra/panel.db
+Environment=HYDRA_LOG_FILE=/var/log/hydra/panel.log
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+        if command -v systemctl >/dev/null 2>&1 && systemctl daemon-reload 2>/dev/null && systemctl enable --now hydra-panel 2>/dev/null; then
+          sleep 4
+          systemctl is-active --quiet hydra-panel || { journalctl -u hydra-panel -n 40 --no-pager || true; die "сервис hydra-panel не запустился через systemd (вывод journalctl выше)"; }
+          log "запущено через systemd"
+        else
+          log "systemd недоступен — стартую через nohup"
+          cd /opt/hydra/repo
+          HYDRA_DB_PATH=/opt/hydra/panel.db HYDRA_LOG_FILE=/var/log/hydra/panel.log nohup /opt/hydra/venv/bin/python -m uvicorn hydra.panel:app --host 0.0.0.0 --port $port >>/var/log/hydra/panel.log 2>&1 &
+          sleep 4
+          pgrep -f "uvicorn hydra.panel:app" >/dev/null || { tail -n 40 /var/log/hydra/panel.log || true; die "панель не запустилась даже через nohup (последние строки лога выше)"; }
+        fi
+
+        if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "Status: active"; then
+          ufw allow $port/tcp >/dev/null 2>&1 || log "не смог открыть порт $port в ufw — проверьте файрвол вручную"
+        fi
+        log "готово: панель должна отвечать на http://127.0.0.1:$port"
     """.trimIndent()
 }

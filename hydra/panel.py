@@ -103,7 +103,7 @@ class AgentMetrics(BaseModel):
 try:
     from . import __version__ as PANEL_VERSION
 except Exception:  # pragma: no cover
-    PANEL_VERSION = "0.7.0"
+    PANEL_VERSION = "0.7.2"
 
 # Application setup
 app = FastAPI(
