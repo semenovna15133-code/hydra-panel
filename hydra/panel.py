@@ -172,7 +172,94 @@ async def shutdown():
 @app.get("/health")
 async def health():
     """Simple health check."""
-    return {"status": "ok", "service": "hydra-panel"}
+    return {"status": "ok", "service": "hydra-panel", "version": PANEL_VERSION}
+
+
+# ───────── Panel error log (v0.7.1) ─────────
+# Читаем лог ошибок самой панели через приложение: /api/v1/panel/log
+# (JSON — для Android-клиента) и /panel/log (HTML — для браузера).
+_PANEL_LOG_CANDIDATES = (
+    os.environ.get("HYDRA_LOG_FILE", ""),
+    "/var/log/hydra/panel.log",
+    "./panel.log",
+)
+
+
+def _tail_text_file(path: str, max_bytes: int = 64 * 1024) -> str:
+    """Последние max_bytes байт файла (эффективный tail без чтения всего файла)."""
+    with open(path, "rb") as f:
+        f.seek(0, os.SEEK_END)
+        size = f.tell()
+        f.seek(max(0, size - max_bytes))
+        data = f.read()
+    return data.decode("utf-8", errors="replace")
+
+
+@app.get("/api/v1/panel/log")
+async def panel_log_api(lines: int = 300):
+    """Последние строки лога ошибок панели (файл HYDRA_LOG_FILE / /var/log/hydra/panel.log).
+
+    Дополнительно возвращаем последние записи journalctl сервиса hydra-panel —
+    именно туда попадают traceback'и стартовых крашей (v0.7.0), когда файл
+    лога ещё не создан или пуст.
+    """
+    import asyncio as _aio
+
+    lines = max(1, min(int(lines or 300), 2000))
+    result = {
+        "version": PANEL_VERSION,
+        "log_file": None,
+        "exists": False,
+        "lines": [],
+        "journal": "",
+        "note": "",
+    }
+
+    path = next((p for p in _PANEL_LOG_CANDIDATES if p and os.path.isfile(p)), None)
+    if path:
+        result["log_file"] = path
+        result["exists"] = True
+        try:
+            text = await _aio.to_thread(_tail_text_file, path, 256 * 1024)
+            result["lines"] = text.splitlines()[-lines:]
+        except OSError as e:
+            result["note"] = f"failed to read {path}: {e}"
+            log.error("panel_log_api: %s", e)
+
+    # journalctl: stdout/stderr панели (startup tracebacks логируются в stderr)
+    try:
+        proc = await _aio.create_subprocess_exec(
+            "journalctl", "-u", "hydra-panel", "-n", str(lines), "--no-pager",
+            stdout=_aio.subprocess.PIPE, stderr=_aio.subprocess.DEVNULL,
+        )
+        out, _ = await _aio.wait_for(proc.communicate(), timeout=5)
+        if out:
+            result["journal"] = out.decode("utf-8", errors="replace")
+    except Exception:
+        pass  # journalctl недоступен (не systemd / нет прав) — не критично
+
+    if not result["exists"] and not result["journal"]:
+        result["note"] = (
+            "Лог-файл не найден ни по одному из путей: "
+            + ", ".join(p for p in _PANEL_LOG_CANDIDATES if p)
+            + ". Проверьте HYDRA_LOG_FILE в systemd-юните."
+        )
+    return result
+
+
+@app.get("/panel/log", response_class=HTMLResponse)
+async def panel_log_page(request: Request):
+    """Веб-страница лога ошибок панели."""
+    data = await panel_log_api(lines=500)
+    body = "\n".join(data["lines"]) or data["journal"] or "(лог пуст)"
+    html = (
+        "<html><head><title>Hydra Panel · error log</title>"
+        "<style>body{background:#111;color:#ddd;font-family:monospace;padding:16px}"
+        "pre{white-space:pre-wrap;word-break:break-all}h3{color:#faa}</style></head><body>"
+        f"<h3>Hydra Panel v{data['version']} · log: {data['log_file'] or '—'}</h3>"
+        f"<p>{data['note'] or ''}</p><pre>{body.replace('<', '&lt;')}</pre></body></html>"
+    )
+    return HTMLResponse(html)
 
 
 # Server endpoints

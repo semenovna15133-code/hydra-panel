@@ -168,3 +168,13 @@ data class BackupInfo(
 )
 
 
+
+@Serializable
+data class PanelLogResponse(
+    val version: String? = null,
+    @SerialName("log_file") val logFile: String? = null,
+    val exists: Boolean = false,
+    val lines: List<String> = emptyList(),
+    val journal: String = "",
+    val note: String = "",
+)

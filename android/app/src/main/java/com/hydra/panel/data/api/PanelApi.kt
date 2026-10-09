@@ -132,6 +132,10 @@ interface PanelApi {
     @Headers("Accept: text/html")
     suspend fun serverLogsPage(@Path("id") serverId: String, @Query("source") source: String): Response<ResponseBody>
 
+    // ───────── Панель: собственный лог ошибок (v0.7.1) ─────────
+    @GET("api/v1/panel/log")
+    suspend fun panelLog(@Query("lines") lines: Int = 300): Response<PanelLogResponse>
+
     // ───────── Configs (HTML + apply) ─────────
     @GET("servers/{id}/configs")
     @Headers("Accept: text/html")

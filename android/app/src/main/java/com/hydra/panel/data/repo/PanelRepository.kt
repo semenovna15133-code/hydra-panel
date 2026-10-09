@@ -391,6 +391,9 @@ class PanelRepository private constructor(
         return logs to sources
     }
 
+    /** Лог ошибок самой панели (v0.7.1): файл HYDRA_LOG_FILE + journalctl сервиса. */
+    suspend fun panelErrorLog(lines: Int = 300): PanelLogResponse = unwrap(api.panelLog(lines))
+
     data class ConfigPage(
         val listing: String,
         val files: Map<String, String>,

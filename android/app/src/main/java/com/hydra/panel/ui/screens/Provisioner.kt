@@ -169,7 +169,7 @@ object Provisioner {
         docker rm -f hydra-panel 2>/dev/null || true
         docker run -d --name hydra-panel --restart unless-stopped -p $port:8000 -v /opt/hydra/data:/data hydra-panel:latest 2>/dev/null || {
           pip3 install -q -r requirements.txt || python3 -m pip install -q -r requirements.txt
-          nohup python3 -m uvicorn hydra.panel:app --host 0.0.0.0 --port $port >/opt/hydra/panel.log 2>&1 &
+          mkdir -p /var/log/hydra; HYDRA_LOG_FILE=/var/log/hydra/panel.log nohup python3 -m uvicorn hydra.panel:app --host 0.0.0.0 --port $port >/var/log/hydra/panel.log 2>&1 &
         }
     """.trimIndent()
 }
