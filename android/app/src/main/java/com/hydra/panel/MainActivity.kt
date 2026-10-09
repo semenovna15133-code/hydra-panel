@@ -211,6 +211,7 @@ fun MainNav(key: Int = 0, onLoggedOut: () -> Unit) {
             composable("reports") { ReportsScreen() }
             composable("database") { DatabaseScreen() }
             composable("settings") { SettingsScreen(onLoggedOut = onLoggedOut) }
+            composable("panel_log") { PanelErrorLogScreen(onBack = { nav.popBackStack() }) }
         }
     }
 }
@@ -224,6 +225,7 @@ private fun MoreScreen(nav: NavHostController, onLoggedOut: () -> Unit) {
         "Отчёты и прогноз" to "reports",
         "SQL-консоль" to "database",
         "Настройки и бекапы" to "settings",
+        "Лог ошибок панели" to "panel_log",
     )
     Scaffold(topBar = {
         TopAppBar(

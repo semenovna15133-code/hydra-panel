@@ -212,3 +212,67 @@ fun ConfigsScreen(serverId: String, onBack: () -> Unit) {
         )
     }
 }
+
+// ─────────────────── Панель: лог ошибок (v0.7.1) ───────────────────
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PanelErrorLogScreen(onBack: () -> Unit) {
+    val repo = PanelRepository.get(LocalContext.current)
+    var data by remember { mutableStateOf<com.hydra.panel.data.model.PanelLogResponse?>(null) }
+    var loading by remember { mutableStateOf(true) }
+    var error by remember { mutableStateOf<String?>(null) }
+    var refresh by remember { mutableStateOf(0) }
+    var showJournal by remember { mutableStateOf(false) }
+
+    LaunchedEffect(refresh) {
+        loading = true; error = null
+        runCatching { repo.panelErrorLog(lines = 500) }
+            .onSuccess { data = it; loading = false }
+            .onFailure { error = it.message; loading = false }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Лог ошибок панели") },
+                navigationIcon = { TextButton(onClick = onBack) { Text("←") } },
+                actions = { IconButton(onClick = { refresh++ }) { Text("⟳") } },
+            )
+        },
+    ) { pad ->
+        Column(Modifier.padding(pad)) {
+            MessageBar(error, true) { error = null }
+            if (loading) LoadingBlock("Читаем лог панели…")
+            else {
+                val d = data
+                Column(Modifier.verticalScroll(rememberScrollState()).padding(12.dp)) {
+                    if (d == null) {
+                        MonoText("Нет данных")
+                    } else {
+                        VCard(Modifier.fillMaxWidth()) {
+                            Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                MonoText("Панель: v${d.version ?: "?"}")
+                                MonoText("Файл лога: ${d.logFile ?: "не найден"}")
+                                if (d.note.isNotBlank()) MonoText(d.note)
+                                if (d.journal.isNotBlank()) {
+                                    ActionButton(
+                                        if (showJournal) "Скрыть journalctl" else "Показать journalctl (systemd)",
+                                        modifier = Modifier.fillMaxWidth(),
+                                    ) { showJournal = !showJournal }
+                                }
+                            }
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        SectionTitle(if (showJournal) "journalctl · hydra-panel" else "Ошибки панели (${d.lines.size} строк)")
+                        Spacer(Modifier.height(4.dp))
+                        val text = if (showJournal) d.journal else d.lines.joinToString("\n").ifBlank {
+                            if (d.journal.isNotBlank()) "Файл лога пуст — смотрите journalctl." else "(лог пуст — панель не писала ошибок)"
+                        }
+                        MonoText(text.take(120_000))
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,12 +1,15 @@
-# Android/Gradle Build Artifacts
-build/
+# Gradle
 .gradle/
-*.dex
-*.class
-*.ap_
-*.prof
-*.profm
 
-# Logs and Crash Reports
-*.log
+# Android Build Artifacts
+build/
+# Python
+__pycache__/
+*.pyc
+
+# JVM crash logs
 hs_err_pid*.log
+*.hprof
+
+# Build logs
+build_v071.log
