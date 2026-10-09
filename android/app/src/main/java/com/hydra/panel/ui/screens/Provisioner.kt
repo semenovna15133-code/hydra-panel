@@ -43,8 +43,11 @@ object Provisioner {
         onProgress("SSH: подключаюсь к $host:$sshPort…")
         sshRunPass(host, sshPort, user, password, null, "echo ok && uname -a")
 
-        onProgress("Устанавливаю Docker…")
-        sshRunPass(host, sshPort, user, password, null, INSTALL_DOCKER_CMD)
+        // v0.7.3: Docker-шаг убран — деплой работает через python venv + systemd/nohup,
+        // а apt-get установки docker.com на части VPS (нерепозиторные образы, блокировки
+        // dpkg, таймауты зеркал) валили весь провижининг ещё до деплоя панели.
+        onProgress("Ставлю базовые пакеты (git, python3-venv)…")
+        sshRunPass(host, sshPort, user, password, null, PREPARE_CMD)
 
         onProgress("Клонирую панель и запускаю сервис…")
         sshRunPass(host, sshPort, user, password, null, DEPLOY_CMD(port, repoUrl))
@@ -145,19 +148,14 @@ object Provisioner {
         throw IllegalStateException("Панель не ответила за ${timeoutMs / 1000}с ($lastErr)")
     }
 
-    private val INSTALL_DOCKER_CMD = """
-        set -e
+    // v0.7.3: только то, что реально нужно деплою. Каждая команда с `|| true`,
+    // apt не должен обрывать провижининг — критичное перепроверяется в DEPLOY_CMD.
+    private val PREPARE_CMD = """
         export DEBIAN_FRONTEND=noninteractive
-        if ! command -v docker >/dev/null 2>&1; then
-          apt-get update -y
-          apt-get install -y ca-certificates curl gnupg git
-          install -m 0755 -d /etc/apt/keyrings
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc || true
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo ${'$'}VERSION_CODENAME) stable" > /etc/apt/sources.list.d/docker.list
-          apt-get update -y
-          apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-          systemctl enable --now docker
-        fi
+        export NEEDRESTART_MODE=a
+        apt-get update -y >/dev/null 2>&1 || echo "[prepare] apt-get update failed (continue)"
+        apt-get install -y git python3 python3-venv python3-pip curl >/dev/null 2>&1 || echo "[prepare] some packages failed to install (deploy step will re-check)"
+        echo "[prepare] done"
     """.trimIndent()
 
     // v0.7.2 — полный переписанный деплой без Docker и с внятными ошибками:
@@ -197,12 +195,15 @@ object Provisioner {
         log "python: $("${'$'}PYBIN" -V 2>&1)"
 
         [ -d /opt/hydra/venv ] || "${'$'}PYBIN" -m venv /opt/hydra/venv || die "не удалось создать venv"
-        /opt/hydra/venv/bin/pip install -q --upgrade pip setuptools wheel || die "pip upgrade не удался (нет доступа к pypi.org?)"
-        /opt/hydra/venv/bin/pip install -q -r requirements.txt || die "установка зависимостей из requirements.txt не удалась (см. вывод pip выше)"
-        /opt/hydra/venv/bin/python -c "import uvicorn, fastapi, aiosqlite, asyncssh" || die "питон-окружение собрано, но модулы панели не импортируются"
+        # v0.7.3: pip без -q — при ошибке пользователь видит реальный текст в приложении;
+        # сетевые сбои pypi ретраим.
+        /opt/hydra/venv/bin/pip install --retries 5 --upgrade pip setuptools wheel || die "pip upgrade не удался (нет доступа к pypi.org?)"
+        /opt/hydra/venv/bin/pip install --retries 5 -r requirements.txt || die "установка зависимостей из requirements.txt не удалась (см. вывод pip выше)"
+        /opt/hydra/venv/bin/python -c "import uvicorn, fastapi, aiosqlite, asyncssh" || die "питон-окружение собрано, но модули панели не импортируются"
 
         mkdir -p /var/log/hydra
         pkill -f "uvicorn hydra.panel:app" 2>/dev/null || true
+        systemctl stop hydra-panel 2>/dev/null || true
 
         cat > /etc/systemd/system/hydra-panel.service <<UNIT
 [Unit]
@@ -219,12 +220,14 @@ Environment=HYDRA_LOG_FILE=/var/log/hydra/panel.log
 [Install]
 WantedBy=multi-user.target
 UNIT
-        if command -v systemctl >/dev/null 2>&1 && systemctl daemon-reload 2>/dev/null && systemctl enable --now hydra-panel 2>/dev/null; then
+        if command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
+          systemctl daemon-reload || die "systemctl daemon-reload не удался"
+          systemctl enable --now hydra-panel || { journalctl -u hydra-panel -n 40 --no-pager || true; die "не удалось запустить сервис hydra-panel через systemd"; }
           sleep 4
           systemctl is-active --quiet hydra-panel || { journalctl -u hydra-panel -n 40 --no-pager || true; die "сервис hydra-panel не запустился через systemd (вывод journalctl выше)"; }
           log "запущено через systemd"
         else
-          log "systemd недоступен — стартую через nohup"
+          log "systemd недоступен (контейнер/OpenVZ) — стартую через nohup"
           cd /opt/hydra/repo
           HYDRA_DB_PATH=/opt/hydra/panel.db HYDRA_LOG_FILE=/var/log/hydra/panel.log nohup /opt/hydra/venv/bin/python -m uvicorn hydra.panel:app --host 0.0.0.0 --port $port >>/var/log/hydra/panel.log 2>&1 &
           sleep 4
